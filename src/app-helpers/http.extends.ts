@@ -9,7 +9,7 @@ export type SuccessParamType = {
 };
 
 export type ErrorResParamType = {
-  errorCode?: number;
+  errorCode?: number | string;
   message?: string;
   data?: any;
   errors?: Array<any>;
@@ -119,7 +119,7 @@ const errorFormatter = (error) => {
   return error;
 };
 
-export function validationRequest(req: Request): Result {
+export function validateRequest(req: Request): Result {
   const errors = validationResult(req).formatWith(errorFormatter);
 
   return errors;

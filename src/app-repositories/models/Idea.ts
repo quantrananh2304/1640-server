@@ -1,10 +1,11 @@
 import { Schema, Types, model } from "mongoose";
 import { USER_COLLECTION_NAME } from "./User";
 import { CATEGORY_COLLECTION_NAME } from "./Category";
+import { BaseModelInterface } from "./BaseModelInterface";
 
 export const IDEA_COLLECTION_NAME = "Ideas";
 
-export interface IdeaModelInterface {
+export interface IdeaModelInterface extends BaseModelInterface {
   title: string;
   description: string;
   like: Array<{

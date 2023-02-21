@@ -1,5 +1,6 @@
 import { Schema, Types, model } from "mongoose";
 import { USER_COLLECTION_NAME } from "./User";
+import { BaseModelInterface } from "./BaseModelInterface";
 
 export const CATEGORY_COLLECTION_NAME = "Categories";
 
@@ -8,7 +9,7 @@ export enum CATEGORY_STATUS {
   INACTIVE = "INACTIVE",
 }
 
-export interface CategoryModelInterface {
+export interface CategoryModelInterface extends BaseModelInterface {
   name: string;
   status: CATEGORY_STATUS;
   closureDate: Date;

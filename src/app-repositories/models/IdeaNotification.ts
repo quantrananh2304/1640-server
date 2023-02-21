@@ -1,6 +1,7 @@
 import { Schema, Types, model } from "mongoose";
 import { IDEA_COLLECTION_NAME } from "./Idea";
 import { USER_COLLECTION_NAME } from "./User";
+import { BaseModelInterface } from "./BaseModelInterface";
 
 export const IDEA_NOTIFICATION_COLLECTION_NAME = "Idea_Notifications";
 
@@ -9,7 +10,7 @@ export enum IDEA_NOTIFICATION_TYPE {
   UPDATE = "UPDATE",
 }
 
-export interface IdeaNotificationModelInterface {
+export interface IdeaNotificationModelInterface extends BaseModelInterface {
   content: string;
   type: IDEA_NOTIFICATION_TYPE;
   idea: string | Types.ObjectId;

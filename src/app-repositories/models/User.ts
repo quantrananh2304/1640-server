@@ -1,4 +1,5 @@
 import { Schema, model, Types } from "mongoose";
+import { BaseModelInterface } from "./BaseModelInterface";
 
 export const USER_COLLECTION_NAME = "Users";
 
@@ -21,14 +22,15 @@ export enum USER_ROLE {
   ADMIN = "ADMIN",
 }
 
-export interface UserModelInterface {
+export interface UserModelInterface extends BaseModelInterface {
   firstName: string;
   lastName: string;
   email: string;
   avatar: string;
   password: string;
   status: USER_STATUS;
-  code: string;
+  code: String;
+  codeExpires: Date;
   role: string;
   address: string;
   dob: Date;
@@ -63,7 +65,6 @@ const userSchema = new Schema({
   },
   avatar: {
     type: String,
-    required: true,
     default: "",
   },
   password: {
@@ -78,12 +79,14 @@ const userSchema = new Schema({
   },
   // code for activating the account and resetting the account's password
   code: {
-    type: {
-      code: String,
-      expires: Date,
-    },
+    type: String,
     required: true,
     default: {},
+  },
+  codeExpires: {
+    type: Date,
+    required: true,
+    default: new Date(),
   },
   role: {
     type: USER_ROLE,
@@ -92,7 +95,6 @@ const userSchema = new Schema({
   },
   address: {
     type: String,
-    required: true,
     default: "",
   },
   dob: {
@@ -110,20 +112,6 @@ const userSchema = new Schema({
     required: true,
     default: "",
   },
-  accountStatusUpdate: [
-    {
-      type: {
-        status: USER_STATUS,
-        reason: String,
-        updatedAt: Date,
-        updatedBy: {
-          type: Types.ObjectId,
-          ref: USER_COLLECTION_NAME,
-        },
-        default: [],
-      },
-    },
-  ],
   createdAt: {
     type: Date,
     required: true,
@@ -135,9 +123,7 @@ const userSchema = new Schema({
     default: new Date(),
   },
   updatedBy: {
-    type: Types.ObjectId,
-    required: true,
-    ref: USER_COLLECTION_NAME,
+    type: Types.ObjectId && String,
   },
 });
 
