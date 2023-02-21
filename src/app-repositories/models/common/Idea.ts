@@ -1,5 +1,6 @@
 import { Schema, Types, model } from "mongoose";
 import { USER_COLLECTION_NAME } from "./User";
+import { CATEGORY_COLLECTION_NAME } from "./Category";
 
 export const IDEA_COLLECTION_NAME = "Ideas";
 
@@ -31,6 +32,7 @@ export interface IdeaModelInterface {
     }>;
   }>;
   documents: Array<string>;
+  category: string | Types.ObjectId;
 }
 
 const ideaSchema = new Schema({
@@ -113,6 +115,11 @@ const ideaSchema = new Schema({
       default: [],
     },
   ],
+  category: {
+    type: Types.ObjectId,
+    ref: CATEGORY_COLLECTION_NAME,
+    required: true,
+  },
   createdAt: {
     type: Date,
     required: true,
