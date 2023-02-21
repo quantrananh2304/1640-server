@@ -78,9 +78,12 @@ const userSchema = new Schema({
   },
   // code for activating the account and resetting the account's password
   code: {
-    type: String,
+    type: {
+      code: String,
+      expires: Date,
+    },
     required: true,
-    default: "",
+    default: {},
   },
   role: {
     type: USER_ROLE,
