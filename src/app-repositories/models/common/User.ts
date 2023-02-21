@@ -38,8 +38,11 @@ export interface UserModelInterface {
     status: USER_STATUS;
     reason: string;
     updatedAt: Date;
-    updatedBy: string;
+    updatedBy: string | Types.ObjectId;
   }>;
+  createdAt: Date;
+  updatedAt: Date;
+  updatedBy: string | Types.ObjectId;
 }
 
 const userSchema = new Schema({
@@ -106,15 +109,33 @@ const userSchema = new Schema({
   },
   accountStatusUpdate: [
     {
-      status: USER_STATUS,
-      reason: String,
-      updatedAt: Date,
-      updatedBy: {
-        type: Types.ObjectId,
-        ref: USER_COLLECTION_NAME,
+      type: {
+        status: USER_STATUS,
+        reason: String,
+        updatedAt: Date,
+        updatedBy: {
+          type: Types.ObjectId,
+          ref: USER_COLLECTION_NAME,
+        },
+        default: [],
       },
     },
   ],
+  createdAt: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
+  updatedAt: {
+    type: Date,
+    required: true,
+    default: new Date(),
+  },
+  updatedBy: {
+    type: Types.ObjectId,
+    required: true,
+    ref: USER_COLLECTION_NAME,
+  },
 });
 
 export default model<UserModelInterface>(USER_COLLECTION_NAME, userSchema);
