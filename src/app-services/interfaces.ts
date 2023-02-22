@@ -4,6 +4,7 @@ import {
   USER_ROLE,
   UserModelInterface,
 } from "@app-repositories/models/User";
+import { Types } from "mongoose";
 
 export interface IUserService {
   createUser(_user: {
@@ -26,6 +27,11 @@ export interface IUserService {
   getUserById(userId: string): Promise<UserModelInterface>;
 
   find(_user: any): Promise<UserModelInterface>;
+
+  updatePassword(
+    userId: string | Types.ObjectId,
+    password: string
+  ): Promise<UserModelInterface>;
 }
 
 export interface IEventService {

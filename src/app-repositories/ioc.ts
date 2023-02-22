@@ -4,10 +4,12 @@ import { Container } from "inversify";
 import TYPES from "./types";
 import EventService from "@app-services/EventService";
 import NodeMailer from "./smtp";
+import UserController from "@app-api/controllers/UserController";
 
 const container = new Container();
 
 container.bind(AuthenticationController).toSelf();
+container.bind(UserController).toSelf();
 
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<EventService>(TYPES.EventService).to(EventService);
