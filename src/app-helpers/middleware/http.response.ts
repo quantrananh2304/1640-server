@@ -51,8 +51,9 @@ const httpResponse = (req: RequestEX, res: Response, next) => {
 
   res.forbidden = function ({
     message = MessageErrors.server.forbidden,
+    errorCode,
   }: ForbiddenRequestParamType = {}) {
-    return res.status(403).errorRes({ errorCode: 403, message: message });
+    return res.status(403).errorRes({ errorCode: errorCode, message: message });
   };
 
   res.unauthorize = function ({

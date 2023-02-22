@@ -9,7 +9,6 @@ import bcrypt = require("bcryptjs");
 import jwt = require("jsonwebtoken");
 import { RANDOM_TOKEN_SECRET } from "@app-configs";
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
-import { Types } from "mongoose";
 import { isBefore } from "date-fns";
 
 @injectable()
@@ -17,6 +16,7 @@ class AuthenticationController {
   @inject(TYPES.UserService) private readonly userService: IUserService;
   @inject(TYPES.EventService) private readonly eventService: IEventService;
   @inject(TYPES.NodeMailer) private readonly nodeMailer: any;
+
   async login(req: Request, res: Response) {
     try {
       const result: Result = validateRequest(req);
@@ -37,7 +37,10 @@ class AuthenticationController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
       }
 
-      const isMatch: boolean = bcrypt.compare(req.body.password, user.password);
+      const isMatch: boolean = await bcrypt.compare(
+        req.body.password,
+        user.password
+      );
 
       if (!isMatch) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.WRONG_PASSWORD);
@@ -112,33 +115,39 @@ class AuthenticationController {
         return res.errorRes({ errors: result.array() });
       }
 
-      const { userId, code } = req.params;
+      const { code } = req.params;
 
-      const user: UserModelInterface = await this.userService.find({
-        _id: Types.ObjectId(userId),
-        code,
-      });
+      const { email } = req.body;
+
+      const user: UserModelInterface = await this.userService.getUserByEmail(
+        email
+      );
 
       const { codeExpires } = user;
+
+      if (code !== user.code) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CODE_INVALID);
+      }
 
       if (isBefore(new Date(codeExpires), new Date())) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.CODE_EXPIRED);
       }
 
       const activatedUser: UserModelInterface =
-        await this.userService.activateUser(userId, userId);
+        await this.userService.activateUser(String(user._id), user._id);
 
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.USER,
         action: EVENT_ACTION.UPDATE,
-        schemaId: userId,
-        actor: userId,
+        schemaId: user._id,
+        actor: user._id,
         description: "/auth/activate",
         createdAt: new Date(),
       });
 
       return res.successRes({ data: activatedUser });
     } catch (error) {
+      console.log("error", error);
       res.internal({ message: error.message });
     }
   }

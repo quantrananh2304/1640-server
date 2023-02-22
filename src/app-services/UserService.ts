@@ -69,7 +69,7 @@ class UserService implements IUserService {
   async getUserById(userId: string): Promise<UserModelInterface> {
     const user: UserModelInterface = await User.findById(
       Types.ObjectId(userId)
-    );
+    ).lean();
 
     return user;
   }
@@ -101,6 +101,21 @@ class UserService implements IUserService {
 
   async find(_user: any): Promise<UserModelInterface> {
     const user: UserModelInterface = await User.findOne(_user);
+
+    return user;
+  }
+
+  async updatePassword(
+    userId: string | Types.ObjectId,
+    password: string
+  ): Promise<UserModelInterface> {
+    const user: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: { password },
+      },
+      { new: true, useFindAndModify: false }
+    );
 
     return user;
   }

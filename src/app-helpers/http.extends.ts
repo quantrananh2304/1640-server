@@ -22,6 +22,7 @@ export type BadRequestParamType = {
 };
 
 export type ForbiddenRequestParamType = {
+  errorCode?: string;
   message?: string;
   data?: any;
 };
