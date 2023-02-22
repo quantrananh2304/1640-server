@@ -1,5 +1,5 @@
 import { Request, Response, validateRequest } from "@app-helpers/http.extends";
-import User, { UserModelInterface } from "@app-repositories/models/User";
+import { UserModelInterface } from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
 import { IEventService, IUserService } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
@@ -60,6 +60,54 @@ class UserController {
 
       return res.successRes({ data: updatedUser });
     } catch (error) {
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async getProfile(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { userId } = req.headers;
+
+      const user: UserModelInterface = await this.userService.getUserById(
+        userId
+      );
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.READ,
+        schemaId: userId,
+        actor: userId,
+        description: "/user/profile",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({
+        data: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          avatar: user.avatar,
+          status: user.status,
+          role: user.role,
+          address: user.address,
+          dob: user.dob,
+          phoneNumber: user.phoneNumber,
+          gender: user.gender,
+          createdAt: user.createdAt,
+        },
+      });
+    } catch (error) {
+      console.log("error", error);
       return res.internal({ message: error.message });
     }
   }
