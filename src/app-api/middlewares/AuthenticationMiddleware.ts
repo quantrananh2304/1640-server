@@ -1,4 +1,4 @@
-import { USER_GENDER, USER_ROLE } from "@app-repositories/models/User";
+import { USER_ROLE } from "@app-repositories/models/User";
 import CONSTANTS from "@app-utils/constants";
 import { body, param } from "express-validator";
 
@@ -57,16 +57,7 @@ const AuthenticationMiddleware = {
       .exists({ checkFalsy: true, checkNull: true })
       .isString(),
 
-    body("gender")
-      .exists({ checkFalsy: true, checkNull: true })
-      .isString()
-      .custom((gender: string) => {
-        if (!USER_GENDER[gender]) {
-          return false;
-        }
-
-        return true;
-      }),
+    body("gender").exists({ checkFalsy: true, checkNull: true }).isString(),
   ],
 
   activateUserAccount: [
