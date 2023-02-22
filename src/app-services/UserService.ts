@@ -119,6 +119,22 @@ class UserService implements IUserService {
 
     return user;
   }
+
+  async generateNewCode(
+    userId: string | Types.ObjectId
+  ): Promise<UserModelInterface> {
+    const code = stringGenerator(CONSTANTS.CODE_LENGTH);
+
+    const user: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: { code, codeExpires: new Date(add(new Date(), { days: 1 })) },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return user;
+  }
 }
 
 export default UserService;

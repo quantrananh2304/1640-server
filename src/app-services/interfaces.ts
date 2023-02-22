@@ -32,6 +32,8 @@ export interface IUserService {
     userId: string | Types.ObjectId,
     password: string
   ): Promise<UserModelInterface>;
+
+  generateNewCode(userId: string | Types.ObjectId): Promise<UserModelInterface>;
 }
 
 export interface IEventService {
