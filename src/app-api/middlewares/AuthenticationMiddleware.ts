@@ -97,6 +97,21 @@ const AuthenticationMiddleware = {
 
     body("password").exists({ checkFalsy: true, checkNull: true }).isString(),
   ],
+
+  requestResetPassword: [
+    body("email")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((email: string) => {
+        if (email.length > 50) {
+          return false;
+        }
+
+        return new RegExp(
+          /^[a-z0-9-](\.?-?_?[a-z0-9]){5,}@(gmail\.com)?(fpt\.edu\.vn)?$/
+        ).test(email);
+      }),
+  ],
 };
 
 export default AuthenticationMiddleware;

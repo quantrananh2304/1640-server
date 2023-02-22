@@ -7,6 +7,20 @@ const CONSTANTS = {
 
   PASSWORD_MAX_LENGTH: 12,
 
+  ACCOUNT_ACTIVATION: "Account activation",
+
+  ACCOUNT_ACTIVATION_BODY: `<p>Your activation code is {user.code}.</p>
+  <p>This code will be expired in a day.</p>`,
+
+  PASSWORD_RESET_REQUEST: "Password reset request",
+
+  PASSWORD_RESET_REQUEST_BODY: `
+    <p>WARNING: Someone is trying to reset your account password.</p>
+    <p>If this is not you, please report to our system.</p>
+    <p>Do not share this code to anyone</p>
+    <p>Your reset code is {user.code}.</p>
+  `,
+
   SERVER_ERROR: {
     USER_EXISTED: {
       errorCode: "01",
@@ -46,6 +60,11 @@ const CONSTANTS = {
     CODE_INVALID: {
       errorCode: "08",
       message: "Code invalid",
+    },
+
+    ACCOUNT_NOT_INACTIVE: {
+      errorCode: "09",
+      message: "Account activated or locked/deleted",
     },
 
     INVALID_AUTHORIZED_TOKEN: {
