@@ -35,6 +35,39 @@ const UserMiddleware = {
       )
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.CONFIRM_PASSWORD_DIFFERENT),
   ],
+
+  updateProfile: [
+    param("userId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .custom((userId: string) => isValidObjectId(userId)),
+
+    body("firstName")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isLength({ max: 50 }),
+
+    body("lastName")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isLength({ max: 50 }),
+
+    body("address")
+      .exists({ checkNull: true })
+      .isString()
+      .isLength({ max: 255 }),
+
+    body("dob")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((dob: string) => !isNaN(Date.parse(dob)))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.DATE_FORMAT_NOT_VALID),
+
+    body("phoneNumber")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString(),
+
+    body("gender").exists({ checkFalsy: true, checkNull: true }).isString(),
+  ],
 };
 
 export default UserMiddleware;

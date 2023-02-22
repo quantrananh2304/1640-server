@@ -67,6 +67,11 @@ const CONSTANTS = {
       message: "Account activated or locked/deleted",
     },
 
+    UNKNOWN_DATA: {
+      errorCode: "010",
+      message: "Unknown parameters passed",
+    },
+
     INVALID_AUTHORIZED_TOKEN: {
       errorCode: "013",
       message: "Invalid Authorization Token",

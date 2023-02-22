@@ -65,7 +65,18 @@ class AuthenticationController {
 
       return res.successRes({
         data: {
-          ...user,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          avatar: user.avatar,
+          status: user.status,
+          role: user.role,
+          address: user.address,
+          dob: user.dob,
+          phoneNumber: user.phoneNumber,
+          gender: user.gender,
+          createdAt: user.createdAt,
+          _id: user._id,
           token,
         },
       });
@@ -102,7 +113,22 @@ class AuthenticationController {
 
       await this.nodeMailer.nodeMailerSendMail([user.email], title, body);
 
-      return res.successRes({ data: user });
+      return res.successRes({
+        data: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          avatar: user.avatar,
+          status: user.status,
+          role: user.role,
+          address: user.address,
+          dob: user.dob,
+          phoneNumber: user.phoneNumber,
+          gender: user.gender,
+          createdAt: user.createdAt,
+          _id: user._id,
+        },
+      });
     } catch (error) {
       console.log("err", error);
       res.internal({ message: error.message });
@@ -139,8 +165,7 @@ class AuthenticationController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_INACTIVE);
       }
 
-      const activatedUser: UserModelInterface =
-        await this.userService.activateUser(String(user._id), user._id);
+      await this.userService.activateUser(String(user._id), user._id);
 
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.USER,
@@ -151,7 +176,9 @@ class AuthenticationController {
         createdAt: new Date(),
       });
 
-      return res.successRes({ data: activatedUser });
+      return res.successRes({
+        data: {},
+      });
     } catch (error) {
       console.log("error", error);
       res.internal({ message: error.message });
@@ -261,7 +288,9 @@ class AuthenticationController {
         createdAt: new Date(),
       });
 
-      return res.successRes({ data: updatedUser });
+      return res.successRes({
+        data: {},
+      });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });

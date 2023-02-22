@@ -1,4 +1,4 @@
-import { Request as RequestEX } from "express";
+import { NextFunction, Request as RequestEX } from "express";
 import {
   Response,
   ErrorResParamType,
@@ -7,15 +7,13 @@ import {
   UnauthorizedRequestParamType,
   InternalRequestParamType,
 } from "../http.extends";
-import MessageErrors from "@app-common/ErrorMessage";
 
-const httpResponse = (req: RequestEX, res: Response, next) => {
+const httpResponse = (req: RequestEX, res: Response, next: NextFunction) => {
   res.successRes = function ({
     data = {},
     errorCode = 0,
-    message = MessageErrors.server.success,
+    message = "Success",
   }) {
-    //discordLogger(req as any, "success");
     return res.json({
       errorCode,
       message,
@@ -31,7 +29,7 @@ const httpResponse = (req: RequestEX, res: Response, next) => {
     errors,
   }: ErrorResParamType = {}) {
     errorCode = errorCode || -1;
-    message = message || MessageErrors.server.error;
+    message = message || "Error";
     data = data || {};
     errors = errors || [];
 
@@ -44,26 +42,26 @@ const httpResponse = (req: RequestEX, res: Response, next) => {
   };
 
   res.badRequest = function ({
-    message = MessageErrors.server.badRequest,
+    message = "Bad Request",
   }: BadRequestParamType = {}) {
     return res.status(400).errorRes({ errorCode: 400, message: message });
   };
 
   res.forbidden = function ({
-    message = MessageErrors.server.forbidden,
+    message = "Forbidden",
     errorCode,
   }: ForbiddenRequestParamType = {}) {
     return res.status(403).errorRes({ errorCode: errorCode, message: message });
   };
 
   res.unauthorize = function ({
-    message = MessageErrors.server.unauthorize,
+    message = "Unauthorized",
   }: UnauthorizedRequestParamType = {}) {
     return res.status(401).errorRes({ errorCode: 401, message: message });
   };
 
   res.internal = function ({
-    message = MessageErrors.server.internal,
+    message = "Internal Server Error",
   }: InternalRequestParamType = {}) {
     return res.status(500).errorRes({ errorCode: 500, message: message });
   };

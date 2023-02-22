@@ -1,5 +1,5 @@
 import { Request, Response, validateRequest } from "@app-helpers/http.extends";
-import { UserModelInterface } from "@app-repositories/models/User";
+import { USER_STATUS, UserModelInterface } from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
 import { IEventService, IUserService } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
@@ -58,7 +58,22 @@ class UserController {
         createdAt: new Date(),
       });
 
-      return res.successRes({ data: updatedUser });
+      return res.successRes({
+        data: {
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          email: updatedUser.email,
+          avatar: updatedUser.avatar,
+          status: updatedUser.status,
+          role: updatedUser.role,
+          address: updatedUser.address,
+          dob: updatedUser.dob,
+          phoneNumber: updatedUser.phoneNumber,
+          gender: updatedUser.gender,
+          createdAt: updatedUser.createdAt,
+          _id: updatedUser._id,
+        },
+      });
     } catch (error) {
       return res.internal({ message: error.message });
     }
@@ -104,6 +119,60 @@ class UserController {
           phoneNumber: user.phoneNumber,
           gender: user.gender,
           createdAt: user.createdAt,
+          _id: user._id,
+        },
+      });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async updateProfile(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { userId } = req.params;
+
+      const user: UserModelInterface = await this.userService.getUserById(
+        userId
+      );
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      if (user.status !== USER_STATUS.ACTIVE) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
+      }
+
+      const updatedUser: UserModelInterface = await this.userService.update(
+        userId,
+        req.body
+      );
+
+      if (!updatedUser) {
+        return res.internal({});
+      }
+
+      return res.successRes({
+        data: {
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          email: updatedUser.email,
+          avatar: updatedUser.avatar,
+          status: updatedUser.status,
+          role: updatedUser.role,
+          address: updatedUser.address,
+          dob: updatedUser.dob,
+          phoneNumber: updatedUser.phoneNumber,
+          gender: updatedUser.gender,
+          createdAt: updatedUser.createdAt,
+          _id: updatedUser._id,
         },
       });
     } catch (error) {
