@@ -1,3 +1,4 @@
+import { SuccessResponseDTOs } from "@app-utils/responseDTO";
 import { Response as ResponseEX, Request as RequestEX } from "express";
 import { validationResult, Result } from "express-validator";
 import { Types } from "mongoose";
@@ -62,7 +63,7 @@ export interface Response extends ResponseEX {
    * @param {Array<Object>} errors - The error array is empty.
    * @return Response
    */
-  successRes: (params: SuccessParamType) => void;
+  successRes: (params: SuccessResponseDTOs) => void;
 
   /**
    * Business error request

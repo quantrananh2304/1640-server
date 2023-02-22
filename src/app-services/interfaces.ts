@@ -34,6 +34,18 @@ export interface IUserService {
   ): Promise<UserModelInterface>;
 
   generateNewCode(userId: string | Types.ObjectId): Promise<UserModelInterface>;
+
+  update(
+    userId: string | Types.ObjectId,
+    _user: {
+      firstName: string;
+      lastName: string;
+      address: string;
+      dob: string | Date;
+      phoneNumber: string;
+      gender: USER_GENDER;
+    }
+  ): Promise<UserModelInterface>;
 }
 
 export interface IEventService {
