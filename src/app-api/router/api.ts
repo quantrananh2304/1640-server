@@ -62,6 +62,12 @@ router.put(
   )
 );
 
+router.get(
+  "/user/profile",
+  checkToken,
+  UserControllerInstance.getProfile.bind(UserControllerInstance)
+);
+
 router.use(function (req: Request, res: Response) {
   res.error({
     errors: "",
