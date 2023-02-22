@@ -54,6 +54,14 @@ router.put(
   )
 );
 
+router.put(
+  "/auth/reset-password/:code",
+  AuthenticationMiddleware.resetPassword,
+  AuthenticationControllerInstance.resetPassword.bind(
+    AuthenticationControllerInstance
+  )
+);
+
 router.use(function (req: Request, res: Response) {
   res.error({
     errors: "",

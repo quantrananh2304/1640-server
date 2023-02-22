@@ -9,7 +9,7 @@ const CONSTANTS = {
 
   ACCOUNT_ACTIVATION: "Account activation",
 
-  ACCOUNT_ACTIVATION_BODY: `<p>Your activation code is {user.code}.</p>
+  ACCOUNT_ACTIVATION_BODY: `<p>Your activation code is <b>{user.code}</b></p>
   <p>This code will be expired in a day.</p>`,
 
   PASSWORD_RESET_REQUEST: "Password reset request",
@@ -18,7 +18,7 @@ const CONSTANTS = {
     <p>WARNING: Someone is trying to reset your account password.</p>
     <p>If this is not you, please report to our system.</p>
     <p>Do not share this code to anyone</p>
-    <p>Your reset code is {user.code}.</p>
+    <p>Your reset code is <b>{user.code}</b></p>
   `,
 
   SERVER_ERROR: {

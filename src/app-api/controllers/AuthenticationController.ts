@@ -206,6 +206,67 @@ class AuthenticationController {
       res.internal({ message: error.message });
     }
   }
+
+  async resetPassword(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { email, newPassword } = req.body;
+
+      const { code } = req.params;
+
+      const user: UserModelInterface = await this.userService.getUserByEmail(
+        email
+      );
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      const { codeExpires } = user;
+
+      if (user.status !== USER_STATUS.ACTIVE) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
+      }
+
+      if (code !== user.code) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CODE_INVALID);
+      }
+
+      if (isBefore(new Date(codeExpires), new Date())) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CODE_EXPIRED);
+      }
+
+      const password = await bcrypt.hash(newPassword, 10);
+
+      const updatedUser = await this.userService.updatePassword(
+        user._id,
+        password
+      );
+
+      if (!updatedUser) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: user._id,
+        actor: req.headers.userId,
+        description: "/auth/reset-password",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({ data: updatedUser });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default AuthenticationController;
