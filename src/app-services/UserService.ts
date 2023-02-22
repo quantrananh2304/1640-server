@@ -95,7 +95,30 @@ class UserService implements IUserService {
       },
       { new: true, useFindAndModify: false }
     );
+    return updatedUser;
+  }
 
+  async deactiveUser(userId: string, actor?: any): Promise<UserModelInterface> {
+    const currentUser = await this.getUserById(userId);
+
+    if (!currentUser) {
+      throw new ServerError(
+        CONSTANTS.SERVER_ERROR.USER_EXISTED.errorCode,
+        CONSTANTS.SERVER_ERROR.USER_EXISTED.message
+      );
+    }
+
+    const updatedUser: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          status: USER_STATUS.INACTIVE,
+          updatedBy: actor ? actor : Types.ObjectId(userId),
+          updatedAt: new Date(),
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
     return updatedUser;
   }
 

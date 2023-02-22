@@ -1,4 +1,4 @@
-import { USER_GENDER, USER_ROLE } from "@app-repositories/models/User";
+import { USER_GENDER, USER_ROLE, USER_STATUS } from "@app-repositories/models/User";
 import CONSTANTS from "@app-utils/constants";
 import { body, param } from "express-validator";
 import { isValidObjectId } from "mongoose";
@@ -94,6 +94,18 @@ const AuthenticationMiddleware = {
       }),
 
     body("password").exists({ checkFalsy: true, checkNull: true }).isString(),
+  ],
+
+  deactiveUserAccount: [
+    param("userId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((userId: string) => isValidObjectId(userId)),
+    
+      param("code")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isLength({ min: CONSTANTS.CODE_LENGTH, max: CONSTANTS.CODE_LENGTH }),
   ],
 };
 

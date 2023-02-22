@@ -23,6 +23,8 @@ export interface IUserService {
 
   activateUser(userId: string, actor?: any): Promise<UserModelInterface>;
 
+  deactiveUser(userId: string, actor?: any): Promise<UserModelInterface>;
+
   getUserById(userId: string): Promise<UserModelInterface>;
 
   find(_user: any): Promise<UserModelInterface>;

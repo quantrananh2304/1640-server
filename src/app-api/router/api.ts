@@ -42,4 +42,12 @@ router.use(function (req: Request, res: Response) {
   });
 });
 
+router.put(
+  "/auth/:userId/deactivate/:code",
+  AuthenticationMiddleware.deactiveUserAccount,
+  AuthenticationControllerInstance.deactiveUserAccount.bind(
+    AuthenticationControllerInstance
+  )
+);
+
 export default router;

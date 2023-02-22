@@ -142,6 +142,45 @@ class AuthenticationController {
       res.internal({ message: error.message });
     }
   }
+
+  async deactiveUserAccount(req: Request, res: Response){
+    try{
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { userId, code } = req.params;
+
+      const user: UserModelInterface = await this.userService.find({
+        _id: Types.ObjectId(userId),
+        code,
+      });
+
+      const { codeExpires } = user;
+
+      if (isBefore(new Date(codeExpires), new Date())) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CODE_EXPIRED);
+      }
+
+      const deactivatedUser: UserModelInterface =
+        await this.userService.deactiveUser(userId, status);
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: userId,
+        actor: userId,
+        description: "/auth/deactivate",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({ data: deactivatedUser });
+    }catch (error) {
+      res.internal({ message: error.message });
+    }
+  }
 }
 
 export default AuthenticationController;
