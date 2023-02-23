@@ -39,7 +39,8 @@ const UserMiddleware = {
   updateProfile: [
     param("userId")
       .exists({ checkFalsy: true, checkNull: true })
-      .custom((userId: string) => isValidObjectId(userId)),
+      .custom((userId: string) => isValidObjectId(userId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
 
     body("firstName")
       .exists({ checkFalsy: true, checkNull: true })
@@ -67,6 +68,18 @@ const UserMiddleware = {
       .isString(),
 
     body("gender").exists({ checkFalsy: true, checkNull: true }).isString(),
+  ],
+
+  uploadAvatar: [
+    param("userId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .custom((userId: string) => isValidObjectId(userId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+
+    body("img")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isBase64(),
   ],
 };
 

@@ -53,6 +53,11 @@ export interface IUserService {
     userId: string | Types.ObjectId,
     password: string
   ): Promise<UserModelInterface>;
+
+  uploadAvatar(
+    userId: string | Types.ObjectId,
+    image: string
+  ): Promise<UserModelInterface>;
 }
 
 export interface IEventService {

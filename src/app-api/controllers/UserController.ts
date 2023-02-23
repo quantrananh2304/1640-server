@@ -180,6 +180,38 @@ class UserController {
       return res.internal({ message: error.message });
     }
   }
+
+  async uploadAvatar(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+
+      const user: UserModelInterface = await this.userService.getUserById(
+        userId
+      );
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      if (user.status !== USER_STATUS.ACTIVE) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
+      }
+
+      const { img } = req.body;
+
+      const updatedUser: UserModelInterface =
+        await this.userService.uploadAvatar(userId, img);
+
+      if (!updatedUser) {
+        return res.internal({});
+      }
+
+      return res.successRes({ data: {} });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default UserController;

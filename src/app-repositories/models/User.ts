@@ -66,6 +66,8 @@ const userSchema = new Schema({
   avatar: {
     type: String,
     default: "",
+    // data: Buffer,
+    // contentType: String,
   },
   password: {
     type: String,
