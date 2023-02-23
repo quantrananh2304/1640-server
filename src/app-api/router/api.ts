@@ -121,7 +121,7 @@ router.put(
   UserMiddleware.uploadAvatar,
   preventUnknownData,
   checkToken,
-  upload.single("picture"),
+  // upload.single("picture"),
   UserControllerInstance.uploadAvatar.bind(UserControllerInstance)
 );
 

@@ -56,7 +56,7 @@ export interface IUserService {
 
   uploadAvatar(
     userId: string | Types.ObjectId,
-    finalImage: any
+    image: string
   ): Promise<UserModelInterface>;
 }
 

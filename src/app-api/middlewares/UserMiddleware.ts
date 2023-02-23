@@ -80,21 +80,6 @@ const UserMiddleware = {
       .exists({ checkFalsy: true, checkNull: true })
       .isString()
       .isBase64(),
-
-    body("contentType")
-      .exists({ checkFalsy: true, checkNull: true })
-      .isString()
-      .custom((contentType: string, { req }) => {
-        const { img } = req.body;
-
-        const base64Type = img.split(";")[0].split(":")[1];
-
-        if (base64Type !== contentType) {
-          return false;
-        }
-
-        return true;
-      }),
   ],
 };
 

@@ -97,13 +97,6 @@ class UserController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
       }
 
-      const { avatar } = user;
-      let thumb = "";
-
-      if (avatar.data) {
-        thumb = Buffer.from(avatar.data.buffer, "binary").toString("base64");
-      }
-
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.USER,
         action: EVENT_ACTION.READ,
@@ -118,7 +111,7 @@ class UserController {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          avatar: thumb.replace("data", "data:").replace("base64", ";base64,"),
+          avatar: user.avatar,
           status: user.status,
           role: user.role,
           address: user.address,
@@ -204,17 +197,10 @@ class UserController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
       }
 
-      const { img, contentType } = req.body;
-
-      // const encode_image = img.toString("base64");
-
-      const finalImage = {
-        contentType,
-        data: Buffer.from(img, "base64"),
-      };
+      const { img } = req.body;
 
       const updatedUser: UserModelInterface =
-        await this.userService.uploadAvatar(userId, finalImage);
+        await this.userService.uploadAvatar(userId, img);
 
       if (!updatedUser) {
         return res.internal({});
