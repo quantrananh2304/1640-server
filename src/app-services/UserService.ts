@@ -44,6 +44,10 @@ class UserService implements IUserService {
 
     const user = await User.create({
       ..._user,
+      avatar: {
+        data: null,
+        contentType: "",
+      },
       password,
       code,
       codeExpires: new Date(add(new Date(), CONSTANTS.DEFAULT_CODE_EXPIRES)),
@@ -218,6 +222,21 @@ class UserService implements IUserService {
           updatedAt: new Date(),
           updatedBy: userId,
         },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return user;
+  }
+
+  async uploadAvatar(
+    userId: string | Types.ObjectId,
+    finalImage: any
+  ): Promise<UserModelInterface> {
+    const user: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: { avatar: finalImage },
       },
       { new: true, useFindAndModify: false }
     );
