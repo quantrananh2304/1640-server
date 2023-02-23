@@ -386,26 +386,33 @@ class AuthenticationController {
       );
 
       if (
-        differenceInSeconds(new Date(codeCreatedTime), new Date()) <
+        differenceInSeconds(new Date(), new Date(codeCreatedTime)) <
         CONSTANTS.MIN_CODE_REQUEST_TIME
       ) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.CANNOT_REQUEST_NEW_CODE_YET);
       }
 
+      const newCodeUser: UserModelInterface =
+        await this.userService.generateNewCode(user._id);
+
       const title = CONSTANTS.ACCOUNT_ACTIVATION;
 
       const body = CONSTANTS.ACCOUNT_ACTIVATION_BODY.replace(
         "{user.code}",
-        user.code
+        newCodeUser.code
       );
 
-      await this.nodeMailer.nodeMailerSendMail([user.email], title, body);
+      await this.nodeMailer.nodeMailerSendMail(
+        [newCodeUser.email],
+        title,
+        body
+      );
 
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.USER,
         action: EVENT_ACTION.CREATE,
-        schemaId: user._id,
-        actor: req.headers.userId,
+        schemaId: newCodeUser._id,
+        actor: newCodeUser._id,
         description: "/auth/signup",
         createdAt: new Date(),
       });
