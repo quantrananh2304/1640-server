@@ -12,8 +12,6 @@ export enum CATEGORY_STATUS {
 export interface CategoryModelInterface extends BaseModelInterface {
   name: string;
   status: CATEGORY_STATUS;
-  closureDate: Date;
-  finalClosureDate: Date;
   createdAt: Date;
   updatedAt: Date;
   updatedBy: string | Types.ObjectId;
@@ -29,16 +27,6 @@ const categorySchema = new Schema({
     type: CATEGORY_STATUS,
     required: true,
     default: CATEGORY_STATUS.ACTIVE,
-  },
-  closureDate: {
-    type: Date,
-    required: true,
-    default: new Date(),
-  },
-  finalClosureDate: {
-    type: Date,
-    required: true,
-    default: new Date(),
   },
   createdAt: {
     type: Date,
