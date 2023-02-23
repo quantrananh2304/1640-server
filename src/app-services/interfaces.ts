@@ -48,6 +48,11 @@ export interface IUserService {
       gender: USER_GENDER;
     }
   ): Promise<UserModelInterface>;
+
+  resetPassword(
+    userId: string | Types.ObjectId,
+    password: string
+  ): Promise<UserModelInterface>;
 }
 
 export interface IEventService {
