@@ -9,14 +9,15 @@ import bcrypt = require("bcryptjs");
 import jwt = require("jsonwebtoken");
 import { RANDOM_TOKEN_SECRET } from "@app-configs";
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
-import { Types } from "mongoose";
 import { isBefore } from "date-fns";
+import { Types } from "mongoose";
 
 @injectable()
 class AuthenticationController {
   @inject(TYPES.UserService) private readonly userService: IUserService;
   @inject(TYPES.EventService) private readonly eventService: IEventService;
   @inject(TYPES.NodeMailer) private readonly nodeMailer: any;
+
   async login(req: Request, res: Response) {
     try {
       const result: Result = validateRequest(req);
@@ -37,7 +38,10 @@ class AuthenticationController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
       }
 
-      const isMatch: boolean = bcrypt.compare(req.body.password, user.password);
+      const isMatch: boolean = await bcrypt.compare(
+        req.body.password,
+        user.password
+      );
 
       if (!isMatch) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.WRONG_PASSWORD);
@@ -62,7 +66,18 @@ class AuthenticationController {
 
       return res.successRes({
         data: {
-          ...user,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          avatar: user.avatar,
+          status: user.status,
+          role: user.role,
+          address: user.address,
+          dob: user.dob,
+          phoneNumber: user.phoneNumber,
+          gender: user.gender,
+          createdAt: user.createdAt,
+          _id: user._id,
           token,
         },
       });
@@ -81,23 +96,40 @@ class AuthenticationController {
 
       const user = await this.userService.createUser(req.body);
 
-      const title = "Confirmation";
+      const title = CONSTANTS.ACCOUNT_ACTIVATION;
 
-      const body = `<p>Your activation code is ${user.code}.</p>
-      <p>This code will be expired in a day.</p>`;
+      const body = CONSTANTS.ACCOUNT_ACTIVATION_BODY.replace(
+        "{user.code}",
+        user.code
+      );
 
-      // await this.eventService.createEvent({
-      //   schema: EVENT_SCHEMA.USER,
-      //   action: EVENT_ACTION.CREATE,
-      //   schemaId: user._id,
-      //   actor: user._id,
-      //   description: "/auth/signup",
-      //   createdAt: new Date(),
-      // });
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.CREATE,
+        schemaId: user._id,
+        actor: req.headers.userId,
+        description: "/auth/signup",
+        createdAt: new Date(),
+      });
 
       await this.nodeMailer.nodeMailerSendMail([user.email], title, body);
 
-      return res.successRes({ data: user });
+      return res.successRes({
+        data: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          avatar: user.avatar,
+          status: user.status,
+          role: user.role,
+          address: user.address,
+          dob: user.dob,
+          phoneNumber: user.phoneNumber,
+          gender: user.gender,
+          createdAt: user.createdAt,
+          _id: user._id,
+        },
+      });
     } catch (error) {
       console.log("err", error);
       res.internal({ message: error.message });
@@ -112,60 +144,184 @@ class AuthenticationController {
         return res.errorRes({ errors: result.array() });
       }
 
-      const { userId, code } = req.params;
+      const { code } = req.params;
 
-      const user: UserModelInterface = await this.userService.find({
-        _id: Types.ObjectId(userId),
-        code,
-      });
+      const { email } = req.body;
+
+      const user: UserModelInterface = await this.userService.getUserByEmail(
+        email
+      );
 
       const { codeExpires } = user;
+
+      if (code !== user.code) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CODE_INVALID);
+      }
 
       if (isBefore(new Date(codeExpires), new Date())) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.CODE_EXPIRED);
       }
 
-      const activatedUser: UserModelInterface =
-        await this.userService.activateUser(userId, userId);
+      if (user.status !== USER_STATUS.INACTIVE) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_INACTIVE);
+      }
+
+      await this.userService.activateUser(String(user._id), user._id);
 
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.USER,
         action: EVENT_ACTION.UPDATE,
-        schemaId: userId,
-        actor: userId,
+        schemaId: user._id,
+        actor: user._id,
         description: "/auth/activate",
         createdAt: new Date(),
       });
 
-      return res.successRes({ data: activatedUser });
+      return res.successRes({
+        data: {},
+      });
     } catch (error) {
+      console.log("error", error);
       res.internal({ message: error.message });
     }
   }
 
-  async deactiveUserAccount(req: Request, res: Response){
-    try{
+  async requestResetPassword(req: Request, res: Response) {
+    try {
       const result: Result = validateRequest(req);
 
       if (!result.isEmpty()) {
         return res.errorRes({ errors: result.array() });
       }
 
-      const { userId, code } = req.params;
+      const { email } = req.body;
 
-      const user: UserModelInterface = await this.userService.find({
-        _id: Types.ObjectId(userId),
-        code,
+      const user: UserModelInterface = await this.userService.getUserByEmail(
+        email
+      );
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      if (user.status !== USER_STATUS.ACTIVE) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
+      }
+
+      const updatedUser = await this.userService.generateNewCode(user._id);
+
+      const title = CONSTANTS.PASSWORD_RESET_REQUEST;
+
+      const body = CONSTANTS.PASSWORD_RESET_REQUEST_BODY.replace(
+        "{user.code}",
+        updatedUser.code
+      );
+
+      await this.nodeMailer.nodeMailerSendMail([email], title, body);
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: updatedUser._id,
+        actor: updatedUser._id,
+        description: "/auth/request-reset-password",
+        createdAt: new Date(),
       });
 
+      res.successRes({ data: {} });
+    } catch (error) {
+      console.log("error", error);
+      res.internal({ message: error.message });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { email, newPassword } = req.body;
+
+      const { code } = req.params;
+
+      const user: UserModelInterface = await this.userService.getUserByEmail(
+        email
+      );
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
       const { codeExpires } = user;
+
+      if (user.status !== USER_STATUS.ACTIVE) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
+      }
+
+      if (code !== user.code) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CODE_INVALID);
+      }
 
       if (isBefore(new Date(codeExpires), new Date())) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.CODE_EXPIRED);
       }
 
+      const password = await bcrypt.hash(newPassword, 10);
+
+      const updatedUser = await this.userService.updatePassword(
+        user._id,
+        password
+      );
+
+      if (!updatedUser) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: user._id,
+        actor: req.headers.userId,
+        description: "/auth/reset-password",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({
+        data: {},
+      });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async deactivateUserAccount(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { userId } = req.params;
+
+      const user: UserModelInterface = await this.userService.find({
+        _id: Types.ObjectId(userId),
+      });
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
       const deactivatedUser: UserModelInterface =
-        await this.userService.deactiveUser(userId, status);
+        await this.userService.deactivateUser(userId, Types.ObjectId(userId));
+
+      if (!deactivatedUser) {
+        return res.internal({});
+      }
 
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.USER,
@@ -176,8 +332,23 @@ class AuthenticationController {
         createdAt: new Date(),
       });
 
-      return res.successRes({ data: deactivatedUser });
-    }catch (error) {
+      return res.successRes({
+        data: {
+          firstName: deactivatedUser.firstName,
+          lastName: deactivatedUser.lastName,
+          email: deactivatedUser.email,
+          avatar: deactivatedUser.avatar,
+          status: deactivatedUser.status,
+          role: deactivatedUser.role,
+          address: deactivatedUser.address,
+          dob: deactivatedUser.dob,
+          phoneNumber: deactivatedUser.phoneNumber,
+          gender: deactivatedUser.gender,
+          createdAt: deactivatedUser.createdAt,
+          _id: deactivatedUser._id,
+        },
+      });
+    } catch (error) {
       res.internal({ message: error.message });
     }
   }

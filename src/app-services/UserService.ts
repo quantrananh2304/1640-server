@@ -69,7 +69,7 @@ class UserService implements IUserService {
   async getUserById(userId: string): Promise<UserModelInterface> {
     const user: UserModelInterface = await User.findById(
       Types.ObjectId(userId)
-    );
+    ).lean();
 
     return user;
   }
@@ -98,7 +98,10 @@ class UserService implements IUserService {
     return updatedUser;
   }
 
-  async deactiveUser(userId: string, actor?: any): Promise<UserModelInterface> {
+  async deactivateUser(
+    userId: string,
+    actor?: any
+  ): Promise<UserModelInterface> {
     const currentUser = await this.getUserById(userId);
 
     if (!currentUser) {
@@ -119,11 +122,81 @@ class UserService implements IUserService {
       },
       { new: true, useFindAndModify: false }
     );
+
     return updatedUser;
   }
 
   async find(_user: any): Promise<UserModelInterface> {
     const user: UserModelInterface = await User.findOne(_user);
+
+    return user;
+  }
+
+  async updatePassword(
+    userId: string | Types.ObjectId,
+    password: string
+  ): Promise<UserModelInterface> {
+    const user: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: { password },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return user;
+  }
+
+  async generateNewCode(
+    userId: string | Types.ObjectId
+  ): Promise<UserModelInterface> {
+    const code = stringGenerator(CONSTANTS.CODE_LENGTH);
+
+    const user: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: { code, codeExpires: new Date(add(new Date(), { days: 1 })) },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return user;
+  }
+
+  async update(
+    userId: string | Types.ObjectId,
+    {
+      firstName,
+      lastName,
+      address,
+      dob,
+      phoneNumber,
+      gender,
+    }: {
+      firstName: string;
+      lastName: string;
+      address: string;
+      dob: string | Date;
+      phoneNumber: string;
+      gender: USER_GENDER;
+    }
+  ): Promise<UserModelInterface> {
+    const user: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          firstName,
+          lastName,
+          address,
+          dob: new Date(dob),
+          phoneNumber,
+          gender,
+          updatedAt: new Date(),
+          updatedBy: userId,
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
 
     return user;
   }

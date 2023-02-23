@@ -29,7 +29,7 @@ export interface UserModelInterface extends BaseModelInterface {
   avatar: string;
   password: string;
   status: USER_STATUS;
-  code: String;
+  code: string;
   codeExpires: Date;
   role: string;
   address: string;

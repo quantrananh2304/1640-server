@@ -1,4 +1,4 @@
-import { USER_GENDER, USER_ROLE, USER_STATUS } from "@app-repositories/models/User";
+import { USER_ROLE } from "@app-repositories/models/User";
 import CONSTANTS from "@app-utils/constants";
 import { body, param } from "express-validator";
 import { isValidObjectId } from "mongoose";
@@ -26,7 +26,8 @@ const AuthenticationMiddleware = {
         return new RegExp(
           /^[a-z0-9-](\.?-?_?[a-z0-9]){5,}@(gmail\.com)?(fpt\.edu\.vn)?$/
         ).test(email);
-      }),
+      })
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.EMAIL_FORMAT_NOT_VALID),
 
     body("avatar").exists({ checkNull: true }).isString(),
 
@@ -39,7 +40,8 @@ const AuthenticationMiddleware = {
         }
 
         return true;
-      }),
+      })
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.USER_ROLE_NOT_EXIST),
 
     body("address")
       .exists({ checkNull: true })
@@ -49,29 +51,30 @@ const AuthenticationMiddleware = {
     body("dob")
       .exists({ checkFalsy: true, checkNull: true })
       .isString()
-      .custom((dob: string) => !isNaN(Date.parse(dob))),
+      .custom((dob: string) => !isNaN(Date.parse(dob)))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.DATE_FORMAT_NOT_VALID),
 
     body("phoneNumber")
       .exists({ checkFalsy: true, checkNull: true })
       .isString(),
 
-    body("gender")
-      .exists({ checkFalsy: true, checkNull: true })
-      .isString()
-      .custom((gender: string) => {
-        if (!USER_GENDER[gender]) {
-          return false;
-        }
-
-        return true;
-      }),
+    body("gender").exists({ checkFalsy: true, checkNull: true }).isString(),
   ],
 
   activateUserAccount: [
-    param("userId")
+    body("email")
       .exists({ checkFalsy: true, checkNull: true })
       .isString()
-      .custom((userId: string) => isValidObjectId(userId)),
+      .custom((email: string) => {
+        if (email.length > 50) {
+          return false;
+        }
+
+        return new RegExp(
+          /^[a-z0-9-](\.?-?_?[a-z0-9]){5,}@(gmail\.com)?(fpt\.edu\.vn)?$/
+        ).test(email);
+      })
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.EMAIL_FORMAT_NOT_VALID),
 
     param("code")
       .exists({ checkFalsy: true, checkNull: true })
@@ -96,16 +99,70 @@ const AuthenticationMiddleware = {
     body("password").exists({ checkFalsy: true, checkNull: true }).isString(),
   ],
 
-  deactiveUserAccount: [
+  requestResetPassword: [
+    body("email")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((email: string) => {
+        if (email.length > 50) {
+          return false;
+        }
+
+        return new RegExp(
+          /^[a-z0-9-](\.?-?_?[a-z0-9]){5,}@(gmail\.com)?(fpt\.edu\.vn)?$/
+        ).test(email);
+      }),
+  ],
+
+  resetPassword: [
+    body("email")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((email: string) => {
+        if (email.length > 50) {
+          return false;
+        }
+
+        return new RegExp(
+          /^[a-z0-9-](\.?-?_?[a-z0-9]){5,}@(gmail\.com)?(fpt\.edu\.vn)?$/
+        ).test(email);
+      })
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.EMAIL_FORMAT_NOT_VALID),
+
+    body("newPassword")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isLength({
+        min: CONSTANTS.PASSWORD_MIN_LENGTH,
+        max: CONSTANTS.PASSWORD_MAX_LENGTH,
+      })
+      .custom((newPassword: string) =>
+        new RegExp(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$/
+        ).test(newPassword)
+      )
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.PASSWORD_NOT_VALID),
+
+    body("confirmPassword")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom(
+        (confirmPassword: string, { req }) =>
+          confirmPassword === req.body.newPassword
+      )
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.CONFIRM_PASSWORD_DIFFERENT),
+
+    param("code")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isLength({ min: CONSTANTS.CODE_LENGTH, max: CONSTANTS.CODE_LENGTH }),
+  ],
+
+  deactivateUserAccount: [
     param("userId")
       .exists({ checkFalsy: true, checkNull: true })
       .isString()
       .custom((userId: string) => isValidObjectId(userId)),
-    
-      param("code")
-      .exists({ checkFalsy: true, checkNull: true })
-      .isString()
-      .isLength({ min: CONSTANTS.CODE_LENGTH, max: CONSTANTS.CODE_LENGTH }),
   ],
 };
 
