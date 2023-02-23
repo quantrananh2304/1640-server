@@ -10,6 +10,7 @@ import jwt = require("jsonwebtoken");
 import { RANDOM_TOKEN_SECRET } from "@app-configs";
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
 import { isBefore } from "date-fns";
+import { Types } from "mongoose";
 
 @injectable()
 class AuthenticationController {
@@ -294,6 +295,61 @@ class AuthenticationController {
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });
+    }
+  }
+
+  async deactivateUserAccount(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { userId } = req.params;
+
+      const user: UserModelInterface = await this.userService.find({
+        _id: Types.ObjectId(userId),
+      });
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      const deactivatedUser: UserModelInterface =
+        await this.userService.deactivateUser(userId, Types.ObjectId(userId));
+
+      if (!deactivatedUser) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: userId,
+        actor: userId,
+        description: "/auth/deactivate",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({
+        data: {
+          firstName: deactivatedUser.firstName,
+          lastName: deactivatedUser.lastName,
+          email: deactivatedUser.email,
+          avatar: deactivatedUser.avatar,
+          status: deactivatedUser.status,
+          role: deactivatedUser.role,
+          address: deactivatedUser.address,
+          dob: deactivatedUser.dob,
+          phoneNumber: deactivatedUser.phoneNumber,
+          gender: deactivatedUser.gender,
+          createdAt: deactivatedUser.createdAt,
+          _id: deactivatedUser._id,
+        },
+      });
+    } catch (error) {
+      res.internal({ message: error.message });
     }
   }
 }

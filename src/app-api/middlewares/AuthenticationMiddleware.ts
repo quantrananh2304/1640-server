@@ -1,6 +1,7 @@
 import { USER_ROLE } from "@app-repositories/models/User";
 import CONSTANTS from "@app-utils/constants";
 import { body, param } from "express-validator";
+import { isValidObjectId } from "mongoose";
 
 const AuthenticationMiddleware = {
   signUp: [
@@ -155,6 +156,13 @@ const AuthenticationMiddleware = {
       .exists({ checkFalsy: true, checkNull: true })
       .isString()
       .isLength({ min: CONSTANTS.CODE_LENGTH, max: CONSTANTS.CODE_LENGTH }),
+  ],
+
+  deactivateUserAccount: [
+    param("userId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((userId: string) => isValidObjectId(userId)),
   ],
 };
 
