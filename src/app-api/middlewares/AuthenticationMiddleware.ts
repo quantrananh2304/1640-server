@@ -162,7 +162,24 @@ const AuthenticationMiddleware = {
     param("userId")
       .exists({ checkFalsy: true, checkNull: true })
       .isString()
-      .custom((userId: string) => isValidObjectId(userId)),
+      .custom((userId: string) => isValidObjectId(userId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+  ],
+
+  requestActivationCode: [
+    body("email")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((email: string) => {
+        if (email.length > 50) {
+          return false;
+        }
+
+        return new RegExp(
+          /^[a-z0-9-](\.?-?_?[a-z0-9]){5,}@(gmail\.com)?(fpt\.edu\.vn)?$/
+        ).test(email);
+      })
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.EMAIL_FORMAT_NOT_VALID),
   ],
 };
 

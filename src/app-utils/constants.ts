@@ -21,6 +21,12 @@ const CONSTANTS = {
     <p>Your reset code is <b>{user.code}</b></p>
   `,
 
+  MIN_CODE_REQUEST_TIME: 10 * 60,
+
+  DEFAULT_CODE_EXPIRES: {
+    days: 1,
+  },
+
   SERVER_ERROR: {
     USER_EXISTED: {
       errorCode: "01",
@@ -72,9 +78,24 @@ const CONSTANTS = {
       message: "Unknown parameters passed",
     },
 
+    CANNOT_REQUEST_NEW_CODE_YET: {
+      errorCode: "011",
+      message: "Cannot request new code yet",
+    },
+
+    ACCOUNT_ACTIVATED: {
+      errorCode: "012",
+      message: "Account activated",
+    },
+
     INVALID_AUTHORIZED_TOKEN: {
       errorCode: "013",
       message: "Invalid Authorization Token",
+    },
+
+    ACCOUNT_LOCKED_OR_DELETED: {
+      errorCode: "014",
+      message: "Account locked or deleted",
     },
 
     AUTHORIZATION_FORBIDDEN: {

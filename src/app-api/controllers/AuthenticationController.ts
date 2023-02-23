@@ -9,7 +9,7 @@ import bcrypt = require("bcryptjs");
 import jwt = require("jsonwebtoken");
 import { RANDOM_TOKEN_SECRET } from "@app-configs";
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
-import { isBefore } from "date-fns";
+import { differenceInSeconds, isBefore, sub } from "date-fns";
 import { Types } from "mongoose";
 
 @injectable()
@@ -271,7 +271,7 @@ class AuthenticationController {
 
       const password = await bcrypt.hash(newPassword, 10);
 
-      const updatedUser = await this.userService.updatePassword(
+      const updatedUser = await this.userService.resetPassword(
         user._id,
         password
       );
@@ -349,7 +349,71 @@ class AuthenticationController {
         },
       });
     } catch (error) {
-      res.internal({ message: error.message });
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async requestActivationCode(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { email } = req.body;
+
+      const user: UserModelInterface = await this.userService.getUserByEmail(
+        email
+      );
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      if (user.status === USER_STATUS.ACTIVE) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_ACTIVATED);
+      }
+
+      if (user.status !== USER_STATUS.INACTIVE) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_LOCKED_OR_DELETED);
+      }
+
+      const { codeExpires } = user;
+
+      const codeCreatedTime = new Date(
+        sub(new Date(codeExpires), CONSTANTS.DEFAULT_CODE_EXPIRES)
+      );
+
+      if (
+        differenceInSeconds(new Date(codeCreatedTime), new Date()) <
+        CONSTANTS.MIN_CODE_REQUEST_TIME
+      ) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CANNOT_REQUEST_NEW_CODE_YET);
+      }
+
+      const title = CONSTANTS.ACCOUNT_ACTIVATION;
+
+      const body = CONSTANTS.ACCOUNT_ACTIVATION_BODY.replace(
+        "{user.code}",
+        user.code
+      );
+
+      await this.nodeMailer.nodeMailerSendMail([user.email], title, body);
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.CREATE,
+        schemaId: user._id,
+        actor: req.headers.userId,
+        description: "/auth/signup",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({ data: {} });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
     }
   }
 }

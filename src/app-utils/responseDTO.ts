@@ -61,6 +61,9 @@ interface UpdateProfileResponseDTO extends SignUpResponseDTO {}
 interface DeactivateUserAccountResponseDTO
   extends ActivateUserAccountResponseDTO {}
 
+interface RequestActivationCodeResponseDTO
+  extends RequestResetPasswordResponseDTO {}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -69,4 +72,5 @@ export type SuccessResponseDTOs =
   | ResetPasswordResponseDTO
   | GetProfileResponseDTO
   | UpdateProfileResponseDTO
-  | DeactivateUserAccountResponseDTO;
+  | DeactivateUserAccountResponseDTO
+  | RequestActivationCodeResponseDTO;

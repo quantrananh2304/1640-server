@@ -46,7 +46,7 @@ class UserService implements IUserService {
       ..._user,
       password,
       code,
-      codeExpires: new Date(add(new Date(), { days: 1 })),
+      codeExpires: new Date(add(new Date(), CONSTANTS.DEFAULT_CODE_EXPIRES)),
       dob: new Date(dob),
       accountStatusUpdate: [],
       status: USER_STATUS.INACTIVE,
@@ -91,6 +91,7 @@ class UserService implements IUserService {
           status: USER_STATUS.ACTIVE,
           updatedBy: actor ? actor : Types.ObjectId(userId),
           updatedAt: new Date(),
+          codeExpires: new Date(),
         },
       },
       { new: true, useFindAndModify: false }
@@ -147,6 +148,24 @@ class UserService implements IUserService {
     return user;
   }
 
+  async resetPassword(
+    userId: string | Types.ObjectId,
+    password: string
+  ): Promise<UserModelInterface> {
+    const user: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          password,
+          codeExpires: new Date(),
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return user;
+  }
+
   async generateNewCode(
     userId: string | Types.ObjectId
   ): Promise<UserModelInterface> {
@@ -155,7 +174,12 @@ class UserService implements IUserService {
     const user: UserModelInterface = await User.findByIdAndUpdate(
       userId,
       {
-        $set: { code, codeExpires: new Date(add(new Date(), { days: 1 })) },
+        $set: {
+          code,
+          codeExpires: new Date(
+            add(new Date(), CONSTANTS.DEFAULT_CODE_EXPIRES)
+          ),
+        },
       },
       { new: true, useFindAndModify: false }
     );

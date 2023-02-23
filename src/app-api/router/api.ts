@@ -86,9 +86,19 @@ router.put(
 router.put(
   "/auth/:userId/deactivate",
   AuthenticationMiddleware.deactivateUserAccount,
+  preventUnknownData,
   checkToken,
   checkAdmin,
   AuthenticationControllerInstance.deactivateUserAccount.bind(
+    AuthenticationControllerInstance
+  )
+);
+
+router.post(
+  "/auth/request-activation-code",
+  AuthenticationMiddleware.requestActivationCode,
+  preventUnknownData,
+  AuthenticationControllerInstance.requestActivationCode.bind(
     AuthenticationControllerInstance
   )
 );
