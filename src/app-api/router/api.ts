@@ -83,17 +83,8 @@ router.put(
   UserControllerInstance.updateProfile.bind(UserControllerInstance)
 );
 
-router.use(function (req: Request, res: Response) {
-  res.error({
-    errors: "",
-    errorCode: 40,
-    message: "Invalid API Route",
-    data: {},
-  });
-});
-
 router.put(
-  "/auth/:userId/deactivate/:code",
+  "/auth/:userId/deactivate",
   AuthenticationMiddleware.deactivateUserAccount,
   checkToken,
   checkAdmin,
@@ -101,5 +92,13 @@ router.put(
     AuthenticationControllerInstance
   )
 );
+
+router.use(function (req: Request, res: Response) {
+  return res.errorRes({
+    errorCode: "40",
+    message: "Invalid API Route",
+    data: {},
+  });
+});
 
 export default router;
