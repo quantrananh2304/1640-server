@@ -48,6 +48,17 @@ router.post(
   AuthenticationControllerInstance.signup.bind(AuthenticationControllerInstance)
 );
 
+router.put(
+  "/admin/auth/:userId/deactivate",
+  AuthenticationMiddleware.deactivateUserAccount,
+  preventUnknownData,
+  checkToken,
+  checkAdmin,
+  AuthenticationControllerInstance.deactivateUserAccount.bind(
+    AuthenticationControllerInstance
+  )
+);
+
 /// department
 router.post(
   "/admin/department/create",
@@ -91,17 +102,6 @@ router.put(
   AuthenticationMiddleware.resetPassword,
   preventUnknownData,
   AuthenticationControllerInstance.resetPassword.bind(
-    AuthenticationControllerInstance
-  )
-);
-
-router.put(
-  "/auth/:userId/deactivate",
-  AuthenticationMiddleware.deactivateUserAccount,
-  preventUnknownData,
-  checkToken,
-  checkAdmin,
-  AuthenticationControllerInstance.deactivateUserAccount.bind(
     AuthenticationControllerInstance
   )
 );

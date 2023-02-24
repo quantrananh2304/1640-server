@@ -1,6 +1,5 @@
 import { Schema, Types, model } from "mongoose";
 import { BaseModelInterface } from "./BaseModelInterface";
-import { USER_COLLECTION_NAME } from "./User";
 
 export const DEPARTMENT_COLLECTION_NAME = "Departments";
 

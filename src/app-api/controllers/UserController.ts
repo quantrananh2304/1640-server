@@ -120,6 +120,7 @@ class UserController {
           gender: user.gender,
           createdAt: user.createdAt,
           _id: user._id,
+          department: user.department,
         },
       });
     } catch (error) {
