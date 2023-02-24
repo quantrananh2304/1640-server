@@ -5,10 +5,16 @@ import {
   UserModelInterface,
 } from "@app-repositories/models/User";
 import { Types } from "mongoose";
-import {
-  DEPARTMENT_STATUS,
-  DepartmentModelInterface,
-} from "@app-repositories/models/Department";
+import { DepartmentModelInterface } from "@app-repositories/models/Department";
+
+export enum GET_LIST_USER_SORT {
+  EMAIL_ASC = "EMAIL_ASC",
+  EMAIL_DESC = "EMAIL_DESC",
+  NAME_ASC = "NAME_ASC",
+  NAME_DESC = "NAME_DESC",
+  DATE_CREATED_ASC = "DATE_CREATED_ASC",
+  DATE_CREATED_DESC = "DATE_CREATED_DESC",
+}
 
 export interface IUserService {
   createUser(_user: {
@@ -62,6 +68,17 @@ export interface IUserService {
     userId: string | Types.ObjectId,
     image: string
   ): Promise<UserModelInterface>;
+
+  getListUser(filter: {
+    page: number;
+    limit: number;
+    sort: GET_LIST_USER_SORT;
+  }): Promise<{
+    users: Array<UserModelInterface>;
+    total: number;
+    page: number;
+    totalPage: number;
+  }>;
 }
 
 export interface IEventService {

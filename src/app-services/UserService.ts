@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { IUserService } from "./interfaces";
+import { GET_LIST_USER_SORT, IUserService } from "./interfaces";
 import {
   USER_GENDER,
   USER_ROLE,
@@ -239,6 +239,82 @@ class UserService implements IUserService {
     );
 
     return user;
+  }
+
+  async getListUser(filter: {
+    page: number;
+    limit: number;
+    sort: GET_LIST_USER_SORT;
+  }): Promise<{
+    users: UserModelInterface[];
+    total: number;
+    page: number;
+    totalPage: number;
+  }> {
+    const { page, limit } = filter;
+
+    const skip = page * limit;
+
+    let sort = {};
+
+    switch (filter.sort) {
+      case GET_LIST_USER_SORT.DATE_CREATED_ASC:
+        sort = {
+          createdAt: 1,
+        };
+        break;
+
+      case GET_LIST_USER_SORT.DATE_CREATED_DESC:
+        sort = {
+          createdAt: -1,
+        };
+        break;
+
+      case GET_LIST_USER_SORT.EMAIL_ASC:
+        sort = {
+          email: 1,
+        };
+        break;
+
+      case GET_LIST_USER_SORT.EMAIL_DESC:
+        sort = {
+          email: -1,
+        };
+        break;
+
+      case GET_LIST_USER_SORT.NAME_ASC:
+        sort = {
+          name: 1,
+        };
+        break;
+
+      case GET_LIST_USER_SORT.NAME_DESC:
+        sort = {
+          name: -1,
+        };
+        break;
+
+      default:
+        break;
+    }
+
+    const [users, total] = await Promise.all([
+      User.find({})
+        .select("-password -code -codeExpires -__v")
+        .populate("department")
+        .sort(sort)
+        .limit(limit)
+        .skip(skip),
+      User.find({}).countDocuments(),
+    ]);
+
+    return {
+      users,
+      total,
+      page,
+      totalPage:
+        total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
+    };
   }
 }
 

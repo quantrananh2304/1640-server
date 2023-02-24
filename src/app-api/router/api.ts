@@ -60,6 +60,7 @@ router.put(
 );
 
 /// department
+
 router.post(
   "/admin/department/create",
   DepartmentMiddleware.create,
@@ -71,7 +72,19 @@ router.post(
   )
 );
 
+/// user
+
+router.get(
+  "/admin/user/list",
+  UserMiddleware.getListUser,
+  preventUnknownData,
+  checkToken,
+  checkAdmin,
+  UserControllerInstance.getListUser.bind(UserControllerInstance)
+);
+
 // auth
+
 router.put(
   "/auth/activate/:code",
   AuthenticationMiddleware.activateUserAccount,
