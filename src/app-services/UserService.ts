@@ -299,7 +299,12 @@ class UserService implements IUserService {
     }
 
     const [users, total] = await Promise.all([
-      User.find({}).populate("department").sort(sort).limit(limit).skip(skip),
+      User.find({})
+        .select("-password -code -codeExpires -__v")
+        .populate("department")
+        .sort(sort)
+        .limit(limit)
+        .skip(skip),
       User.find({}).countDocuments(),
     ]);
 
