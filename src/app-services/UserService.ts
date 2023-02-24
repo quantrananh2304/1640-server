@@ -68,9 +68,9 @@ class UserService implements IUserService {
   }
 
   async getUserById(userId: string): Promise<UserModelInterface> {
-    const user: UserModelInterface = await User.findById(
-      Types.ObjectId(userId)
-    ).lean();
+    const user: UserModelInterface = await User.findById(Types.ObjectId(userId))
+      .populate({ path: "department" })
+      .lean();
 
     return user;
   }

@@ -79,7 +79,8 @@ const UserMiddleware = {
     body("img")
       .exists({ checkFalsy: true, checkNull: true })
       .isString()
-      .isBase64(),
+      .isDataURI()
+      .withMessage("asd"),
   ],
 };
 

@@ -5,6 +5,10 @@ import {
   UserModelInterface,
 } from "@app-repositories/models/User";
 import { Types } from "mongoose";
+import {
+  DEPARTMENT_STATUS,
+  DepartmentModelInterface,
+} from "@app-repositories/models/Department";
 
 export interface IUserService {
   createUser(_user: {
@@ -62,4 +66,13 @@ export interface IUserService {
 
 export interface IEventService {
   createEvent(_event: EventModelInterface): Promise<EventModelInterface>;
+}
+
+export interface IDepartmentService {
+  createDepartment(
+    _department: { name: string; note: string },
+    actor: string
+  ): Promise<DepartmentModelInterface>;
+
+  getDepartmentByName(name: string): Promise<DepartmentModelInterface>;
 }

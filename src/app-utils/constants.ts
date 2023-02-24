@@ -98,6 +98,11 @@ const CONSTANTS = {
       message: "Account locked or deleted",
     },
 
+    DEPARTMENT_EXISTED: {
+      errorCode: "015",
+      message: "Department existed",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",

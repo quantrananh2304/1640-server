@@ -120,6 +120,7 @@ class UserController {
           gender: user.gender,
           createdAt: user.createdAt,
           _id: user._id,
+          department: user.department,
         },
       });
     } catch (error) {
@@ -159,6 +160,15 @@ class UserController {
         return res.internal({});
       }
 
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: userId,
+        actor: req.headers.userId,
+        description: "/user/update",
+        createdAt: new Date(),
+      });
+
       return res.successRes({
         data: {
           firstName: updatedUser.firstName,
@@ -183,6 +193,12 @@ class UserController {
 
   async uploadAvatar(req: Request, res: Response) {
     try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
       const { userId } = req.params;
 
       const user: UserModelInterface = await this.userService.getUserById(
@@ -205,6 +221,15 @@ class UserController {
       if (!updatedUser) {
         return res.internal({});
       }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: userId,
+        actor: req.headers.userId,
+        description: "/user/upload-avatar",
+        createdAt: new Date(),
+      });
 
       return res.successRes({ data: {} });
     } catch (error) {

@@ -1,0 +1,60 @@
+import { Request, Response, validateRequest } from "@app-helpers/http.extends";
+import { DepartmentModelInterface } from "@app-repositories/models/Department";
+import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
+import TYPES from "@app-repositories/types";
+import { IDepartmentService, IEventService } from "@app-services/interfaces";
+import CONSTANTS from "@app-utils/constants";
+import { Result } from "express-validator";
+import { inject, injectable } from "inversify";
+
+@injectable()
+class DepartmentController {
+  @inject(TYPES.DepartmentService)
+  private readonly departmentService: IDepartmentService;
+  @inject(TYPES.EventService) private readonly eventService: IEventService;
+
+  async createDepartment(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { name, note } = req.body;
+
+      const department: DepartmentModelInterface =
+        await this.departmentService.getDepartmentByName(name);
+
+      if (department) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.DEPARTMENT_EXISTED);
+      }
+
+      const newDepartment: DepartmentModelInterface =
+        await this.departmentService.createDepartment(
+          { name, note },
+          req.headers.userId
+        );
+
+      if (!newDepartment) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.DEPARTMENT,
+        action: EVENT_ACTION.CREATE,
+        schemaId: newDepartment._id,
+        actor: req.headers.userId,
+        description: "/department/create",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({ data: newDepartment });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+}
+
+export default DepartmentController;

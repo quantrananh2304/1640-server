@@ -1,3 +1,4 @@
+import { DEPARTMENT_STATUS } from "@app-repositories/models/Department";
 import {
   USER_GENDER,
   USER_ROLE,
@@ -64,6 +65,17 @@ interface DeactivateUserAccountResponseDTO
 interface RequestActivationCodeResponseDTO
   extends RequestResetPasswordResponseDTO {}
 
+interface CreateDepartmentResponseDTO extends Omit<SignUpResponseDTO, "data"> {
+  data: {
+    name: string;
+    note: string;
+    status: DEPARTMENT_STATUS;
+    createdAt: Date;
+    createdBy: string;
+    updatedBy: string;
+  };
+}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -73,4 +85,5 @@ export type SuccessResponseDTOs =
   | GetProfileResponseDTO
   | UpdateProfileResponseDTO
   | DeactivateUserAccountResponseDTO
-  | RequestActivationCodeResponseDTO;
+  | RequestActivationCodeResponseDTO
+  | CreateDepartmentResponseDTO;
