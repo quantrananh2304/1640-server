@@ -126,6 +126,8 @@ const CONSTANTS = {
     PASSWORD_NOT_VALID: "Password invalid",
 
     CONFIRM_PASSWORD_DIFFERENT: "Confirm password not the same",
+
+    SORT_OPTION_INVALID: "Sort option invalid",
   },
 };
 

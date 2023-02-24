@@ -237,6 +237,44 @@ class UserController {
       return res.internal({ message: error.message });
     }
   }
+
+  async getListUser(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { page, limit, sort } = req.query;
+
+      const user = await this.userService.getListUser({
+        page: Number(page),
+        limit: Number(limit),
+        sort,
+      });
+
+      if (!user) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.READ,
+        schemaId: null,
+        actor: req.headers.userId,
+        description: "/user/list",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({
+        data: user,
+      });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default UserController;
