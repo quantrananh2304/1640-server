@@ -1,5 +1,6 @@
 import { Schema, model, Types } from "mongoose";
 import { BaseModelInterface } from "./BaseModelInterface";
+import { DEPARTMENT_COLLECTION_NAME } from "./Department";
 
 export const USER_COLLECTION_NAME = "Users";
 
@@ -45,6 +46,7 @@ export interface UserModelInterface extends BaseModelInterface {
   createdAt: Date;
   updatedAt: Date;
   updatedBy: string | Types.ObjectId;
+  department: string | Types.ObjectId;
 }
 
 const userSchema = new Schema({
@@ -126,6 +128,11 @@ const userSchema = new Schema({
   },
   updatedBy: {
     type: Types.ObjectId && String,
+  },
+  department: {
+    type: Types.ObjectId,
+    required: true,
+    ref: DEPARTMENT_COLLECTION_NAME,
   },
 });
 

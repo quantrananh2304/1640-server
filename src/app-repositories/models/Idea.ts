@@ -2,6 +2,7 @@ import { Schema, Types, model } from "mongoose";
 import { USER_COLLECTION_NAME } from "./User";
 import { CATEGORY_COLLECTION_NAME } from "./Category";
 import { BaseModelInterface } from "./BaseModelInterface";
+import { THREAD_COLLECTION_NAME } from "./Thread";
 
 export const IDEA_COLLECTION_NAME = "Ideas";
 
@@ -34,6 +35,7 @@ export interface IdeaModelInterface extends BaseModelInterface {
   }>;
   documents: Array<string>;
   category: string | Types.ObjectId;
+  thread: string | Types.ObjectId;
 }
 
 const ideaSchema = new Schema({
@@ -135,6 +137,11 @@ const ideaSchema = new Schema({
     type: Types.ObjectId,
     required: true,
     ref: USER_COLLECTION_NAME,
+  },
+  thread: {
+    type: Types.ObjectId,
+    required: true,
+    ref: THREAD_COLLECTION_NAME,
   },
 });
 
