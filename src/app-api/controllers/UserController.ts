@@ -160,6 +160,15 @@ class UserController {
         return res.internal({});
       }
 
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: userId,
+        actor: req.headers.userId,
+        description: "/user/update",
+        createdAt: new Date(),
+      });
+
       return res.successRes({
         data: {
           firstName: updatedUser.firstName,
@@ -212,6 +221,15 @@ class UserController {
       if (!updatedUser) {
         return res.internal({});
       }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: userId,
+        actor: req.headers.userId,
+        description: "/user/upload-avatar",
+        createdAt: new Date(),
+      });
 
       return res.successRes({ data: {} });
     } catch (error) {

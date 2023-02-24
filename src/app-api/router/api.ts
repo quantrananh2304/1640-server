@@ -9,19 +9,19 @@ import preventUnknownData from "@app-api/middlewares/preventUnmatchedData";
 import { Request, Response } from "@app-helpers/http.extends";
 import { container } from "@app-repositories/ioc";
 import express = require("express");
-import multer = require("multer");
+// import multer = require("multer");
 
-const storage = multer.diskStorage({
-  destination: (req: Request, file, cb) => {
-    cb(null, "uploads");
-  },
+// const storage = multer.diskStorage({
+//   destination: (req: Request, file, cb) => {
+//     cb(null, "uploads");
+//   },
 
-  filename: (req: Request, file, cb) => {
-    cb(null, file.filename + "-" + Date.now());
-  },
-});
+//   filename: (req: Request, file, cb) => {
+//     cb(null, file.filename + "-" + Date.now());
+//   },
+// });
 
-export const upload = multer({ storage });
+// export const upload = multer({ storage });
 
 const router = express.Router();
 
