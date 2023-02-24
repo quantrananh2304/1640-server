@@ -1,6 +1,8 @@
 import AuthenticationController from "@app-api/controllers/AuthenticationController";
+import DepartmentController from "@app-api/controllers/DepartmentController";
 import UserController from "@app-api/controllers/UserController";
 import AuthenticationMiddleware from "@app-api/middlewares/AuthenticationMiddleware";
+import DepartmentMiddleware from "@app-api/middlewares/DepartmentMiddleware";
 import UserMiddleware from "@app-api/middlewares/UserMiddleware";
 import checkToken, { checkAdmin } from "@app-api/middlewares/authorization";
 import preventUnknownData from "@app-api/middlewares/preventUnmatchedData";
@@ -26,10 +28,16 @@ const router = express.Router();
 const AuthenticationControllerInstance =
   container.get<AuthenticationController>(AuthenticationController);
 const UserControllerInstance = container.get<UserController>(UserController);
+const DepartmentControllerInstance =
+  container.get<DepartmentController>(DepartmentController);
 
 router.get("/test", (req, res) => {
   res.send({ foo: "bar" });
 });
+
+// admin
+
+/// auth
 
 router.post(
   "/admin/auth/signup",
@@ -40,6 +48,19 @@ router.post(
   AuthenticationControllerInstance.signup.bind(AuthenticationControllerInstance)
 );
 
+/// department
+router.post(
+  "/admin/department/create",
+  DepartmentMiddleware.create,
+  preventUnknownData,
+  checkToken,
+  checkAdmin,
+  DepartmentControllerInstance.createDepartment.bind(
+    DepartmentControllerInstance
+  )
+);
+
+// auth
 router.put(
   "/auth/activate/:code",
   AuthenticationMiddleware.activateUserAccount,
@@ -54,14 +75,6 @@ router.post(
   AuthenticationMiddleware.login,
   preventUnknownData,
   AuthenticationControllerInstance.login.bind(AuthenticationControllerInstance)
-);
-
-router.put(
-  "/user/:userId/change-password",
-  UserMiddleware.changePassword,
-  preventUnknownData,
-  checkToken,
-  UserControllerInstance.changePassword.bind(UserControllerInstance)
 );
 
 router.put(
@@ -82,20 +95,6 @@ router.put(
   )
 );
 
-router.get(
-  "/user/profile",
-  checkToken,
-  UserControllerInstance.getProfile.bind(UserControllerInstance)
-);
-
-router.put(
-  "/user/:userId/update",
-  UserMiddleware.updateProfile,
-  preventUnknownData,
-  checkToken,
-  UserControllerInstance.updateProfile.bind(UserControllerInstance)
-);
-
 router.put(
   "/auth/:userId/deactivate",
   AuthenticationMiddleware.deactivateUserAccount,
@@ -114,6 +113,30 @@ router.post(
   AuthenticationControllerInstance.requestActivationCode.bind(
     AuthenticationControllerInstance
   )
+);
+
+// user
+
+router.put(
+  "/user/:userId/change-password",
+  UserMiddleware.changePassword,
+  preventUnknownData,
+  checkToken,
+  UserControllerInstance.changePassword.bind(UserControllerInstance)
+);
+
+router.get(
+  "/user/profile",
+  checkToken,
+  UserControllerInstance.getProfile.bind(UserControllerInstance)
+);
+
+router.put(
+  "/user/:userId/update",
+  UserMiddleware.updateProfile,
+  preventUnknownData,
+  checkToken,
+  UserControllerInstance.updateProfile.bind(UserControllerInstance)
 );
 
 router.put(

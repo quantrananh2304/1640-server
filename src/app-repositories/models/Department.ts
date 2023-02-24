@@ -27,7 +27,6 @@ const departmentSchema = new Schema({
 
   note: {
     type: String,
-    required: true,
     default: "",
   },
 
@@ -52,7 +51,7 @@ const departmentSchema = new Schema({
   updatedBy: {
     type: Types.ObjectId,
     required: true,
-    ref: USER_COLLECTION_NAME,
+    ref: "users",
   },
 });
 

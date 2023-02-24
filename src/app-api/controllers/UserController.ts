@@ -183,6 +183,12 @@ class UserController {
 
   async uploadAvatar(req: Request, res: Response) {
     try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
       const { userId } = req.params;
 
       const user: UserModelInterface = await this.userService.getUserById(
