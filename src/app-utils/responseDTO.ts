@@ -1,4 +1,7 @@
-import { DEPARTMENT_STATUS } from "@app-repositories/models/Department";
+import {
+  DEPARTMENT_STATUS,
+  DepartmentModelInterface,
+} from "@app-repositories/models/Department";
 import {
   USER_GENDER,
   USER_ROLE,
@@ -86,6 +89,15 @@ interface GetListUserResponseDTO extends Omit<SignUpResponseDTO, "data"> {
   };
 }
 
+interface GetListDepartmentResponseDTO extends Omit<SignUpResponseDTO, "data"> {
+  data: {
+    departments: Array<DepartmentModelInterface>;
+    total: number;
+    page: number;
+    totalPage: number;
+  };
+}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -97,4 +109,5 @@ export type SuccessResponseDTOs =
   | DeactivateUserAccountResponseDTO
   | RequestActivationCodeResponseDTO
   | CreateDepartmentResponseDTO
-  | GetListUserResponseDTO;
+  | GetListUserResponseDTO
+  | GetListDepartmentResponseDTO;
