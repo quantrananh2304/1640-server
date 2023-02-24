@@ -72,6 +72,17 @@ router.post(
   )
 );
 
+router.get(
+  "/admin/department/list",
+  DepartmentMiddleware.getListUser,
+  preventUnknownData,
+  checkToken,
+  checkAdmin,
+  DepartmentControllerInstance.getListDepartment.bind(
+    DepartmentControllerInstance
+  )
+);
+
 /// user
 
 router.get(

@@ -55,6 +55,44 @@ class DepartmentController {
       return res.internal({ message: error.message });
     }
   }
+
+  async getListDepartment(req: Request, res: Response) {
+    try {
+      const result: Result = validateRequest(req);
+
+      if (!result.isEmpty()) {
+        return res.errorRes({ errors: result.array() });
+      }
+
+      const { page, limit, sort } = req.query;
+
+      const department = await this.departmentService.getListDepartment({
+        page: Number(page),
+        limit: Number(limit),
+        sort,
+      });
+
+      if (!department) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.DEPARTMENT,
+        action: EVENT_ACTION.READ,
+        schemaId: null,
+        actor: req.headers.userId,
+        description: "/department/list",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({
+        data: department,
+      });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default DepartmentController;

@@ -16,6 +16,13 @@ export enum GET_LIST_USER_SORT {
   DATE_CREATED_DESC = "DATE_CREATED_DESC",
 }
 
+export enum GET_LIST_DEPARTMENT_SORT {
+  NAME_ASC = "NAME_ASC",
+  NAME_DESC = "NAME_DESC",
+  DATE_CREATED_ASC = "DATE_CREATED_ASC",
+  DATE_CREATED_DESC = "DATE_CREATED_DESC",
+}
+
 export interface IUserService {
   createUser(_user: {
     firstName: string;
@@ -92,4 +99,15 @@ export interface IDepartmentService {
   ): Promise<DepartmentModelInterface>;
 
   getDepartmentByName(name: string): Promise<DepartmentModelInterface>;
+
+  getListDepartment(filter: {
+    page: number;
+    limit: number;
+    sort: GET_LIST_DEPARTMENT_SORT;
+  }): Promise<{
+    departments: Array<DepartmentModelInterface>;
+    total: number;
+    page: number;
+    totalPage: number;
+  }>;
 }
