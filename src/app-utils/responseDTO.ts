@@ -3,6 +3,7 @@ import {
   USER_GENDER,
   USER_ROLE,
   USER_STATUS,
+  UserModelInterface,
 } from "@app-repositories/models/User";
 
 interface SignUpResponseDTO {
@@ -76,6 +77,15 @@ interface CreateDepartmentResponseDTO extends Omit<SignUpResponseDTO, "data"> {
   };
 }
 
+interface GetListUserResponseDTO extends Omit<SignUpResponseDTO, "data"> {
+  data: {
+    users: Array<UserModelInterface>;
+    total: number;
+    page: number;
+    totalPage: number;
+  };
+}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -86,4 +96,5 @@ export type SuccessResponseDTOs =
   | UpdateProfileResponseDTO
   | DeactivateUserAccountResponseDTO
   | RequestActivationCodeResponseDTO
-  | CreateDepartmentResponseDTO;
+  | CreateDepartmentResponseDTO
+  | GetListUserResponseDTO;
