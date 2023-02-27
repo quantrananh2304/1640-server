@@ -1,7 +1,7 @@
 import { Request, Response } from "@app-helpers/http.extends";
 import CONSTANTS from "@app-utils/constants";
 import { NextFunction } from "express";
-import { matchedData } from "express-validator";
+import { matchedData, validationResult } from "express-validator";
 
 function preventUnknownData(req: Request, res: Response, next: NextFunction) {
   const requiredData = matchedData(req, { includeOptionals: false });
@@ -13,4 +13,19 @@ function preventUnknownData(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-export default preventUnknownData;
+function validationRequest(req: Request, res: Response, next: NextFunction) {
+  const errors = validationResult(req).formatWith((error) => error);
+
+  if (!errors.isEmpty()) {
+    return res.errorRes({ errors: errors.array() });
+  }
+
+  next();
+}
+
+const ParamsValidations = {
+  preventUnknownData,
+  validationRequest,
+};
+
+export default ParamsValidations;

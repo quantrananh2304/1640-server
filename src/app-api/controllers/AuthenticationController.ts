@@ -1,9 +1,8 @@
-import { Request, Response, validateRequest } from "@app-helpers/http.extends";
+import { Request, Response } from "@app-helpers/http.extends";
 import TYPES from "@app-repositories/types";
 import { USER_STATUS, UserModelInterface } from "@app-repositories/models/User";
 import { IEventService, IUserService } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { Result } from "express-validator";
 import { inject, injectable } from "inversify";
 import bcrypt = require("bcryptjs");
 import jwt = require("jsonwebtoken");
@@ -20,12 +19,6 @@ class AuthenticationController {
 
   async login(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const user: UserModelInterface = await this.userService.getUserByEmail(
         req.body.email
       );
@@ -88,12 +81,6 @@ class AuthenticationController {
 
   async signup(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const user = await this.userService.createUser(req.body);
 
       const title = CONSTANTS.ACCOUNT_ACTIVATION;
@@ -138,12 +125,6 @@ class AuthenticationController {
 
   async activeUserAccount(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { code } = req.params;
 
       const { email } = req.body;
@@ -188,12 +169,6 @@ class AuthenticationController {
 
   async requestResetPassword(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { email } = req.body;
 
       const user: UserModelInterface = await this.userService.getUserByEmail(
@@ -237,12 +212,6 @@ class AuthenticationController {
 
   async resetPassword(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { email, newPassword } = req.body;
 
       const { code } = req.params;
@@ -300,12 +269,6 @@ class AuthenticationController {
 
   async deactivateUserAccount(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { userId } = req.params;
 
       const user: UserModelInterface = await this.userService.find({
@@ -355,12 +318,6 @@ class AuthenticationController {
 
   async requestActivationCode(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { email } = req.body;
 
       const user: UserModelInterface = await this.userService.getUserByEmail(

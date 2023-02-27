@@ -1,9 +1,8 @@
-import { Request, Response, validateRequest } from "@app-helpers/http.extends";
+import { Request, Response } from "@app-helpers/http.extends";
 import { USER_STATUS, UserModelInterface } from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
 import { IEventService, IUserService } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { Result } from "express-validator";
 import { inject, injectable } from "inversify";
 import bcrypt = require("bcryptjs");
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
@@ -15,12 +14,6 @@ class UserController {
 
   async changePassword(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { userId } = req.params;
       const { oldPassword, newPassword } = req.body;
 
@@ -81,12 +74,6 @@ class UserController {
 
   async getProfile(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { userId } = req.headers;
 
       const user: UserModelInterface = await this.userService.getUserById(
@@ -131,12 +118,6 @@ class UserController {
 
   async updateProfile(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { userId } = req.params;
 
       const user: UserModelInterface = await this.userService.getUserById(
@@ -193,12 +174,6 @@ class UserController {
 
   async uploadAvatar(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { userId } = req.params;
 
       const user: UserModelInterface = await this.userService.getUserById(
@@ -240,12 +215,6 @@ class UserController {
 
   async getListUser(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { page, limit, sort } = req.query;
 
       const user = await this.userService.getListUser({

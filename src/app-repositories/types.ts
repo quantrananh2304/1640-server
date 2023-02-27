@@ -3,6 +3,7 @@ const TYPES = {
   EventService: Symbol.for("EventService"),
   NodeMailer: Symbol.for("NodeMailer"),
   DepartmentService: Symbol.for("DepartmentService"),
+  ThreadService: Symbol.for("ThreadService"),
 };
 
 export default TYPES;
