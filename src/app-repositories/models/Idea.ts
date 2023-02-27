@@ -156,14 +156,16 @@ const ideaSchema = new Schema({
     required: true,
     ref: THREAD_COLLECTION_NAME,
   },
-  subscribers: [
-    {
-      type: Types.ObjectId,
-      ref: USER_COLLECTION_NAME,
-      default: [],
-      _id: false,
-    },
-  ],
+  subscribers: {
+    type: [
+      {
+        user: { type: Types.ObjectId, ref: USER_COLLECTION_NAME },
+        createdAt: Date,
+      },
+    ],
+    default: [],
+    _id: false,
+  },
 });
 
 export default model<IdeaModelInterface>(IDEA_COLLECTION_NAME, ideaSchema);
