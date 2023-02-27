@@ -45,6 +45,17 @@ class ThreadService implements IThreadService {
 
     return thread;
   }
+
+  async getThreadById(_id: string): Promise<ThreadModelInterface> {
+    const thread: ThreadModelInterface = await Thread.findById(_id)
+      .populate({
+        path: "updatedBy",
+        select: "-__v -password -code -codeExpires",
+      })
+      .lean();
+
+    return thread;
+  }
 }
 
 export default ThreadService;

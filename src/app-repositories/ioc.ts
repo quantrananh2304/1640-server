@@ -11,6 +11,8 @@ import ThreadController from "@app-api/controllers/ThreadController";
 import ThreadService from "@app-services/ThreadService";
 import CategoryController from "@app-api/controllers/CategoryController";
 import CategoryService from "@app-services/CategoryService";
+import IdeaController from "@app-api/controllers/IdeaController";
+import IdeaService from "@app-services/IdeaService";
 
 const container = new Container();
 
@@ -19,6 +21,7 @@ container.bind(UserController).toSelf();
 container.bind(DepartmentController).toSelf();
 container.bind(ThreadController).toSelf();
 container.bind(CategoryController).toSelf();
+container.bind(IdeaController).toSelf();
 
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<EventService>(TYPES.EventService).to(EventService);
@@ -28,5 +31,6 @@ container
   .to(DepartmentService);
 container.bind<ThreadService>(TYPES.ThreadService).to(ThreadService);
 container.bind<CategoryService>(TYPES.CategoryService).to(CategoryService);
+container.bind<IdeaService>(TYPES.IdeaService).to(IdeaService);
 
 export { container };

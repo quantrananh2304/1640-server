@@ -42,7 +42,12 @@ class DepartmentController {
         createdAt: new Date(),
       });
 
-      return res.successRes({ data: newDepartment });
+      const result: DepartmentModelInterface =
+        await this.departmentService.getDepartmentById(
+          String(newDepartment._id)
+        );
+
+      return res.successRes({ data: result });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });

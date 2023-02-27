@@ -43,7 +43,10 @@ class ThreadController {
         createdAt: new Date(),
       });
 
-      return res.successRes({ data: newThread });
+      const result: ThreadModelInterface =
+        await this.threadService.getThreadById(String(newThread._id));
+
+      return res.successRes({ data: result });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });

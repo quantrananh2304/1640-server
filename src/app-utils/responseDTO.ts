@@ -1,9 +1,15 @@
-import { CATEGORY_STATUS } from "@app-repositories/models/Category";
+import {
+  CATEGORY_STATUS,
+  CategoryModelInterface,
+} from "@app-repositories/models/Category";
 import {
   DEPARTMENT_STATUS,
   DepartmentModelInterface,
 } from "@app-repositories/models/Department";
-import { THREAD_STATUS } from "@app-repositories/models/Thread";
+import {
+  THREAD_STATUS,
+  ThreadModelInterface,
+} from "@app-repositories/models/Thread";
 import {
   USER_GENDER,
   USER_ROLE,
@@ -111,7 +117,7 @@ interface CreateThreadResponseDTO extends Omit<SignUpResponseDTO, "data"> {
     createdAt: Date;
     updatedAt: Date;
     _id: string;
-    updatedBy: string;
+    updatedBy: UserModelInterface;
   };
 }
 
@@ -122,7 +128,34 @@ interface CreateCategoryResponseDTO extends Omit<SignUpResponseDTO, "data"> {
     createdAt: Date;
     updatedAt: Date;
     _id: string;
-    updatedBy: string;
+    updatedBy: UserModelInterface;
+  };
+}
+
+interface CreateIdeaResponseDTO extends Omit<SignUpResponseDTO, "data"> {
+  data: {
+    title: string;
+    description: string;
+    documents: Array<string>;
+    category: Array<CategoryModelInterface>;
+    createdAt: Date;
+    updatedAt: Date;
+    subscribers: Array<UserModelInterface>;
+    _id: string;
+    thread: ThreadModelInterface;
+    like: Array<{ user: UserModelInterface; createdAt: Date }>;
+    disLike: Array<{ user: UserModelInterface; createdAt: Date }>;
+    views: Array<{ user: UserModelInterface; createdAt: Date }>;
+    updatedBy: UserModelInterface;
+    comments: Array<{
+      content: string;
+      createdBy: UserModelInterface;
+      createdAt: Date;
+      editHistory: Array<{
+        content: string;
+        updatedAt: Date;
+      }>;
+    }>;
   };
 }
 
@@ -140,4 +173,5 @@ export type SuccessResponseDTOs =
   | GetListUserResponseDTO
   | GetListDepartmentResponseDTO
   | CreateThreadResponseDTO
-  | CreateCategoryResponseDTO;
+  | CreateCategoryResponseDTO
+  | CreateIdeaResponseDTO;
