@@ -97,6 +97,49 @@ class IdeaController {
       return res.internal({ message: error.message });
     }
   }
+
+  async likeDislikeIdea(req: Request, res: Response) {
+    try {
+      const { ideaId, action } = req.params;
+
+      const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
+        ideaId
+      );
+
+      if (!idea) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      const updatedIdea: IdeaModelInterface =
+        await this.ideaService.likeDislikeIdea(
+          ideaId,
+          action,
+          req.headers.userId
+        );
+
+      if (!updatedIdea) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: updatedIdea._id,
+        actor: req.headers.userId,
+        description: "/idea/like-dislike",
+        createdAt: new Date(),
+      });
+
+      const result: IdeaModelInterface = await this.ideaService.getIdeaById(
+        String(updatedIdea._id)
+      );
+
+      return res.successRes({ data: result });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default IdeaController;

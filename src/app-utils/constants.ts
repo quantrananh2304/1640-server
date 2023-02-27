@@ -138,6 +138,11 @@ const CONSTANTS = {
       message: "Category not existed",
     },
 
+    IDEA_NOT_EXISTED: {
+      errorCode: "023",
+      message: "Idea not existed",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",
@@ -168,6 +173,8 @@ const CONSTANTS = {
       "Final closure date cannot before closure date",
 
     DOCUMENT_INVALID: "Document is not valid",
+
+    ACTION_INVALID: "Action invalid",
   },
 };
 

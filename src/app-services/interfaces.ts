@@ -157,4 +157,10 @@ export interface IIdeaService {
   getIdeaByTitle(title: string): Promise<IdeaModelInterface>;
 
   getIdeaById(_id: string): Promise<IdeaModelInterface>;
+
+  likeDislikeIdea(
+    _id: string,
+    action: "like" | "dislike",
+    actor: string
+  ): Promise<IdeaModelInterface>;
 }
