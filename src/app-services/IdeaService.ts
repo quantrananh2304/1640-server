@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { IIdeaService } from "./interfaces";
+import { GET_LIST_IDEA_SORT, IIdeaService } from "./interfaces";
 import Idea, { IdeaModelInterface } from "@app-repositories/models/Idea";
 import { Types } from "mongoose";
 
@@ -50,6 +50,215 @@ class IdeaService implements IIdeaService {
       });
 
     return idea;
+  }
+
+  async getListIdea(filter: {
+    page: number;
+    limit: number;
+    sort: GET_LIST_IDEA_SORT;
+  }): Promise<{
+    ideas: IdeaModelInterface[];
+    total: number;
+    page: number;
+    totalPage: number;
+  }> {
+    const { page, limit } = filter;
+
+    const skip = page * limit;
+
+    let sort = {};
+
+    switch (filter.sort) {
+      case GET_LIST_IDEA_SORT.DATE_CREATED_ASC:
+        sort = {
+          createdAt: 1,
+        };
+        break;
+
+      case GET_LIST_IDEA_SORT.DATE_CREATED_DESC:
+        sort = {
+          createdAt: -1,
+        };
+        break;
+
+      case GET_LIST_IDEA_SORT.LATEST_COMMENT:
+        sort = {
+          commentsLastCreatedAt: 1,
+        };
+        break;
+
+      case GET_LIST_IDEA_SORT.DISLIKE_ASC:
+        sort = {
+          dislikeCount: 1,
+        };
+        break;
+
+      case GET_LIST_IDEA_SORT.DISLIKE_DESC:
+        sort = {
+          dislikeCount: -1,
+        };
+        break;
+
+      case GET_LIST_IDEA_SORT.LIKE_ASC:
+        sort = {
+          likeCount: 1,
+        };
+        break;
+
+      case GET_LIST_IDEA_SORT.LIKE_DESC:
+        sort = {
+          likeCount: -1,
+        };
+        break;
+
+      case GET_LIST_IDEA_SORT.POPULARITY_ASC:
+        sort = {
+          viewCount: 1,
+        };
+        break;
+
+      case GET_LIST_IDEA_SORT.POPULARITY_DESC:
+        sort = {
+          viewCount: -1,
+        };
+        break;
+
+      default:
+        break;
+    }
+
+    const aggregation = [
+      {
+        $lookup: {
+          from: "threads",
+          localField: "thread",
+          foreignField: "_id",
+          as: "thread",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$thread",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$category",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "updatedBy",
+          foreignField: "_id",
+          as: "updatedBy",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                firstName: 1,
+                lastName: 1,
+                email: 1,
+                avatar: 1,
+                status: 1,
+                role: 1,
+                address: 1,
+                dob: 1,
+                phoneNumber: 1,
+                gender: 1,
+              },
+            },
+          ],
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$updatedBy",
+        },
+      },
+
+      {
+        $project: {
+          title: 1,
+          createdAt: 1,
+          like: 1,
+          dislike: 1,
+          views: 1,
+          updatedAt: 1,
+          updatedBy: 1,
+          documents: 1,
+          category: 1,
+          thread: 1,
+          subscribers: 1,
+          _id: 1,
+
+          dislikeCount: {
+            $cond: {
+              if: { $isArray: "$dislike" },
+              then: { $size: "$dislike" },
+              else: 0,
+            },
+          },
+
+          likeCount: {
+            $cond: {
+              if: { $isArray: "$like" },
+              then: { $size: "$like" },
+              else: 0,
+            },
+          },
+
+          viewCount: {
+            $cond: {
+              if: { $isArray: "$views" },
+              then: { $size: "$views" },
+              else: 0,
+            },
+          },
+
+          commentLastCreated: {
+            $cond: {
+              if: { $isArray: "$comments" },
+              then: { $max: "$comments.updatedAt" },
+              else: null,
+            },
+          },
+        },
+      },
+
+      { $sort: sort },
+
+      { $limit: limit },
+
+      { $skip: skip },
+    ];
+
+    const [ideas, total] = await Promise.all([
+      Idea.aggregate(aggregation),
+      Idea.find({}).countDocuments(),
+    ]);
+
+    return {
+      ideas,
+      total,
+      page: page + 1,
+      totalPage:
+        total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
+    };
   }
 }
 
