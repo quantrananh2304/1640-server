@@ -231,12 +231,21 @@ router.post(
 );
 
 router.put(
-  "/idea/:ideaId/:action",
+  "/idea/:ideaId/like-dislike/:action",
   IdeaMiddleware.likeDislikeIdea,
   ParamsValidations.validationRequest,
   ParamsValidations.preventUnknownData,
   checkToken,
   IdeaControllerInstance.likeDislikeIdea.bind(IdeaControllerInstance)
+);
+
+router.put(
+  "/idea/:ideaId/view",
+  IdeaMiddleware.view,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.viewIdea.bind(IdeaControllerInstance)
 );
 
 router.use(function (req: Request, res: Response) {

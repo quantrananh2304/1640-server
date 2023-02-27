@@ -186,6 +186,8 @@ interface LikeDislikeIdeaResponseDTO extends Omit<SignUpResponseDTO, "data"> {
   };
 }
 
+interface ViewIdeaResponseDTO extends RequestResetPasswordResponseDTO {}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -202,4 +204,5 @@ export type SuccessResponseDTOs =
   | CreateThreadResponseDTO
   | CreateCategoryResponseDTO
   | CreateIdeaResponseDTO
-  | LikeDislikeIdeaResponseDTO;
+  | LikeDislikeIdeaResponseDTO
+  | ViewIdeaResponseDTO;

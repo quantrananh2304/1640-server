@@ -163,4 +163,6 @@ export interface IIdeaService {
     action: "like" | "dislike",
     actor: string
   ): Promise<IdeaModelInterface>;
+
+  viewIdea(_id: string, actor: string): Promise<IdeaModelInterface>;
 }
