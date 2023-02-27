@@ -118,6 +118,26 @@ const CONSTANTS = {
       message: "Not an Admin or Quality Assurance Manager",
     },
 
+    IDEA_EXISTED: {
+      errorCode: "019",
+      message: "Idea existed",
+    },
+
+    THREAD_NOT_EXISTED: {
+      errorCode: "020",
+      message: "Thread not existed",
+    },
+
+    THREAD_EXPIRED: {
+      errorCode: "021",
+      message: "Thread expired",
+    },
+
+    CATEGORY_NOT_EXISTED: {
+      errorCode: "022",
+      message: "Category not existed",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",
@@ -146,6 +166,8 @@ const CONSTANTS = {
 
     FINAL_CLOSURE_DATE_NOTE_BEFORE_CLOSURE_DATE:
       "Final closure date cannot before closure date",
+
+    DOCUMENT_INVALID: "Document is not valid",
   },
 };
 

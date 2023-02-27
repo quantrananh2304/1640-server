@@ -8,6 +8,7 @@ import { Types } from "mongoose";
 import { DepartmentModelInterface } from "@app-repositories/models/Department";
 import { ThreadModelInterface } from "@app-repositories/models/Thread";
 import { CategoryModelInterface } from "@app-repositories/models/Category";
+import { IdeaModelInterface } from "@app-repositories/models/Idea";
 
 export enum GET_LIST_USER_SORT {
   EMAIL_ASC = "EMAIL_ASC",
@@ -112,6 +113,8 @@ export interface IDepartmentService {
     page: number;
     totalPage: number;
   }>;
+
+  getDepartmentById(_id: string): Promise<DepartmentModelInterface>;
 }
 
 export interface IThreadService {
@@ -127,10 +130,31 @@ export interface IThreadService {
   ): Promise<ThreadModelInterface>;
 
   getThreadByName(name: string): Promise<ThreadModelInterface>;
+
+  getThreadById(_id: string): Promise<ThreadModelInterface>;
 }
 
 export interface ICategoryService {
   createCategory(name: string, actor: string): Promise<CategoryModelInterface>;
 
   getCategoryByName(name: string): Promise<CategoryModelInterface>;
+
+  getCategoryById(_id: string): Promise<CategoryModelInterface>;
+}
+
+export interface IIdeaService {
+  createIdea(
+    _idea: {
+      title: string;
+      description: string;
+      documents: Array<string>;
+      category: Array<string>;
+      thread: string;
+    },
+    actor: string
+  ): Promise<IdeaModelInterface>;
+
+  getIdeaByTitle(title: string): Promise<IdeaModelInterface>;
+
+  getIdeaById(_id: string): Promise<IdeaModelInterface>;
 }

@@ -64,7 +64,10 @@ class CategoryController {
         createdAt: new Date(),
       });
 
-      return res.successRes({ data: newCategory });
+      const result: CategoryModelInterface =
+        await this.categoryService.getCategoryById(String(newCategory._id));
+
+      return res.successRes({ data: result });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });

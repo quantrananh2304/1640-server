@@ -34,8 +34,9 @@ export interface IdeaModelInterface extends BaseModelInterface {
     }>;
   }>;
   documents: Array<string>;
-  category: string | Types.ObjectId;
+  category: Array<string | Types.ObjectId>;
   thread: string | Types.ObjectId;
+  subscribers: Array<string | Types.ObjectId>;
 }
 
 const ideaSchema = new Schema({
@@ -51,51 +52,40 @@ const ideaSchema = new Schema({
   },
   like: [
     {
-      type: {
-        user: {
-          type: Types.ObjectId,
-          ref: USER_COLLECTION_NAME,
-        },
-        createdAt: Date,
+      user: {
+        type: Types.ObjectId,
+        ref: USER_COLLECTION_NAME,
       },
+      createdAt: Date,
       default: [],
-      required: true,
     },
   ],
   dislike: [
     {
-      type: {
-        user: {
-          type: Types.ObjectId,
-          ref: USER_COLLECTION_NAME,
-        },
-        createdAt: Date,
+      user: {
+        type: Types.ObjectId,
+        ref: USER_COLLECTION_NAME,
       },
+      createdAt: Date,
       default: [],
-      required: true,
     },
   ],
   views: [
     {
-      type: {
-        user: {
-          type: Types.ObjectId,
-          ref: USER_COLLECTION_NAME,
-        },
-        createdAt: Date,
+      user: {
+        type: Types.ObjectId,
+        ref: USER_COLLECTION_NAME,
       },
+      createdAt: Date,
       default: [],
-      required: true,
     },
   ],
   comments: [
     {
-      type: {
-        content: String,
-        createdBy: {
-          type: Types.ObjectId,
-          ref: USER_COLLECTION_NAME,
-        },
+      content: String,
+      createdBy: {
+        type: Types.ObjectId,
+        ref: USER_COLLECTION_NAME,
         createdAt: Date,
         editHistory: [
           {
@@ -107,7 +97,6 @@ const ideaSchema = new Schema({
           },
         ],
       },
-      required: true,
       default: [],
     },
   ],
@@ -118,11 +107,13 @@ const ideaSchema = new Schema({
       default: [],
     },
   ],
-  category: {
-    type: Types.ObjectId,
-    ref: CATEGORY_COLLECTION_NAME,
-    required: true,
-  },
+  category: [
+    {
+      type: Types.ObjectId,
+      ref: CATEGORY_COLLECTION_NAME,
+      default: [],
+    },
+  ],
   createdAt: {
     type: Date,
     required: true,
@@ -143,6 +134,13 @@ const ideaSchema = new Schema({
     required: true,
     ref: THREAD_COLLECTION_NAME,
   },
+  subscribers: [
+    {
+      type: Types.ObjectId,
+      ref: USER_COLLECTION_NAME,
+      default: [],
+    },
+  ],
 });
 
 export default model<IdeaModelInterface>(IDEA_COLLECTION_NAME, ideaSchema);

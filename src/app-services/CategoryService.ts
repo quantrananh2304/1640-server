@@ -30,6 +30,17 @@ class CategoryService implements ICategoryService {
 
     return category;
   }
+
+  async getCategoryById(_id: string): Promise<CategoryModelInterface> {
+    const category: CategoryModelInterface = await Category.findById(_id)
+      .populate({
+        path: "updatedBy",
+        select: "-__v -password -code -codeExpires",
+      })
+      .lean();
+
+    return category;
+  }
 }
 
 export default CategoryService;

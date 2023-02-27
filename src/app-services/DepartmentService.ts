@@ -89,6 +89,12 @@ class DepartmentService implements IDepartmentService {
         total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
     };
   }
+
+  async getDepartmentById(_id: string): Promise<DepartmentModelInterface> {
+    const department: DepartmentModelInterface = await Department.findById(_id);
+
+    return department;
+  }
 }
 
 export default DepartmentService;

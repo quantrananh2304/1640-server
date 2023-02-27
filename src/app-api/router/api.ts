@@ -1,11 +1,13 @@
 import AuthenticationController from "@app-api/controllers/AuthenticationController";
 import CategoryController from "@app-api/controllers/CategoryController";
 import DepartmentController from "@app-api/controllers/DepartmentController";
+import IdeaController from "@app-api/controllers/IdeaController";
 import ThreadController from "@app-api/controllers/ThreadController";
 import UserController from "@app-api/controllers/UserController";
 import AuthenticationMiddleware from "@app-api/middlewares/AuthenticationMiddleware";
 import CategoryMiddleware from "@app-api/middlewares/CategoryMiddleware";
 import DepartmentMiddleware from "@app-api/middlewares/DepartmentMiddleware";
+import IdeaMiddleware from "@app-api/middlewares/IdeaMiddleware";
 import ThreadMiddleware from "@app-api/middlewares/ThreadMiddleware";
 import UserMiddleware from "@app-api/middlewares/UserMiddleware";
 import checkToken, { checkAdmin } from "@app-api/middlewares/authorization";
@@ -38,6 +40,7 @@ const ThreadControllerInstance =
   container.get<ThreadController>(ThreadController);
 const CategoryControllerInstance =
   container.get<CategoryController>(CategoryController);
+const IdeaControllerInstance = container.get<IdeaController>(IdeaController);
 
 router.get("/test", (req, res) => {
   res.send({ foo: "bar" });
@@ -214,6 +217,17 @@ router.post(
   ParamsValidations.preventUnknownData,
   checkToken,
   CategoryControllerInstance.createCategory.bind(CategoryControllerInstance)
+);
+
+/// idea
+
+router.post(
+  "/idea/create",
+  IdeaMiddleware.create,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.createIdea.bind(IdeaControllerInstance)
 );
 
 router.use(function (req: Request, res: Response) {
