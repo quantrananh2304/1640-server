@@ -9,6 +9,8 @@ import DepartmentService from "@app-services/DepartmentService";
 import DepartmentController from "@app-api/controllers/DepartmentController";
 import ThreadController from "@app-api/controllers/ThreadController";
 import ThreadService from "@app-services/ThreadService";
+import CategoryController from "@app-api/controllers/CategoryController";
+import CategoryService from "@app-services/CategoryService";
 
 const container = new Container();
 
@@ -16,6 +18,7 @@ container.bind(AuthenticationController).toSelf();
 container.bind(UserController).toSelf();
 container.bind(DepartmentController).toSelf();
 container.bind(ThreadController).toSelf();
+container.bind(CategoryController).toSelf();
 
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<EventService>(TYPES.EventService).to(EventService);
@@ -24,5 +27,6 @@ container
   .bind<DepartmentService>(TYPES.DepartmentService)
   .to(DepartmentService);
 container.bind<ThreadService>(TYPES.ThreadService).to(ThreadService);
+container.bind<CategoryService>(TYPES.CategoryService).to(CategoryService);
 
 export { container };

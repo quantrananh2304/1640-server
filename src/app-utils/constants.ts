@@ -108,6 +108,16 @@ const CONSTANTS = {
       message: "Thread existed",
     },
 
+    CATEGORY_EXISTED: {
+      errorCode: "017",
+      message: "Category existed",
+    },
+
+    NOT_ADMIN_OR_QAM: {
+      errorCode: "018",
+      message: "Not an Admin or Quality Assurance Manager",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",
