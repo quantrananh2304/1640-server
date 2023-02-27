@@ -65,6 +65,7 @@ const ideaSchema = new Schema({
       },
     ],
     default: [],
+    _id: false,
   },
   dislike: {
     type: [
@@ -77,6 +78,7 @@ const ideaSchema = new Schema({
       },
     ],
     default: [],
+    _id: false,
   },
   views: {
     type: [
@@ -89,6 +91,7 @@ const ideaSchema = new Schema({
       },
     ],
     default: [],
+    _id: false,
   },
   comments: {
     type: [
@@ -106,11 +109,13 @@ const ideaSchema = new Schema({
               },
             ],
             default: [],
+            _id: false,
           },
         },
       },
     ],
     default: [],
+    _id: false,
   },
   documents: {
     type: [
@@ -121,12 +126,14 @@ const ideaSchema = new Schema({
       },
     ],
     default: [],
+    _id: false,
   },
   category: [
     {
       type: Types.ObjectId,
       ref: CATEGORY_COLLECTION_NAME,
       default: [],
+      _id: false,
     },
   ],
   createdAt: {
@@ -154,6 +161,7 @@ const ideaSchema = new Schema({
       type: Types.ObjectId,
       ref: USER_COLLECTION_NAME,
       default: [],
+      _id: false,
     },
   ],
 });

@@ -230,6 +230,15 @@ router.post(
   IdeaControllerInstance.createIdea.bind(IdeaControllerInstance)
 );
 
+router.put(
+  "/idea/:ideaId/:action",
+  IdeaMiddleware.likeDislikeIdea,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.likeDislikeIdea.bind(IdeaControllerInstance)
+);
+
 router.use(function (req: Request, res: Response) {
   return res.errorRes({
     errorCode: "40",
