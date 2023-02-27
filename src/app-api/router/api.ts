@@ -239,6 +239,24 @@ router.get(
   IdeaControllerInstance.getListIdea.bind(IdeaControllerInstance)
 );
 
+router.put(
+  "/idea/:ideaId/like-dislike/:action",
+  IdeaMiddleware.likeDislikeIdea,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.likeDislikeIdea.bind(IdeaControllerInstance)
+);
+
+router.put(
+  "/idea/:ideaId/view",
+  IdeaMiddleware.view,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.viewIdea.bind(IdeaControllerInstance)
+);
+
 router.use(function (req: Request, res: Response) {
   return res.errorRes({
     errorCode: "40",

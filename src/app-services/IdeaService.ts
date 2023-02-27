@@ -47,7 +47,16 @@ class IdeaService implements IIdeaService {
         path: "updatedBy",
         populate: "department",
         select: "-__v -password -code -codeExpires",
-      });
+      })
+      .populate({
+        path: "like.user",
+        select: "-__v -password -code -codeExpires",
+      })
+      .populate({
+        path: "dislike.user",
+        select: "-__v -password -code -codeExpires",
+      })
+      .lean();
 
     return idea;
   }
@@ -259,6 +268,95 @@ class IdeaService implements IIdeaService {
       totalPage:
         total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
     };
+  }
+
+  async likeDislikeIdea(
+    _id: string,
+    action: "like" | "dislike",
+    actor: string
+  ): Promise<IdeaModelInterface> {
+    const idea: IdeaModelInterface = await Idea.findById(_id);
+
+    const { like, dislike } = idea;
+
+    let update = {};
+
+    if (action === "like") {
+      if (like.map((item) => String(item.user)).includes(actor)) {
+        update = {
+          $pull: {
+            like: {
+              user: Types.ObjectId(actor),
+            },
+          },
+        };
+      } else {
+        update = {
+          $push: {
+            like: {
+              user: Types.ObjectId(actor),
+              createdAt: new Date(),
+            },
+          },
+
+          $pull: {
+            dislike: {
+              user: Types.ObjectId(actor),
+            },
+          },
+        };
+      }
+    } else {
+      if (dislike.map((item) => String(item.user)).includes(actor)) {
+        update = {
+          $pull: {
+            dislike: {
+              user: Types.ObjectId(actor),
+            },
+          },
+        };
+      } else {
+        update = {
+          $push: {
+            dislike: {
+              user: Types.ObjectId(actor),
+              createdAt: new Date(),
+            },
+          },
+
+          $pull: {
+            like: {
+              user: Types.ObjectId(actor),
+            },
+          },
+        };
+      }
+    }
+
+    const updatedIdea: IdeaModelInterface = await Idea.findByIdAndUpdate(
+      _id,
+      update,
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedIdea;
+  }
+
+  async viewIdea(_id: string, actor: string): Promise<IdeaModelInterface> {
+    const updatedIdea: IdeaModelInterface = await Idea.findByIdAndUpdate(
+      _id,
+      {
+        $push: {
+          views: {
+            user: Types.ObjectId(actor),
+            createdAt: new Date(),
+          },
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedIdea;
   }
 }
 

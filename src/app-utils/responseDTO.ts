@@ -159,6 +159,35 @@ interface CreateIdeaResponseDTO extends Omit<SignUpResponseDTO, "data"> {
   };
 }
 
+interface LikeDislikeIdeaResponseDTO extends Omit<SignUpResponseDTO, "data"> {
+  data: {
+    _id: string;
+    title: string;
+    description: string;
+    category: Array<CategoryModelInterface>;
+    createdAt: Date;
+    updatedAt: Date;
+    subscribers: Array<{ user: UserModelInterface; createdAt: Date }>;
+    documents: Array<{ contentType: string; name: string; url: string }>;
+    thread: ThreadModelInterface;
+    like: Array<{ user: UserModelInterface; createdAt: Date }>;
+    dislike: Array<{ user: UserModelInterface; createdAt: Date }>;
+    views: Array<{ user: UserModelInterface; createdAt: Date }>;
+    updatedBy: UserModelInterface;
+    comments: Array<{
+      content: string;
+      createdBy: UserModelInterface;
+      editHistory: Array<{
+        content: string;
+        updatedAt: Date;
+      }>;
+      createdAt: Date;
+    }>;
+  };
+}
+
+interface ViewIdeaResponseDTO extends RequestResetPasswordResponseDTO {}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -174,4 +203,6 @@ export type SuccessResponseDTOs =
   | GetListDepartmentResponseDTO
   | CreateThreadResponseDTO
   | CreateCategoryResponseDTO
-  | CreateIdeaResponseDTO;
+  | CreateIdeaResponseDTO
+  | LikeDislikeIdeaResponseDTO
+  | ViewIdeaResponseDTO;

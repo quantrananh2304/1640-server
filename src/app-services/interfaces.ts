@@ -180,4 +180,12 @@ export interface IIdeaService {
     page: number;
     totalPage: number;
   }>;
+
+  likeDislikeIdea(
+    _id: string,
+    action: "like" | "dislike",
+    actor: string
+  ): Promise<IdeaModelInterface>;
+
+  viewIdea(_id: string, actor: string): Promise<IdeaModelInterface>;
 }

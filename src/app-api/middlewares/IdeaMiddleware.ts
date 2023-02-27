@@ -1,6 +1,6 @@
 import { GET_LIST_IDEA_SORT } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { body, query } from "express-validator";
+import { body, param, query } from "express-validator";
 import { isValidObjectId } from "mongoose";
 
 const IdeaMiddleware = {
@@ -62,6 +62,28 @@ const IdeaMiddleware = {
         return true;
       })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.SORT_OPTION_INVALID),
+  ],
+
+  likeDislikeIdea: [
+    param("ideaId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((ideaId: string) => isValidObjectId(ideaId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+
+    param("action")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((action: string) => action === "like" || action === "dislike")
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.ACTION_INVALID),
+  ],
+
+  view: [
+    param("ideaId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((ideaId: string) => isValidObjectId(ideaId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
   ],
 };
 
