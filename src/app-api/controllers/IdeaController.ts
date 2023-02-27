@@ -50,31 +50,6 @@ class IdeaController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.THREAD_EXPIRED);
       }
 
-      // const asyncGetCategories = (categories: Array<string>) => {
-      //   const promises: Array<Promise<CategoryModelInterface>> = categories.map(
-      //     async (item: string) => {
-      //       const categoryDocument: CategoryModelInterface =
-      //         await this.categoryService.getCategoryById(item);
-
-      //       return categoryDocument;
-      //     }
-      //   );
-
-      //   return Promise.all(promises);
-      // };
-
-      // const categoryDocuments: Array<CategoryModelInterface> =
-      //   await asyncGetCategories(category);
-
-      // categoryDocuments.forEach((item: CategoryModelInterface) => {
-      //   if (!item) {
-      //     return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
-      //   }
-      //   if (item.status === CATEGORY_STATUS.INACTIVE) {
-      //     return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
-      //   }
-      // });
-
       category.map(async (item: string) => {
         const categoryDocument: CategoryModelInterface =
           await this.categoryService.getCategoryById(item);

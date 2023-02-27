@@ -33,7 +33,11 @@ export interface IdeaModelInterface extends BaseModelInterface {
       updatedAt: Date;
     }>;
   }>;
-  documents: Array<string>;
+  documents: Array<{
+    contentType: string;
+    name: string;
+    url: string;
+  }>;
   category: Array<string | Types.ObjectId>;
   thread: string | Types.ObjectId;
   subscribers: Array<string | Types.ObjectId>;
@@ -50,63 +54,74 @@ const ideaSchema = new Schema({
     required: true,
     default: "",
   },
-  like: [
-    {
-      user: {
-        type: Types.ObjectId,
-        ref: USER_COLLECTION_NAME,
-      },
-      createdAt: Date,
-      default: [],
-    },
-  ],
-  dislike: [
-    {
-      user: {
-        type: Types.ObjectId,
-        ref: USER_COLLECTION_NAME,
-      },
-      createdAt: Date,
-      default: [],
-    },
-  ],
-  views: [
-    {
-      user: {
-        type: Types.ObjectId,
-        ref: USER_COLLECTION_NAME,
-      },
-      createdAt: Date,
-      default: [],
-    },
-  ],
-  comments: [
-    {
-      content: String,
-      createdBy: {
-        type: Types.ObjectId,
-        ref: USER_COLLECTION_NAME,
+  like: {
+    type: [
+      {
+        user: {
+          type: Types.ObjectId,
+          ref: USER_COLLECTION_NAME,
+        },
         createdAt: Date,
-        editHistory: [
-          {
-            type: {
-              content: String,
-              updatedAt: Date(),
-            },
+      },
+    ],
+    default: [],
+  },
+  dislike: {
+    type: [
+      {
+        user: {
+          type: Types.ObjectId,
+          ref: USER_COLLECTION_NAME,
+        },
+        createdAt: Date,
+      },
+    ],
+    default: [],
+  },
+  views: {
+    type: [
+      {
+        user: {
+          type: Types.ObjectId,
+          ref: USER_COLLECTION_NAME,
+        },
+        createdAt: Date,
+      },
+    ],
+    default: [],
+  },
+  comments: {
+    type: [
+      {
+        content: String,
+        createdBy: {
+          type: Types.ObjectId,
+          ref: USER_COLLECTION_NAME,
+          createdAt: Date,
+          editHistory: {
+            type: [
+              {
+                content: String,
+                updatedAt: Date(),
+              },
+            ],
             default: [],
           },
-        ],
+        },
       },
-      default: [],
-    },
-  ],
-  documents: [
-    {
-      type: String,
-      required: true,
-      default: [],
-    },
-  ],
+    ],
+    default: [],
+  },
+  documents: {
+    type: [
+      {
+        contentType: String,
+        name: String,
+        url: String,
+      },
+    ],
+    default: [],
+  },
   category: [
     {
       type: Types.ObjectId,
