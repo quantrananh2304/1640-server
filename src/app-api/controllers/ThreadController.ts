@@ -39,7 +39,7 @@ class ThreadController {
         action: EVENT_ACTION.CREATE,
         schemaId: newThread._id,
         actor: req.headers.userId,
-        description: "/thread/created",
+        description: "/thread/create",
         createdAt: new Date(),
       });
 

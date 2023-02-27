@@ -7,6 +7,7 @@ import {
 import { Types } from "mongoose";
 import { DepartmentModelInterface } from "@app-repositories/models/Department";
 import { ThreadModelInterface } from "@app-repositories/models/Thread";
+import { CategoryModelInterface } from "@app-repositories/models/Category";
 
 export enum GET_LIST_USER_SORT {
   EMAIL_ASC = "EMAIL_ASC",
@@ -126,4 +127,10 @@ export interface IThreadService {
   ): Promise<ThreadModelInterface>;
 
   getThreadByName(name: string): Promise<ThreadModelInterface>;
+}
+
+export interface ICategoryService {
+  createCategory(name: string, actor: string): Promise<CategoryModelInterface>;
+
+  getCategoryByName(name: string): Promise<CategoryModelInterface>;
 }

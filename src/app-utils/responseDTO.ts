@@ -1,3 +1,4 @@
+import { CATEGORY_STATUS } from "@app-repositories/models/Category";
 import {
   DEPARTMENT_STATUS,
   DepartmentModelInterface,
@@ -114,6 +115,17 @@ interface CreateThreadResponseDTO extends Omit<SignUpResponseDTO, "data"> {
   };
 }
 
+interface CreateCategoryResponseDTO extends Omit<SignUpResponseDTO, "data"> {
+  data: {
+    name: string;
+    status: CATEGORY_STATUS;
+    createdAt: Date;
+    updatedAt: Date;
+    _id: string;
+    updatedBy: string;
+  };
+}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -127,4 +139,5 @@ export type SuccessResponseDTOs =
   | CreateDepartmentResponseDTO
   | GetListUserResponseDTO
   | GetListDepartmentResponseDTO
-  | CreateThreadResponseDTO;
+  | CreateThreadResponseDTO
+  | CreateCategoryResponseDTO;
