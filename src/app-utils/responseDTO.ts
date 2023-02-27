@@ -2,6 +2,7 @@ import {
   DEPARTMENT_STATUS,
   DepartmentModelInterface,
 } from "@app-repositories/models/Department";
+import { THREAD_STATUS } from "@app-repositories/models/Thread";
 import {
   USER_GENDER,
   USER_ROLE,
@@ -98,6 +99,21 @@ interface GetListDepartmentResponseDTO extends Omit<SignUpResponseDTO, "data"> {
   };
 }
 
+interface CreateThreadResponseDTO extends Omit<SignUpResponseDTO, "data"> {
+  data: {
+    name: string;
+    description: string;
+    note: string;
+    closureDate: Date;
+    finalClosureDate: Date;
+    status: THREAD_STATUS;
+    createdAt: Date;
+    updatedAt: Date;
+    _id: string;
+    updatedBy: string;
+  };
+}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -110,4 +126,5 @@ export type SuccessResponseDTOs =
   | RequestActivationCodeResponseDTO
   | CreateDepartmentResponseDTO
   | GetListUserResponseDTO
-  | GetListDepartmentResponseDTO;
+  | GetListDepartmentResponseDTO
+  | CreateThreadResponseDTO;

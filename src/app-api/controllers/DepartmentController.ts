@@ -1,10 +1,9 @@
-import { Request, Response, validateRequest } from "@app-helpers/http.extends";
+import { Request, Response } from "@app-helpers/http.extends";
 import { DepartmentModelInterface } from "@app-repositories/models/Department";
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
 import TYPES from "@app-repositories/types";
 import { IDepartmentService, IEventService } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { Result } from "express-validator";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -15,12 +14,6 @@ class DepartmentController {
 
   async createDepartment(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { name, note } = req.body;
 
       const department: DepartmentModelInterface =
@@ -58,12 +51,6 @@ class DepartmentController {
 
   async getListDepartment(req: Request, res: Response) {
     try {
-      const result: Result = validateRequest(req);
-
-      if (!result.isEmpty()) {
-        return res.errorRes({ errors: result.array() });
-      }
-
       const { page, limit, sort } = req.query;
 
       const department = await this.departmentService.getListDepartment({

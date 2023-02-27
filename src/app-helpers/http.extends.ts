@@ -1,6 +1,5 @@
 import { SuccessResponseDTOs } from "@app-utils/responseDTO";
 import { Response as ResponseEX, Request as RequestEX } from "express";
-import { validationResult, Result } from "express-validator";
 import { Types } from "mongoose";
 
 export type SuccessParamType = {
@@ -115,14 +114,4 @@ export interface Request extends RequestEX {
   url: string;
 
   baseUrl: string;
-}
-
-const errorFormatter = (error) => {
-  return error;
-};
-
-export function validateRequest(req: Request): Result {
-  const errors = validationResult(req).formatWith(errorFormatter);
-
-  return errors;
 }

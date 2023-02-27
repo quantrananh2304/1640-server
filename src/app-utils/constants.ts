@@ -103,6 +103,11 @@ const CONSTANTS = {
       message: "Department existed",
     },
 
+    THREAD_EXISTED: {
+      errorCode: "016",
+      message: "Thread existed",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",
@@ -128,6 +133,9 @@ const CONSTANTS = {
     CONFIRM_PASSWORD_DIFFERENT: "Confirm password not the same",
 
     SORT_OPTION_INVALID: "Sort option invalid",
+
+    FINAL_CLOSURE_DATE_NOTE_BEFORE_CLOSURE_DATE:
+      "Final closure date cannot before closure date",
   },
 };
 

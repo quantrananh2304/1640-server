@@ -6,6 +6,7 @@ export const THREAD_COLLECTION_NAME = "Threads";
 
 export enum THREAD_STATUS {
   ACTIVE = "ACTIVE",
+  SOFT_EXPIRED = "SOFT_EXPIRED",
   EXPIRED = "EXPIRED",
 }
 
@@ -36,7 +37,6 @@ const threadSchema = new Schema({
 
   note: {
     type: String,
-    required: true,
     default: "",
   },
 
