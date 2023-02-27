@@ -132,6 +132,23 @@ class IdeaService implements IIdeaService {
 
     return updatedIdea;
   }
+
+  async viewIdea(_id: string, actor: string): Promise<IdeaModelInterface> {
+    const updatedIdea: IdeaModelInterface = await Idea.findByIdAndUpdate(
+      _id,
+      {
+        $push: {
+          views: {
+            user: Types.ObjectId(actor),
+            createdAt: new Date(),
+          },
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedIdea;
+  }
 }
 
 export default IdeaService;

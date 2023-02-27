@@ -56,6 +56,14 @@ const IdeaMiddleware = {
       .custom((action: string) => action === "like" || action === "dislike")
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.ACTION_INVALID),
   ],
+
+  view: [
+    param("ideaId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((ideaId: string) => isValidObjectId(ideaId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+  ],
 };
 
 export default IdeaMiddleware;
