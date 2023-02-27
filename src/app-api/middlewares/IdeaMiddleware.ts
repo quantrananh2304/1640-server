@@ -1,6 +1,5 @@
 import CONSTANTS from "@app-utils/constants";
 import { body } from "express-validator";
-import _ from "lodash";
 import { isValidObjectId } from "mongoose";
 
 const IdeaMiddleware = {
@@ -19,7 +18,13 @@ const IdeaMiddleware = {
       .exists({ checkNull: true, checkFalsy: true })
       .isArray()
       .custom((documents: Array<any>) => {
-        return documents.every((item) => _.isString(item));
+        if (!documents.length) {
+          return true;
+        }
+
+        return documents.every(
+          (item) => item.contentType && item.name && item.url
+        );
       })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.DOCUMENT_INVALID),
 

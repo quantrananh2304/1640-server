@@ -26,7 +26,7 @@ class IdeaService implements IIdeaService {
       updatedAt: new Date(),
       updatedBy: Types.ObjectId(actor),
       comments: [],
-      documents: [],
+      documents: _idea.documents,
       subscribers: [],
     });
 
