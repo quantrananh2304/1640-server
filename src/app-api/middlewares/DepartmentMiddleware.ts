@@ -13,7 +13,7 @@ const DepartmentMiddleware = {
   ],
 
   getListUser: [
-    query("page").exists({ checkNull: true }).isInt({ min: 0 }),
+    query("page").exists({ checkNull: true }).isInt({ min: 1 }),
 
     query("limit")
       .exists({ checkFalsy: true, checkNull: true })

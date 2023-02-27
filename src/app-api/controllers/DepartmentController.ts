@@ -67,7 +67,7 @@ class DepartmentController {
       const { page, limit, sort } = req.query;
 
       const department = await this.departmentService.getListDepartment({
-        page: Number(page),
+        page: Number(page) - 1,
         limit: Number(limit),
         sort,
       });

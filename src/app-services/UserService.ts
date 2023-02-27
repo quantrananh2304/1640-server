@@ -311,7 +311,7 @@ class UserService implements IUserService {
     return {
       users,
       total,
-      page,
+      page: page + 1,
       totalPage:
         total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
     };

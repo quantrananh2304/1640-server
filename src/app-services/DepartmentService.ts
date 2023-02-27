@@ -84,7 +84,7 @@ class DepartmentService implements IDepartmentService {
     return {
       departments,
       total,
-      page,
+      page: page + 1,
       totalPage:
         total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
     };

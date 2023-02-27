@@ -249,7 +249,7 @@ class UserController {
       const { page, limit, sort } = req.query;
 
       const user = await this.userService.getListUser({
-        page: Number(page),
+        page: Number(page) - 1,
         limit: Number(limit),
         sort,
       });
