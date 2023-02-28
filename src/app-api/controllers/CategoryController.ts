@@ -1,13 +1,9 @@
 import { Request, Response } from "@app-helpers/http.extends";
 import { CategoryModelInterface } from "@app-repositories/models/Category";
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
-import { USER_ROLE, UserModelInterface } from "@app-repositories/models/User";
+import { USER_ROLE } from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
-import {
-  ICategoryService,
-  IEventService,
-  IUserService,
-} from "@app-services/interfaces";
+import { ICategoryService, IEventService } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
 import { inject, injectable } from "inversify";
 
@@ -16,25 +12,14 @@ class CategoryController {
   @inject(TYPES.CategoryService)
   private readonly categoryService: ICategoryService;
   @inject(TYPES.EventService) private readonly eventService: IEventService;
-  @inject(TYPES.UserService) private readonly userService: IUserService;
 
   async createCategory(req: Request, res: Response) {
     try {
-      const { userId } = req.headers;
-
-      const user: UserModelInterface = await this.userService.getUserById(
-        userId
-      );
-
-      if (!user) {
-        return res.internal({});
-      }
-
-      const { role } = user;
+      const { userId, userRole } = req.headers;
 
       if (
-        role !== USER_ROLE.ADMIN &&
-        role !== USER_ROLE.QUALITY_ASSURANCE_MANAGER
+        userRole !== USER_ROLE.ADMIN &&
+        userRole !== USER_ROLE.QUALITY_ASSURANCE_MANAGER
       ) {
         return res.forbidden(CONSTANTS.SERVER_ERROR.NOT_ADMIN_OR_QAM);
       }
@@ -77,14 +62,7 @@ class CategoryController {
   async getListCategory(req: Request, res: Response) {
     try {
       const { page, limit, sort } = req.query;
-      const { userRole, userId } = req.headers;
-
-      if (
-        userRole !== USER_ROLE.ADMIN &&
-        userRole !== USER_ROLE.QUALITY_ASSURANCE_MANAGER
-      ) {
-        return res.errorRes(CONSTANTS.SERVER_ERROR.AUTHORIZATION_FORBIDDEN);
-      }
+      const { userId } = req.headers;
 
       const category = await this.categoryService.getListCategory({
         page: Number(page) - 1,
