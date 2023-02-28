@@ -88,7 +88,7 @@ router.post(
 
 router.get(
   "/admin/department/list",
-  DepartmentMiddleware.getListUser,
+  DepartmentMiddleware.getListDepartment,
   ParamsValidations.validationRequest,
   ParamsValidations.preventUnknownData,
   checkToken,
@@ -217,6 +217,15 @@ router.post(
   ParamsValidations.preventUnknownData,
   checkToken,
   CategoryControllerInstance.createCategory.bind(CategoryControllerInstance)
+);
+
+router.get(
+  "/category/list",
+  CategoryMiddleware.getListCategory,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  CategoryControllerInstance.getListCategory.bind(CategoryControllerInstance)
 );
 
 /// idea

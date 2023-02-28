@@ -1,9 +1,6 @@
 import { RANDOM_TOKEN_SECRET } from "@app-configs";
 import { Request, Response } from "@app-helpers/http.extends";
-import User, {
-  USER_ROLE,
-  UserModelInterface,
-} from "@app-repositories/models/User";
+import { USER_ROLE } from "@app-repositories/models/User";
 import CONSTANTS from "@app-utils/constants";
 import { NextFunction } from "express";
 import jwt = require("jsonwebtoken");
@@ -19,6 +16,7 @@ export default async function checkToken(
     jwt.verify(token, RANDOM_TOKEN_SECRET, (err: Error, payload: any) => {
       if (payload) {
         req.headers["userId"] = payload.userId;
+        req.headers["userRole"] = payload.userRole;
         next();
       } else {
         if (err.name === "TokenExpiredError") {
@@ -44,15 +42,13 @@ export async function checkAdmin(
 
     jwt.verify(token, RANDOM_TOKEN_SECRET, (err: Error, payload: any) => {
       if (payload) {
-        const { userId } = payload;
+        const { userRole } = payload;
 
-        User.findById(userId).then((user: UserModelInterface) => {
-          if (USER_ROLE[user.role] === USER_ROLE.ADMIN) {
-            next();
-          } else {
-            return res.forbidden(CONSTANTS.SERVER_ERROR.ADMIN_ONLY);
-          }
-        });
+        if (USER_ROLE[userRole] === USER_ROLE.ADMIN) {
+          next();
+        } else {
+          return res.forbidden(CONSTANTS.SERVER_ERROR.ADMIN_ONLY);
+        }
       }
     });
   } catch (error) {

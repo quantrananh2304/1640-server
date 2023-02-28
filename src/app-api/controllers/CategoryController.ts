@@ -73,6 +73,46 @@ class CategoryController {
       return res.internal({ message: error.message });
     }
   }
+
+  async getListCategory(req: Request, res: Response) {
+    try {
+      const { page, limit, sort } = req.query;
+      const { userRole, userId } = req.headers;
+
+      if (
+        userRole !== USER_ROLE.ADMIN &&
+        userRole !== USER_ROLE.QUALITY_ASSURANCE_MANAGER
+      ) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.AUTHORIZATION_FORBIDDEN);
+      }
+
+      const category = await this.categoryService.getListCategory({
+        page: Number(page) - 1,
+        limit: Number(limit),
+        sort,
+      });
+
+      if (!category) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.CATEGORY,
+        action: EVENT_ACTION.READ,
+        schemaId: null,
+        actor: userId,
+        description: "/category/list",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({
+        data: category,
+      });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default CategoryController;
