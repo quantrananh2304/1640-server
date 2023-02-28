@@ -41,7 +41,7 @@ class AuthenticationController {
       }
 
       const token = jwt.sign(
-        { userId: String(user._id) },
+        { userId: String(user._id), userRole: user.role },
         RANDOM_TOKEN_SECRET,
         {
           expiresIn: "1d",

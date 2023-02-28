@@ -6,6 +6,7 @@ import {
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
 import { IdeaModelInterface } from "@app-repositories/models/Idea";
 import { ThreadModelInterface } from "@app-repositories/models/Thread";
+import { USER_ROLE } from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
 import {
   ICategoryService,
@@ -172,6 +173,156 @@ class IdeaController {
       });
 
       return res.successRes({ data: {} });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async addComment(req: Request, res: Response) {
+    try {
+      const { ideaId } = req.params;
+      const { content } = req.body;
+
+      const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
+        ideaId
+      );
+
+      if (!idea) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      const updatedIdea: IdeaModelInterface = await this.ideaService.addComment(
+        ideaId,
+        content,
+        req.headers.userId
+      );
+
+      if (!updatedIdea) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: updatedIdea._id,
+        actor: req.headers.userId,
+        description: "/idea/add-comment",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({ data: {} });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async deleteComment(req: Request, res: Response) {
+    try {
+      const { ideaId, commentId } = req.params;
+      const { userId, userRole } = req.headers;
+
+      const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
+        ideaId
+      );
+
+      if (!idea) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      const comment: any = idea.comments.filter(
+        (item) => String(item._id) === commentId
+      )[0];
+
+      if (!comment) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.COMMENT_NOT_EXISTED);
+      }
+
+      if (
+        userId !== String(comment.createdBy._id) &&
+        userRole !== USER_ROLE.ADMIN
+      ) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CANNOT_DELETE_OTHER_COMMENT);
+      }
+
+      const updatedIdea: IdeaModelInterface =
+        await this.ideaService.deleteComment(ideaId, commentId);
+
+      if (!updatedIdea) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.DELETE,
+        schemaId: updatedIdea._id,
+        actor: userId,
+        description: "/idea/comment/delete",
+        createdAt: new Date(),
+      });
+
+      const result: IdeaModelInterface = await this.ideaService.getIdeaById(
+        String(updatedIdea._id)
+      );
+
+      return res.successRes({ data: result });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async editComment(req: Request, res: Response) {
+    try {
+      const { ideaId, commentId } = req.params;
+      const { content } = req.body;
+      const { userId, userRole } = req.headers;
+
+      const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
+        ideaId
+      );
+
+      if (!idea) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      const comment: any = idea.comments.filter(
+        (item) => String(item._id) === commentId
+      )[0];
+
+      if (!comment) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.COMMENT_NOT_EXISTED);
+      }
+
+      if (
+        userId !== String(comment.createdBy._id) &&
+        userRole !== USER_ROLE.ADMIN
+      ) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CANNOT_EDIT_OTHER_COMMENT);
+      }
+
+      const updatedIdea: IdeaModelInterface =
+        await this.ideaService.editComment(ideaId, commentId, content);
+
+      if (!updatedIdea) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: updatedIdea._id,
+        actor: userId,
+        description: "/idea/comment/edit",
+        createdAt: new Date(),
+      });
+
+      const result: IdeaModelInterface = await this.ideaService.getIdeaById(
+        String(updatedIdea._id)
+      );
+
+      return res.successRes({ data: result });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });

@@ -143,6 +143,21 @@ const CONSTANTS = {
       message: "Idea not existed",
     },
 
+    COMMENT_NOT_EXISTED: {
+      errorCode: "024",
+      message: "Comment not existed",
+    },
+
+    CANNOT_DELETE_OTHER_COMMENT: {
+      errorCode: "025",
+      message: "Cannot delete others' comment",
+    },
+
+    CANNOT_EDIT_OTHER_COMMENT: {
+      errorCode: "026",
+      message: "Cannot edit others' comment",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",
