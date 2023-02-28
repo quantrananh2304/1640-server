@@ -208,6 +208,16 @@ router.put(
   UserControllerInstance.uploadAvatar.bind(UserControllerInstance)
 );
 
+router.put(
+  "/user/:userId/change-department",
+  UserMiddleware.changeDepartment,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  checkAdmin,
+  UserControllerInstance.changeDepartment.bind(UserControllerInstance)
+);
+
 // category
 
 router.post(

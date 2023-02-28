@@ -245,6 +245,61 @@ class UserController {
       return res.internal({ message: error.message });
     }
   }
+
+  async changeDepartment(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+      const { departmentId } = req.body;
+
+      const user: UserModelInterface = await this.userService.getUserById(
+        userId
+      );
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      const updatedUser = await this.userService.changeDepartment(
+        userId,
+        departmentId,
+        userId
+      );
+
+      if (!updatedUser) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: user._id,
+        actor: req.headers.userId,
+        description: "/user/change-department",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({
+        data: {
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          email: updatedUser.email,
+          avatar: updatedUser.avatar,
+          status: updatedUser.status,
+          role: updatedUser.role,
+          address: updatedUser.address,
+          dob: updatedUser.dob,
+          phoneNumber: updatedUser.phoneNumber,
+          gender: updatedUser.gender,
+          createdAt: updatedUser.createdAt,
+          _id: updatedUser._id,
+          department: user.department,
+        },
+      });
+
+    } catch (error) {
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default UserController;

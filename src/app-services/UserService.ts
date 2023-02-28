@@ -323,6 +323,35 @@ class UserService implements IUserService {
         total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
     };
   }
+
+  async changeDepartment(
+    userId: string, 
+    departmentId: string, 
+    actor: string
+  ): Promise<UserModelInterface> {
+    const currentUser = await this.getUserById(userId);
+
+    if (!currentUser) {
+      throw new ServerError(
+        CONSTANTS.SERVER_ERROR.USER_EXISTED.errorCode,
+        CONSTANTS.SERVER_ERROR.USER_EXISTED.message
+      );
+    }
+
+    const updatedUser: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          department: departmentId,
+          updatedAt: new Date(),
+          updatedBy: Types.ObjectId(actor),
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedUser;
+  }
 }
 
 export default UserService;
