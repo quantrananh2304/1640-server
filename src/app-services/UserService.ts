@@ -329,15 +329,6 @@ class UserService implements IUserService {
     departmentId: string, 
     actor: string
   ): Promise<UserModelInterface> {
-    const currentUser = await this.getUserById(userId);
-
-    if (!currentUser) {
-      throw new ServerError(
-        CONSTANTS.SERVER_ERROR.USER_EXISTED.errorCode,
-        CONSTANTS.SERVER_ERROR.USER_EXISTED.message
-      );
-    }
-
     const updatedUser: UserModelInterface = await User.findByIdAndUpdate(
       userId,
       {

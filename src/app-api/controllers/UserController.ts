@@ -151,22 +151,12 @@ class UserController {
         createdAt: new Date(),
       });
 
-      return res.successRes({
-        data: {
-          firstName: updatedUser.firstName,
-          lastName: updatedUser.lastName,
-          email: updatedUser.email,
-          avatar: updatedUser.avatar,
-          status: updatedUser.status,
-          role: updatedUser.role,
-          address: updatedUser.address,
-          dob: updatedUser.dob,
-          phoneNumber: updatedUser.phoneNumber,
-          gender: updatedUser.gender,
-          createdAt: updatedUser.createdAt,
-          _id: updatedUser._id,
-        },
-      });
+      const result: UserModelInterface = await this.userService.getUserById(
+        String(updatedUser._id)
+      );
+
+      return res.successRes({ data: result });
+      
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });
@@ -262,7 +252,7 @@ class UserController {
       const updatedUser = await this.userService.changeDepartment(
         userId,
         departmentId,
-        userId
+        req.headers.userId
       );
 
       if (!updatedUser) {
