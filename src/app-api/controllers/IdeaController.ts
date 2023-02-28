@@ -214,12 +214,16 @@ class IdeaController {
       const { ideaId } = req.params;
       const { content } = req.body;
 
-      const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
-        ideaId
-      );
+      const idea: any = await this.ideaService.getIdeaById(ideaId);
 
       if (!idea) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      const { thread } = idea;
+
+      if (isBefore(new Date(thread.closureDate), new Date())) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.THREAD_EXPIRED);
       }
 
       const updatedIdea: IdeaModelInterface = await this.ideaService.addComment(

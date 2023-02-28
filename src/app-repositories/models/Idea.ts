@@ -2,7 +2,7 @@ import { Schema, Types, model } from "mongoose";
 import { USER_COLLECTION_NAME, UserModelInterface } from "./User";
 import { CATEGORY_COLLECTION_NAME } from "./Category";
 import { BaseModelInterface } from "./BaseModelInterface";
-import { THREAD_COLLECTION_NAME } from "./Thread";
+import { THREAD_COLLECTION_NAME, ThreadModelInterface } from "./Thread";
 
 export const IDEA_COLLECTION_NAME = "Ideas";
 
@@ -41,7 +41,7 @@ export interface IdeaModelInterface extends BaseModelInterface {
     url: string;
   }>;
   category: Array<string | Types.ObjectId>;
-  thread: string | Types.ObjectId;
+  thread: string | Types.ObjectId | ThreadModelInterface;
   subscribers: Array<string | Types.ObjectId>;
 }
 
