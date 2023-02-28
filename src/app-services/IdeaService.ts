@@ -56,6 +56,10 @@ class IdeaService implements IIdeaService {
         path: "dislike.user",
         select: "-__v -password -code -codeExpires",
       })
+      .populate({
+        path: "comments.createdBy",
+        select: "-__v -password -code -codeExpires",
+      })
       .lean();
 
     return idea;
@@ -685,6 +689,92 @@ class IdeaService implements IIdeaService {
         },
       },
       { new: true, useFindAndModify: false }
+    );
+
+    return updatedIdea;
+  }
+
+  async addComment(
+    _id: string,
+    content: string,
+    actor: string
+  ): Promise<IdeaModelInterface> {
+    const updatedIdea: IdeaModelInterface = await Idea.findByIdAndUpdate(
+      _id,
+      {
+        $push: {
+          comments: {
+            content,
+            createdBy: Types.ObjectId(actor),
+            createdAt: new Date(),
+            editHistory: [],
+          },
+          $position: 0,
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedIdea;
+  }
+
+  async deleteComment(
+    ideaId: string,
+    commentId: string
+  ): Promise<IdeaModelInterface> {
+    const updatedIdea: IdeaModelInterface = await Idea.findByIdAndUpdate(
+      ideaId,
+      {
+        $pull: {
+          comments: {
+            _id: Types.ObjectId(commentId),
+          },
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedIdea;
+  }
+
+  async editComment(
+    ideaId: string,
+    commentId: string,
+    content: string
+  ): Promise<IdeaModelInterface> {
+    const idea: IdeaModelInterface = await Idea.findById(ideaId);
+
+    const comment = idea.comments.filter(
+      (item) => String(item._id) === commentId
+    )[0];
+
+    const { createdAt } = comment;
+
+    const history = {
+      content: comment.content,
+      createdAt,
+      updatedAt: new Date(),
+    };
+
+    const updatedIdea: IdeaModelInterface = await Idea.findOneAndUpdate(
+      {
+        _id: Types.ObjectId(ideaId),
+        "comments._id": Types.ObjectId(commentId),
+      },
+      {
+        $set: {
+          "comments.$.content": content,
+          "comments.$.createdAt": new Date(),
+        },
+        $push: {
+          "comments.$.editHistory": history,
+          $position: 0,
+        },
+      },
+      {
+        new: true,
+        useFindAndModify: false,
+      }
     );
 
     return updatedIdea;
