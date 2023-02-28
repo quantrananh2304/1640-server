@@ -71,10 +71,14 @@ export interface IUserService {
 
   updatePassword(
     userId: string | Types.ObjectId,
-    password: string
+    password: string,
+    actor: string
   ): Promise<UserModelInterface>;
 
-  generateNewCode(userId: string | Types.ObjectId): Promise<UserModelInterface>;
+  generateNewCode(
+    userId: string | Types.ObjectId,
+    actor: string
+  ): Promise<UserModelInterface>;
 
   update(
     userId: string | Types.ObjectId,
@@ -90,12 +94,14 @@ export interface IUserService {
 
   resetPassword(
     userId: string | Types.ObjectId,
-    password: string
+    password: string,
+    actor: string
   ): Promise<UserModelInterface>;
 
   uploadAvatar(
     userId: string | Types.ObjectId,
-    image: string
+    image: string,
+    actor: string
   ): Promise<UserModelInterface>;
 
   getListUser(filter: {

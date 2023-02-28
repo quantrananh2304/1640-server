@@ -183,7 +183,10 @@ class AuthenticationController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
       }
 
-      const updatedUser = await this.userService.generateNewCode(user._id);
+      const updatedUser = await this.userService.generateNewCode(
+        user._id,
+        String(user._id)
+      );
 
       const title = CONSTANTS.PASSWORD_RESET_REQUEST;
 
@@ -242,7 +245,8 @@ class AuthenticationController {
 
       const updatedUser = await this.userService.resetPassword(
         user._id,
-        password
+        password,
+        String(user._id)
       );
 
       if (!updatedUser) {
@@ -350,7 +354,7 @@ class AuthenticationController {
       }
 
       const newCodeUser: UserModelInterface =
-        await this.userService.generateNewCode(user._id);
+        await this.userService.generateNewCode(user._id, String(user._id));
 
       const title = CONSTANTS.ACCOUNT_ACTIVATION;
 

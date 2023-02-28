@@ -136,12 +136,17 @@ class UserService implements IUserService {
 
   async updatePassword(
     userId: string | Types.ObjectId,
-    password: string
+    password: string,
+    actor: string
   ): Promise<UserModelInterface> {
     const user: UserModelInterface = await User.findByIdAndUpdate(
       userId,
       {
-        $set: { password },
+        $set: {
+          password,
+          updatedAt: new Date(),
+          updatedBy: Types.ObjectId(actor),
+        },
       },
       { new: true, useFindAndModify: false }
     );
@@ -151,7 +156,8 @@ class UserService implements IUserService {
 
   async resetPassword(
     userId: string | Types.ObjectId,
-    password: string
+    password: string,
+    actor: string
   ): Promise<UserModelInterface> {
     const user: UserModelInterface = await User.findByIdAndUpdate(
       userId,
@@ -159,6 +165,8 @@ class UserService implements IUserService {
         $set: {
           password,
           codeExpires: new Date(),
+          updatedAt: new Date(),
+          updatedBy: Types.ObjectId(actor),
         },
       },
       { new: true, useFindAndModify: false }
@@ -168,7 +176,8 @@ class UserService implements IUserService {
   }
 
   async generateNewCode(
-    userId: string | Types.ObjectId
+    userId: string | Types.ObjectId,
+    actor: string
   ): Promise<UserModelInterface> {
     const code = stringGenerator(CONSTANTS.CODE_LENGTH);
 
@@ -180,6 +189,8 @@ class UserService implements IUserService {
           codeExpires: new Date(
             add(new Date(), CONSTANTS.DEFAULT_CODE_EXPIRES)
           ),
+          updatedAt: new Date(),
+          updatedBy: Types.ObjectId(actor),
         },
       },
       { new: true, useFindAndModify: false }
@@ -228,12 +239,17 @@ class UserService implements IUserService {
 
   async uploadAvatar(
     userId: string | Types.ObjectId,
-    image: string
+    image: string,
+    actor: string
   ): Promise<UserModelInterface> {
     const user: UserModelInterface = await User.findByIdAndUpdate(
       userId,
       {
-        $set: { avatar: image },
+        $set: {
+          avatar: image,
+          updatedAt: new Date(),
+          updatedBy: Types.ObjectId(actor),
+        },
       },
       { new: true, useFindAndModify: false }
     );
