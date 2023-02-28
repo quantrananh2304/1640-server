@@ -1,5 +1,5 @@
 import { Schema, Types, model } from "mongoose";
-import { USER_COLLECTION_NAME } from "./User";
+import { USER_COLLECTION_NAME, UserModelInterface } from "./User";
 import { CATEGORY_COLLECTION_NAME } from "./Category";
 import { BaseModelInterface } from "./BaseModelInterface";
 import { THREAD_COLLECTION_NAME } from "./Thread";
@@ -25,8 +25,9 @@ export interface IdeaModelInterface extends BaseModelInterface {
   updatedAt: Date;
   updatedBy: string | Types.ObjectId;
   comments: Array<{
+    _id: string | Types.ObjectId;
     content: string;
-    createdBy: string | Types.ObjectId;
+    createdBy: string | Types.ObjectId | UserModelInterface;
     createdAt: Date;
     editHistory: Array<{
       content: string;

@@ -56,6 +56,10 @@ class IdeaService implements IIdeaService {
         path: "dislike.user",
         select: "-__v -password -code -codeExpires",
       })
+      .populate({
+        path: "comments.createdBy",
+        select: "-__v -password -code -codeExpires",
+      })
       .lean();
 
     return idea;
@@ -166,6 +170,25 @@ class IdeaService implements IIdeaService {
             editHistory: [],
           },
           $position: 0,
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedIdea;
+  }
+
+  async deleteComment(
+    ideaId: string,
+    commentId: string
+  ): Promise<IdeaModelInterface> {
+    const updatedIdea: IdeaModelInterface = await Idea.findByIdAndUpdate(
+      ideaId,
+      {
+        $pull: {
+          comments: {
+            _id: Types.ObjectId(commentId),
+          },
         },
       },
       { new: true, useFindAndModify: false }

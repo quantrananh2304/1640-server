@@ -171,4 +171,6 @@ export interface IIdeaService {
     content: string,
     actor: string
   ): Promise<IdeaModelInterface>;
+
+  deleteComment(ideaId: string, commentId: string): Promise<IdeaModelInterface>;
 }

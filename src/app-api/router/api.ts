@@ -257,6 +257,15 @@ router.put(
   IdeaControllerInstance.addComment.bind(IdeaControllerInstance)
 );
 
+router.delete(
+  "/idea/:ideaId/comment/:commentId/delete",
+  IdeaMiddleware.deleteComment,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.deleteComment.bind(IdeaControllerInstance)
+);
+
 router.use(function (req: Request, res: Response) {
   return res.errorRes({
     errorCode: "40",
