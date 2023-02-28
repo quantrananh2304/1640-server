@@ -213,6 +213,8 @@ interface GetListCategoryResponseDTO extends Omit<SignUpResponseDTO, "data"> {
   };
 }
 
+interface GetIdeaResponseDTO extends LikeDislikeIdeaResponseDTO {}
+
 interface DeactivateCategoryResponseDTO
   extends RequestResetPasswordResponseDTO {}
 
@@ -239,4 +241,5 @@ export type SuccessResponseDTOs =
   | EditCommentResponseDTO
   | GetListIdeaResponseDTO
   | GetListCategoryResponseDTO
-  | DeactivateCategoryResponseDTO;
+  | DeactivateCategoryResponseDTO
+  | GetIdeaResponseDTO;

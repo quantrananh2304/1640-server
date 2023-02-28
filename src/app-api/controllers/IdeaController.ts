@@ -15,7 +15,7 @@ import {
   IThreadService,
 } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { isBefore } from "date-fns";
+import { isBefore, max } from "date-fns";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -357,6 +357,45 @@ class IdeaController {
       );
 
       return res.successRes({ data: result });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async getIdea(req: Request, res: Response) {
+    try {
+      const { ideaId } = req.query;
+      const { userId } = req.headers;
+      const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
+        ideaId
+      );
+
+      if (!idea) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.READ,
+        schemaId: idea._id,
+        actor: userId,
+        description: "/idea/get",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({
+        data: {
+          ...idea,
+          likeCount: idea.like.length,
+          dislikeCount: idea.dislike.length,
+          viewCount: idea.views.length,
+          commentsCount: idea.comments.length,
+          commentLastCreated: new Date(
+            max(idea.comments.map((item) => new Date(item.createdAt)))
+          ),
+        },
+      });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });

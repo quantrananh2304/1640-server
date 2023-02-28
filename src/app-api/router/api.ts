@@ -302,6 +302,15 @@ router.put(
   IdeaControllerInstance.editComment.bind(IdeaControllerInstance)
 );
 
+router.get(
+  "/idea/",
+  IdeaMiddleware.get,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.getIdea.bind(IdeaControllerInstance)
+);
+
 router.use(function (req: Request, res: Response) {
   return res.errorRes({
     errorCode: "40",

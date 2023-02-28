@@ -131,6 +131,14 @@ const IdeaMiddleware = {
       .isString()
       .isLength({ max: 255 }),
   ],
+
+  get: [
+    query("ideaId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((ideaId: string) => isValidObjectId(ideaId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+  ],
 };
 
 export default IdeaMiddleware;

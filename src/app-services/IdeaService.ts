@@ -50,16 +50,21 @@ class IdeaService implements IIdeaService {
       })
       .populate({
         path: "like.user",
-        select: "-__v -password -code -codeExpires",
+        select: "-__v -password -code -codeExpires -avatar",
       })
       .populate({
         path: "dislike.user",
-        select: "-__v -password -code -codeExpires",
+        select: "-__v -password -code -codeExpires -avatar",
       })
       .populate({
         path: "comments.createdBy",
         select: "-__v -password -code -codeExpires",
       })
+      .populate({
+        path: "views.user",
+        select: "-__v -password -code -codeExpires -avatar",
+      })
+      .select("-__v")
       .lean();
 
     return idea;

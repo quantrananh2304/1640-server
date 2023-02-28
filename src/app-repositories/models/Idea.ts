@@ -42,7 +42,7 @@ export interface IdeaModelInterface extends BaseModelInterface {
   }>;
   category: Array<string | Types.ObjectId>;
   thread: string | Types.ObjectId | ThreadModelInterface;
-  subscribers: Array<string | Types.ObjectId>;
+  subscribers: Array<{ user: string | Types.ObjectId; createdAt: Date }>;
 }
 
 const ideaSchema = new Schema({
