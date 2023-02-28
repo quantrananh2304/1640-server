@@ -26,6 +26,18 @@ export enum GET_LIST_DEPARTMENT_SORT {
   DATE_CREATED_DESC = "DATE_CREATED_DESC",
 }
 
+export enum GET_LIST_IDEA_SORT {
+  POPULARITY_ASC = "POPULARITY_ASC",
+  POPULARITY_DESC = "POPULARITY_DESC",
+  DATE_CREATED_ASC = "DATE_CREATED_ASC",
+  DATE_CREATED_DESC = "DATE_CREATED_DESC",
+  LATEST_COMMENT = "LATEST_COMMENT",
+  LIKE_ASC = "LIE_ASC",
+  LIKE_DESC = "LIKE_DESC",
+  DISLIKE_ASC = "DISLIKE_ASC",
+  DISLIKE_DESC = "DISLIKE_DESC",
+}
+
 export interface IUserService {
   createUser(_user: {
     firstName: string;
@@ -157,6 +169,17 @@ export interface IIdeaService {
   getIdeaByTitle(title: string): Promise<IdeaModelInterface>;
 
   getIdeaById(_id: string): Promise<IdeaModelInterface>;
+
+  getListIdea(filter: {
+    page: number;
+    limit: number;
+    sort: GET_LIST_IDEA_SORT;
+  }): Promise<{
+    ideas: Array<IdeaModelInterface>;
+    total: number;
+    page: number;
+    totalPage: number;
+  }>;
 
   likeDislikeIdea(
     _id: string,

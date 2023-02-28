@@ -99,6 +99,36 @@ class IdeaController {
     }
   }
 
+  async getListIdea(req: Request, res: Response) {
+    try {
+      const { page, limit, sort } = req.query;
+
+      const idea = await this.ideaService.getListIdea({
+        page: Number(page) - 1,
+        limit: Number(limit),
+        sort,
+      });
+
+      if (!idea) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.READ,
+        schemaId: null,
+        actor: req.headers.userId,
+        description: "/idea/list",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({ data: idea });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
   async likeDislikeIdea(req: Request, res: Response) {
     try {
       const { ideaId, action } = req.params;

@@ -230,6 +230,15 @@ router.post(
   IdeaControllerInstance.createIdea.bind(IdeaControllerInstance)
 );
 
+router.get(
+  "/idea/list",
+  IdeaMiddleware.getListIdea,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.getListIdea.bind(IdeaControllerInstance)
+);
+
 router.put(
   "/idea/:ideaId/like-dislike/:action",
   IdeaMiddleware.likeDislikeIdea,
