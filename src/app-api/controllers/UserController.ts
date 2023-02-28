@@ -35,7 +35,8 @@ class UserController {
 
       const updatedUser = await this.userService.updatePassword(
         userId,
-        password
+        password,
+        userId
       );
 
       if (!updatedUser) {
@@ -191,7 +192,7 @@ class UserController {
       const { img } = req.body;
 
       const updatedUser: UserModelInterface =
-        await this.userService.uploadAvatar(userId, img);
+        await this.userService.uploadAvatar(userId, img, req.headers.userId);
 
       if (!updatedUser) {
         return res.internal({});
