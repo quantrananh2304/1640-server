@@ -6,6 +6,7 @@ import {
   DEPARTMENT_STATUS,
   DepartmentModelInterface,
 } from "@app-repositories/models/Department";
+import { IdeaModelInterface } from "@app-repositories/models/Idea";
 import {
   THREAD_STATUS,
   ThreadModelInterface,
@@ -194,6 +195,15 @@ interface DeleteCommentResponseDTO extends LikeDislikeIdeaResponseDTO {}
 
 interface EditCommentResponseDTO extends LikeDislikeIdeaResponseDTO {}
 
+interface GetListIdeaResponseDTO extends Omit<SignUpResponseDTO, "data"> {
+  data: {
+    ideas: Array<IdeaModelInterface>;
+    total: number;
+    page: number;
+    totalPage: number;
+  };
+}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -214,4 +224,5 @@ export type SuccessResponseDTOs =
   | ViewIdeaResponseDTO
   | AddCommentResponseDTO
   | DeleteCommentResponseDTO
-  | EditCommentResponseDTO;
+  | EditCommentResponseDTO
+  | GetListIdeaResponseDTO;
