@@ -31,6 +31,7 @@ export interface IdeaModelInterface extends BaseModelInterface {
     createdAt: Date;
     editHistory: Array<{
       content: string;
+      createdAt: Date;
       updatedAt: Date;
     }>;
   }>;
@@ -108,10 +109,10 @@ const ideaSchema = new Schema({
             {
               content: String,
               updatedAt: Date,
+              createdAt: Date,
             },
           ],
           default: [],
-          _id: false,
         },
       },
     ],

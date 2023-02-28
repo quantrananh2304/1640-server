@@ -196,6 +196,49 @@ class IdeaService implements IIdeaService {
 
     return updatedIdea;
   }
+
+  async editComment(
+    ideaId: string,
+    commentId: string,
+    content: string
+  ): Promise<IdeaModelInterface> {
+    const idea: IdeaModelInterface = await Idea.findById(ideaId);
+
+    const comment = idea.comments.filter(
+      (item) => String(item._id) === commentId
+    )[0];
+
+    const { createdAt } = comment;
+
+    const history = {
+      content: comment.content,
+      createdAt,
+      updatedAt: new Date(),
+    };
+
+    const updatedIdea: IdeaModelInterface = await Idea.findOneAndUpdate(
+      {
+        _id: Types.ObjectId(ideaId),
+        "comments._id": Types.ObjectId(commentId),
+      },
+      {
+        $set: {
+          "comments.$.content": content,
+          "comments.$.createdAt": new Date(),
+        },
+        $push: {
+          "comments.$.editHistory": history,
+          $position: 0,
+        },
+      },
+      {
+        new: true,
+        useFindAndModify: false,
+      }
+    );
+
+    return updatedIdea;
+  }
 }
 
 export default IdeaService;
