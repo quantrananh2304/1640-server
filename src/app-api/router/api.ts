@@ -248,6 +248,15 @@ router.put(
   IdeaControllerInstance.viewIdea.bind(IdeaControllerInstance)
 );
 
+router.put(
+  "/idea/:ideaId/comment",
+  IdeaMiddleware.addComment,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.addComment.bind(IdeaControllerInstance)
+);
+
 router.use(function (req: Request, res: Response) {
   return res.errorRes({
     errorCode: "40",

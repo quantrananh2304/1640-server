@@ -177,6 +177,45 @@ class IdeaController {
       return res.internal({ message: error.message });
     }
   }
+
+  async addComment(req: Request, res: Response) {
+    try {
+      const { ideaId } = req.params;
+      const { content } = req.body;
+
+      const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
+        ideaId
+      );
+
+      if (!idea) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      const updatedIdea: IdeaModelInterface = await this.ideaService.addComment(
+        ideaId,
+        content,
+        req.headers.userId
+      );
+
+      if (!updatedIdea) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: updatedIdea._id,
+        actor: req.headers.userId,
+        description: "/idea/add-comment",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({ data: {} });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default IdeaController;

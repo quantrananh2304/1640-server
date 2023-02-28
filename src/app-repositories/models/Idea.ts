@@ -97,25 +97,24 @@ const ideaSchema = new Schema({
     type: [
       {
         content: String,
+        createdAt: Date,
         createdBy: {
           type: Types.ObjectId,
           ref: USER_COLLECTION_NAME,
-          createdAt: Date,
-          editHistory: {
-            type: [
-              {
-                content: String,
-                updatedAt: Date(),
-              },
-            ],
-            default: [],
-            _id: false,
-          },
+        },
+        editHistory: {
+          type: [
+            {
+              content: String,
+              updatedAt: Date,
+            },
+          ],
+          default: [],
+          _id: false,
         },
       },
     ],
     default: [],
-    _id: false,
   },
   documents: {
     type: [

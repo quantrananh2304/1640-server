@@ -165,4 +165,10 @@ export interface IIdeaService {
   ): Promise<IdeaModelInterface>;
 
   viewIdea(_id: string, actor: string): Promise<IdeaModelInterface>;
+
+  addComment(
+    _id: string,
+    content: string,
+    actor: string
+  ): Promise<IdeaModelInterface>;
 }

@@ -149,6 +149,30 @@ class IdeaService implements IIdeaService {
 
     return updatedIdea;
   }
+
+  async addComment(
+    _id: string,
+    content: string,
+    actor: string
+  ): Promise<IdeaModelInterface> {
+    const updatedIdea: IdeaModelInterface = await Idea.findByIdAndUpdate(
+      _id,
+      {
+        $push: {
+          comments: {
+            content,
+            createdBy: Types.ObjectId(actor),
+            createdAt: new Date(),
+            editHistory: [],
+          },
+          $position: 0,
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedIdea;
+  }
 }
 
 export default IdeaService;

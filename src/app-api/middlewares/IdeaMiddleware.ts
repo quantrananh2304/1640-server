@@ -64,6 +64,19 @@ const IdeaMiddleware = {
       .custom((ideaId: string) => isValidObjectId(ideaId))
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
   ],
+
+  addComment: [
+    param("ideaId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((ideaId: string) => isValidObjectId(ideaId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+
+    body("content")
+      .exists({ checkFalsy: true, checkNull: false })
+      .isString()
+      .isLength({ max: 255 }),
+  ],
 };
 
 export default IdeaMiddleware;
