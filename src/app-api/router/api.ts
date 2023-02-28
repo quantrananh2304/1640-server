@@ -228,6 +228,15 @@ router.get(
   CategoryControllerInstance.getListCategory.bind(CategoryControllerInstance)
 );
 
+router.put(
+  "/category/:categoryId/deactivate",
+  CategoryMiddleware.deactivate,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  CategoryControllerInstance.deactivateCategory.bind(CategoryControllerInstance)
+);
+
 /// idea
 
 router.post(

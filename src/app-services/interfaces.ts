@@ -170,6 +170,11 @@ export interface ICategoryService {
     page: number;
     totalPage: number;
   }>;
+
+  deactivateCategory(
+    _id: string,
+    actor: string
+  ): Promise<CategoryModelInterface>;
 }
 
 export interface IIdeaService {

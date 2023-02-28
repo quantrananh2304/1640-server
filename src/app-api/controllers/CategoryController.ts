@@ -91,6 +91,41 @@ class CategoryController {
       return res.internal({ message: error.message });
     }
   }
+
+  async deactivateCategory(req: Request, res: Response) {
+    try {
+      const { categoryId } = req.params;
+      const { userRole, userId } = req.headers;
+
+      if (
+        userRole !== USER_ROLE.ADMIN &&
+        userRole !== USER_ROLE.QUALITY_ASSURANCE_COORDINATOR
+      ) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.NOT_ADMIN_OR_QAM);
+      }
+
+      const updatedCategory: CategoryModelInterface =
+        await this.categoryService.deactivateCategory(categoryId, userId);
+
+      if (!updatedCategory) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.CATEGORY,
+        action: EVENT_ACTION.DELETE,
+        schemaId: updatedCategory._id,
+        actor: userId,
+        description: "/category/deactivate",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({ data: {} });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default CategoryController;

@@ -100,6 +100,26 @@ class CategoryService implements ICategoryService {
         total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
     };
   }
+
+  async deactivateCategory(
+    _id: string,
+    actor: string
+  ): Promise<CategoryModelInterface> {
+    const updatedCategory: CategoryModelInterface =
+      await Category.findByIdAndUpdate(
+        _id,
+        {
+          $set: {
+            status: CATEGORY_STATUS.INACTIVE,
+            updatedAt: new Date(),
+            updatedBy: Types.ObjectId(actor),
+          },
+        },
+        { new: true, useFindAndModify: false }
+      );
+
+    return updatedCategory;
+  }
 }
 
 export default CategoryService;

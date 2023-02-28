@@ -1,6 +1,7 @@
 import { GET_LIST_CATEGORY_SORT } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { body, query } from "express-validator";
+import { body, param, query } from "express-validator";
+import { isValidObjectId } from "mongoose";
 
 const CategoryMiddleware = {
   create: [
@@ -28,6 +29,14 @@ const CategoryMiddleware = {
         return true;
       })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.SORT_OPTION_INVALID),
+  ],
+
+  deactivate: [
+    param("categoryId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((ideaId: string) => isValidObjectId(ideaId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
   ],
 };
 
