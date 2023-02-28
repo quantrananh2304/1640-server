@@ -76,15 +76,6 @@ class UserService implements IUserService {
   }
 
   async activateUser(userId: string, actor?: any): Promise<UserModelInterface> {
-    const currentUser = await this.getUserById(userId);
-
-    if (!currentUser) {
-      throw new ServerError(
-        CONSTANTS.SERVER_ERROR.USER_EXISTED.errorCode,
-        CONSTANTS.SERVER_ERROR.USER_EXISTED.message
-      );
-    }
-
     const updatedUser: UserModelInterface = await User.findByIdAndUpdate(
       userId,
       {
