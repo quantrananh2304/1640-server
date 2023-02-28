@@ -204,6 +204,15 @@ interface GetListIdeaResponseDTO extends Omit<SignUpResponseDTO, "data"> {
   };
 }
 
+interface getListCategoryResponseDTO extends Omit<SignUpResponseDTO, "data"> {
+  data: {
+    categories: Array<CategoryModelInterface>;
+    total: number;
+    page: number;
+    totalPage: number;
+  };
+}
+
 export type SuccessResponseDTOs =
   | SignUpResponseDTO
   | ActivateUserAccountResponseDTO
@@ -225,4 +234,5 @@ export type SuccessResponseDTOs =
   | AddCommentResponseDTO
   | DeleteCommentResponseDTO
   | EditCommentResponseDTO
-  | GetListIdeaResponseDTO;
+  | GetListIdeaResponseDTO
+  | getListCategoryResponseDTO;

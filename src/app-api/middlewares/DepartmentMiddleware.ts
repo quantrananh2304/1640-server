@@ -12,7 +12,7 @@ const DepartmentMiddleware = {
     body("note").exists({ checkNull: true }).isString().isLength({ max: 255 }),
   ],
 
-  getListUser: [
+  getListDepartment: [
     query("page").exists({ checkNull: true }).isInt({ min: 1 }),
 
     query("limit")

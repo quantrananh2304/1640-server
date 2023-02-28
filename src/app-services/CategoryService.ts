@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { ICategoryService } from "./interfaces";
+import { GET_LIST_CATEGORY_SORT, ICategoryService } from "./interfaces";
 import Category, {
   CATEGORY_STATUS,
   CategoryModelInterface,
@@ -40,6 +40,65 @@ class CategoryService implements ICategoryService {
       .lean();
 
     return category;
+  }
+
+  async getListCategory(filter: {
+    page: number;
+    limit: number;
+    sort: GET_LIST_CATEGORY_SORT;
+  }): Promise<{
+    categories: CategoryModelInterface[];
+    total: number;
+    page: number;
+    totalPage: number;
+  }> {
+    const { page, limit } = filter;
+
+    const skip = page * limit;
+
+    let sort = {};
+
+    switch (filter.sort) {
+      case GET_LIST_CATEGORY_SORT.DATE_CRATED_DESC:
+        sort = {
+          createdAt: -1,
+        };
+        break;
+
+      case GET_LIST_CATEGORY_SORT.DATE_CREATED_ASC:
+        sort = {
+          createdAt: 1,
+        };
+        break;
+
+      case GET_LIST_CATEGORY_SORT.NAME_ASC:
+        sort = {
+          name: 1,
+        };
+        break;
+
+      case GET_LIST_CATEGORY_SORT.NAME_DESC:
+        sort = {
+          name: -1,
+        };
+        break;
+
+      default:
+        break;
+    }
+
+    const [categories, total] = await Promise.all([
+      Category.find({}).select("-__v").sort(sort).limit(limit).skip(skip),
+      Category.find({}).countDocuments(),
+    ]);
+
+    return {
+      categories,
+      total,
+      page: page + 1,
+      totalPage:
+        total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
+    };
   }
 }
 
