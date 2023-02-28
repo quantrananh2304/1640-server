@@ -144,6 +144,124 @@ class IdeaService implements IIdeaService {
       {
         $lookup: {
           from: "users",
+          localField: "comments.createdBy",
+          foreignField: "_id",
+          as: "commentedBy",
+        },
+      },
+
+      {
+        $addFields: {
+          comments: {
+            $map: {
+              input: "$comments",
+              in: {
+                $mergeObjects: [
+                  "$$this",
+                  {
+                    createdBy: {
+                      _id: {
+                        $arrayElemAt: [
+                          "$commentedBy._id",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      firstName: {
+                        $arrayElemAt: [
+                          "$commentedBy.firstName",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      lastName: {
+                        $arrayElemAt: [
+                          "$commentedBy.lastName",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      email: {
+                        $arrayElemAt: [
+                          "$commentedBy.email",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      status: {
+                        $arrayElemAt: [
+                          "$commentedBy.status",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      role: {
+                        $arrayElemAt: [
+                          "$commentedBy.role",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      address: {
+                        $arrayElemAt: [
+                          "$commentedBy.address",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      dob: {
+                        $arrayElemAt: [
+                          "$commentedBy.dob",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      phoneNumber: {
+                        $arrayElemAt: [
+                          "$commentedBy.phoneNumber",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      gender: {
+                        $arrayElemAt: [
+                          "$commentedBy.gender",
+                          {
+                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          commentedBy: "$$REMOVE",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
           localField: "like.user",
           foreignField: "_id",
           as: "likeUsers",
@@ -534,21 +652,19 @@ class IdeaService implements IIdeaService {
 
       {
         $project: {
+          _id: 1,
           title: 1,
           createdAt: 1,
           like: 1,
           dislike: 1,
-          views: {
-            user: 1,
-            createdAt: 1,
-          },
+          views: 1,
           updatedAt: 1,
           updatedBy: 1,
           documents: 1,
           category: 1,
           thread: 1,
           subscribers: 1,
-          _id: 1,
+          comments: 1,
 
           dislikeCount: {
             $cond: {
@@ -574,12 +690,16 @@ class IdeaService implements IIdeaService {
             },
           },
 
-          commentLastCreated: {
+          commentsCount: {
             $cond: {
               if: { $isArray: "$comments" },
-              then: { $max: "$comments.updatedAt" },
-              else: null,
+              then: { $size: "$comments" },
+              else: 0,
             },
+          },
+
+          commentLastCreated: {
+            $max: "$comments.createdAt",
           },
         },
       },
