@@ -139,6 +139,334 @@ class IdeaService implements IIdeaService {
     const aggregation = [
       {
         $lookup: {
+          from: "users",
+          localField: "like.user",
+          foreignField: "_id",
+          as: "likeUsers",
+        },
+      },
+
+      {
+        $addFields: {
+          like: {
+            $map: {
+              input: "$like",
+              in: {
+                $mergeObjects: [
+                  "$$this",
+                  {
+                    user: {
+                      _id: {
+                        $arrayElemAt: [
+                          "$likeUsers._id",
+                          { $indexOfArray: ["$likeUsers._id", "$$this.user"] },
+                        ],
+                      },
+
+                      firstName: {
+                        $arrayElemAt: [
+                          "$likeUsers.firstName",
+                          { $indexOfArray: ["$likeUsers._id", "$$this.user"] },
+                        ],
+                      },
+
+                      lastName: {
+                        $arrayElemAt: [
+                          "$likeUsers.lastName",
+                          {
+                            $indexOfArray: ["$likeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      email: {
+                        $arrayElemAt: [
+                          "$likeUsers.email",
+                          {
+                            $indexOfArray: ["$likeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      status: {
+                        $arrayElemAt: [
+                          "$likeUsers.status",
+                          {
+                            $indexOfArray: ["$likeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      role: {
+                        $arrayElemAt: [
+                          "$likeUsers.role",
+                          { $indexOfArray: ["$likeUsers._id", "$$this.user"] },
+                        ],
+                      },
+
+                      address: {
+                        $arrayElemAt: [
+                          "$likeUsers.address",
+                          {
+                            $indexOfArray: ["$likeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      dob: {
+                        $arrayElemAt: [
+                          "$likeUsers.dob",
+                          { $indexOfArray: ["$likeUsers._id", "$$this.user"] },
+                        ],
+                      },
+
+                      phoneNumber: {
+                        $arrayElemAt: [
+                          "$likeUsers.phoneNumber",
+                          {
+                            $indexOfArray: ["$likeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      gender: {
+                        $arrayElemAt: [
+                          "$likeUsers.gender",
+                          {
+                            $indexOfArray: ["$likeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          likeUsers: "$$REMOVE",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "dislike.user",
+          foreignField: "_id",
+          as: "dislikeUsers",
+        },
+      },
+
+      {
+        $addFields: {
+          dislike: {
+            $map: {
+              input: "$dislike",
+              in: {
+                $mergeObjects: [
+                  "$$this",
+                  {
+                    user: {
+                      _id: {
+                        $arrayElemAt: [
+                          "$dislikeUsers._id",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      firstName: {
+                        $arrayElemAt: [
+                          "$dislikeUsers.firstName",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      lastName: {
+                        $arrayElemAt: [
+                          "$dislikeUsers.lastName",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      email: {
+                        $arrayElemAt: [
+                          "$dislikeUsers.email",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      status: {
+                        $arrayElemAt: [
+                          "$dislikeUsers.status",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      role: {
+                        $arrayElemAt: [
+                          "$dislikeUsers.role",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      address: {
+                        $arrayElemAt: [
+                          "$dislikeUsers.address",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      dob: {
+                        $arrayElemAt: [
+                          "$dislikeUsers.dob",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      phoneNumber: {
+                        $arrayElemAt: [
+                          "$dislikeUsers.phoneNumber",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      gender: {
+                        $arrayElemAt: [
+                          "$dislikeUsers.gender",
+                          {
+                            $indexOfArray: ["$dislikeUsers._id", "$$this.user"],
+                          },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          dislikeUsers: "$$REMOVE",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "views.user",
+          foreignField: "_id",
+          as: "users",
+        },
+      },
+
+      {
+        $addFields: {
+          views: {
+            $map: {
+              input: "$views",
+              in: {
+                $mergeObjects: [
+                  "$$this",
+                  {
+                    user: {
+                      _id: {
+                        $arrayElemAt: [
+                          "$users._id",
+                          { $indexOfArray: ["$users._id", "$$this.user"] },
+                        ],
+                      },
+
+                      firstName: {
+                        $arrayElemAt: [
+                          "$users.firstName",
+                          { $indexOfArray: ["$users._id", "$$this.user"] },
+                        ],
+                      },
+
+                      lastName: {
+                        $arrayElemAt: [
+                          "$users.lastName",
+                          { $indexOfArray: ["$users._id", "$$this.user"] },
+                        ],
+                      },
+
+                      email: {
+                        $arrayElemAt: [
+                          "$users.email",
+                          { $indexOfArray: ["$users._id", "$$this.user"] },
+                        ],
+                      },
+
+                      status: {
+                        $arrayElemAt: [
+                          "$users.status",
+                          { $indexOfArray: ["$users._id", "$$this.user"] },
+                        ],
+                      },
+
+                      role: {
+                        $arrayElemAt: [
+                          "$users.role",
+                          { $indexOfArray: ["$users._id", "$$this.user"] },
+                        ],
+                      },
+
+                      address: {
+                        $arrayElemAt: [
+                          "$users.address",
+                          { $indexOfArray: ["$users._id", "$$this.user"] },
+                        ],
+                      },
+
+                      dob: {
+                        $arrayElemAt: [
+                          "$users.dob",
+                          { $indexOfArray: ["$users._id", "$$this.user"] },
+                        ],
+                      },
+
+                      phoneNumber: {
+                        $arrayElemAt: [
+                          "$users.phoneNumber",
+                          {
+                            $indexOfArray: ["$users._id", "$$this.user"],
+                          },
+                        ],
+                      },
+
+                      gender: {
+                        $arrayElemAt: [
+                          "$users.gender",
+                          { $indexOfArray: ["$users._id", "$$this.user"] },
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          users: "$$REMOVE",
+        },
+      },
+
+      {
+        $lookup: {
           from: "threads",
           localField: "thread",
           foreignField: "_id",
@@ -206,7 +534,10 @@ class IdeaService implements IIdeaService {
           createdAt: 1,
           like: 1,
           dislike: 1,
-          views: 1,
+          views: {
+            user: 1,
+            createdAt: 1,
+          },
           updatedAt: 1,
           updatedBy: 1,
           documents: 1,

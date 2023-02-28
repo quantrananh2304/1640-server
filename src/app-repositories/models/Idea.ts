@@ -115,7 +115,6 @@ const ideaSchema = new Schema({
       },
     ],
     default: [],
-    _id: false,
   },
   documents: {
     type: [
