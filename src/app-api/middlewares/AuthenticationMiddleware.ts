@@ -181,6 +181,16 @@ const AuthenticationMiddleware = {
       })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.EMAIL_FORMAT_NOT_VALID),
   ],
+
+  changeDepartment: [
+    param("userId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .custom((userId: string) => isValidObjectId(userId)),
+
+    body("departmentId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString(),
+  ],
 };
 
 export default AuthenticationMiddleware;

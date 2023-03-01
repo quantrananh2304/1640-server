@@ -72,6 +72,18 @@ router.put(
   )
 );
 
+router.put(
+  "/admin/auth/:userId/change-department",
+  AuthenticationMiddleware.changeDepartment,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  checkAdmin,
+  AuthenticationControllerInstance.changeDepartment.bind(
+    AuthenticationControllerInstance
+  )
+);
+
 /// department
 
 router.post(
@@ -206,16 +218,6 @@ router.put(
   checkToken,
   // upload.single("picture"),
   UserControllerInstance.uploadAvatar.bind(UserControllerInstance)
-);
-
-router.put(
-  "/auth/:userId/change-department",
-  UserMiddleware.changeDepartment,
-  ParamsValidations.validationRequest,
-  ParamsValidations.preventUnknownData,
-  checkToken,
-  checkAdmin,
-  UserControllerInstance.changeDepartment.bind(UserControllerInstance)
 );
 
 // category
