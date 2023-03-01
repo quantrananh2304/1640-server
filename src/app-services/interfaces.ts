@@ -116,10 +116,10 @@ export interface IUserService {
   }>;
 
   changeDepartment(
-    userId: string, 
-    departmentId: string, 
+    userId: string,
+    departmentId: string,
     actor: string
-  ):Promise<UserModelInterface>;
+  ): Promise<UserModelInterface>;
 }
 
 export interface IEventService {

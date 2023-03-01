@@ -70,6 +70,7 @@ class UserService implements IUserService {
   async getUserById(userId: string): Promise<UserModelInterface> {
     const user: UserModelInterface = await User.findById(Types.ObjectId(userId))
       .populate({ path: "department" })
+      .select("-__v -password -code -codeExpires")
       .lean();
 
     return user;
@@ -325,8 +326,8 @@ class UserService implements IUserService {
   }
 
   async changeDepartment(
-    userId: string, 
-    departmentId: string, 
+    userId: string,
+    departmentId: string,
     actor: string
   ): Promise<UserModelInterface> {
     const updatedUser: UserModelInterface = await User.findByIdAndUpdate(
