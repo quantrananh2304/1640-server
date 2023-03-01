@@ -209,7 +209,7 @@ router.put(
 );
 
 router.put(
-  "/user/:userId/change-department",
+  "/auth/:userId/change-department",
   UserMiddleware.changeDepartment,
   ParamsValidations.validationRequest,
   ParamsValidations.preventUnknownData,
