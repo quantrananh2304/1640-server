@@ -1,16 +1,23 @@
 import { Request, Response } from "@app-helpers/http.extends";
 import { USER_STATUS, UserModelInterface } from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
-import { IEventService, IUserService } from "@app-services/interfaces";
+import {
+  IDepartmentService,
+  IEventService,
+  IUserService,
+} from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
 import { inject, injectable } from "inversify";
 import bcrypt = require("bcryptjs");
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
+import { DepartmentModelInterface } from "@app-repositories/models/Department";
 
 @injectable()
 class UserController {
   @inject(TYPES.UserService) private readonly userService: IUserService;
   @inject(TYPES.EventService) private readonly eventService: IEventService;
+  @inject(TYPES.DepartmentService)
+  private readonly departmentService: IDepartmentService;
 
   async changePassword(req: Request, res: Response) {
     try {
@@ -240,12 +247,21 @@ class UserController {
       const { userId } = req.params;
       const { departmentId } = req.body;
 
-      const user: UserModelInterface = await this.userService.getUserById(
-        userId
-      );
+      const user: any = await this.userService.getUserById(userId);
 
       if (!user) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      const department: DepartmentModelInterface =
+        await this.departmentService.getDepartmentById(departmentId);
+
+      if (!department) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.DEPARTMENT_NOT_EXISTED);
+      }
+
+      if (String(user.department._id) === String(department._id)) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_ALREADY_IN_DEPARTMENT);
       }
 
       const updatedUser = await this.userService.changeDepartment(
