@@ -116,7 +116,7 @@ export interface IUserService {
   }>;
 
   changeDepartment(
-    userId: string,
+    userId: string | Types.ObjectId,
     departmentId: string,
     actor: string
   ): Promise<UserModelInterface>;

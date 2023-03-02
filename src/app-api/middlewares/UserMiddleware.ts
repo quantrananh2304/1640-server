@@ -103,6 +103,16 @@ const UserMiddleware = {
       })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.SORT_OPTION_INVALID),
   ],
+  
+  changeDepartment: [
+    param("userId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .custom((userId: string) => isValidObjectId(userId)),
+
+    body("departmentId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString(),
+  ],
 };
 
 export default UserMiddleware;
