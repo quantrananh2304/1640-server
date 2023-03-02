@@ -72,8 +72,6 @@ router.put(
   )
 );
 
-
-
 /// department
 
 router.post(
@@ -113,15 +111,13 @@ router.get(
 );
 
 router.put(
-  "/admin/:userId/change-department",
+  "/admin/user/:userId/change-department",
   UserMiddleware.changeDepartment,
   ParamsValidations.validationRequest,
   ParamsValidations.preventUnknownData,
   checkToken,
   checkAdmin,
-  UserControllerInstance.changeDepartment.bind(
-    UserControllerInstance
-  )
+  UserControllerInstance.changeDepartment.bind(UserControllerInstance)
 );
 
 /// thread

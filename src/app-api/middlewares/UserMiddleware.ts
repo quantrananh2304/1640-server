@@ -103,7 +103,7 @@ const UserMiddleware = {
       })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.SORT_OPTION_INVALID),
   ],
-  
+
   changeDepartment: [
     param("userId")
       .exists({ checkFalsy: true, checkNull: true })

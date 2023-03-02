@@ -158,6 +158,16 @@ const CONSTANTS = {
       message: "Cannot edit others' comment",
     },
 
+    DEPARTMENT_NOT_EXISTED: {
+      errorCode: "027",
+      message: "Department not existed",
+    },
+
+    USER_ALREADY_IN_DEPARTMENT: {
+      errorCode: "028",
+      message: "User already in this department",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",
