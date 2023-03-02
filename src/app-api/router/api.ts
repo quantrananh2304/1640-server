@@ -72,18 +72,6 @@ router.put(
   )
 );
 
-router.put(
-  "/admin/auth/:userId/change-department",
-  AuthenticationMiddleware.changeDepartment,
-  ParamsValidations.validationRequest,
-  ParamsValidations.preventUnknownData,
-  checkToken,
-  checkAdmin,
-  AuthenticationControllerInstance.changeDepartment.bind(
-    AuthenticationControllerInstance
-  )
-);
-
 /// department
 
 router.post(
@@ -120,6 +108,16 @@ router.get(
   checkToken,
   checkAdmin,
   UserControllerInstance.getListUser.bind(UserControllerInstance)
+);
+
+router.put(
+  "/admin/user/:userId/change-department",
+  UserMiddleware.changeDepartment,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  checkAdmin,
+  UserControllerInstance.changeDepartment.bind(UserControllerInstance)
 );
 
 /// thread

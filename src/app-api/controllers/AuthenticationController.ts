@@ -384,48 +384,6 @@ class AuthenticationController {
       return res.internal({ message: error.message });
     }
   }
-
-  async changeDepartment(req: Request, res: Response) {
-    try {
-      const { userId } = req.params;
-      const { departmentId } = req.body;
-
-      const user: UserModelInterface = await this.userService.getUserById(
-        userId
-      );
-
-      if (!user) {
-        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
-      }
-
-      const updatedUser = await this.userService.changeDepartment(
-        userId,
-        departmentId,
-        req.headers.userId
-      );
-
-      if (!updatedUser) {
-        return res.internal({});
-      }
-
-      await this.eventService.createEvent({
-        schema: EVENT_SCHEMA.USER,
-        action: EVENT_ACTION.UPDATE,
-        schemaId: user._id,
-        actor: req.headers.userId,
-        description: "/user/change-department",
-        createdAt: new Date(),
-      });
-
-      const result: UserModelInterface = await this.userService.getUserById(
-        String(updatedUser._id)
-      );
-
-      return res.successRes({ data: result });
-    } catch (error) {
-      return res.internal({ message: error.message });
-    }
-  }
 }
 
 export default AuthenticationController;
