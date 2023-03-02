@@ -1,16 +1,23 @@
 import { Request, Response } from "@app-helpers/http.extends";
 import { USER_STATUS, UserModelInterface } from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
-import { IEventService, IUserService } from "@app-services/interfaces";
+import {
+  IDepartmentService,
+  IEventService,
+  IUserService,
+} from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
 import { inject, injectable } from "inversify";
 import bcrypt = require("bcryptjs");
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
+import { DepartmentModelInterface } from "@app-repositories/models/Department";
 
 @injectable()
 class UserController {
   @inject(TYPES.UserService) private readonly userService: IUserService;
   @inject(TYPES.EventService) private readonly eventService: IEventService;
+  @inject(TYPES.DepartmentService)
+  private readonly departmentService: IDepartmentService;
 
   async changePassword(req: Request, res: Response) {
     try {
@@ -151,22 +158,11 @@ class UserController {
         createdAt: new Date(),
       });
 
-      return res.successRes({
-        data: {
-          firstName: updatedUser.firstName,
-          lastName: updatedUser.lastName,
-          email: updatedUser.email,
-          avatar: updatedUser.avatar,
-          status: updatedUser.status,
-          role: updatedUser.role,
-          address: updatedUser.address,
-          dob: updatedUser.dob,
-          phoneNumber: updatedUser.phoneNumber,
-          gender: updatedUser.gender,
-          createdAt: updatedUser.createdAt,
-          _id: updatedUser._id,
-        },
-      });
+      const result: UserModelInterface = await this.userService.getUserById(
+        String(updatedUser._id)
+      );
+
+      return res.successRes({ data: result });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });
@@ -242,6 +238,57 @@ class UserController {
       });
     } catch (error) {
       console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async changeDepartment(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+      const { departmentId } = req.body;
+
+      const user: any = await this.userService.getUserById(userId);
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      const department: DepartmentModelInterface =
+        await this.departmentService.getDepartmentById(departmentId);
+
+      if (!department) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.DEPARTMENT_NOT_EXISTED);
+      }
+
+      if (String(user.department._id) === String(department._id)) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_ALREADY_IN_DEPARTMENT);
+      }
+
+      const updatedUser = await this.userService.changeDepartment(
+        userId,
+        departmentId,
+        req.headers.userId
+      );
+
+      if (!updatedUser) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: user._id,
+        actor: req.headers.userId,
+        description: "/user/change-department",
+        createdAt: new Date(),
+      });
+
+      const result: UserModelInterface = await this.userService.getUserById(
+        String(updatedUser._id)
+      );
+
+      return res.successRes({ data: result });
+    } catch (error) {
       return res.internal({ message: error.message });
     }
   }

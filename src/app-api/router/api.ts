@@ -110,6 +110,16 @@ router.get(
   UserControllerInstance.getListUser.bind(UserControllerInstance)
 );
 
+router.put(
+  "/admin/user/:userId/change-department",
+  UserMiddleware.changeDepartment,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  checkAdmin,
+  UserControllerInstance.changeDepartment.bind(UserControllerInstance)
+);
+
 /// thread
 
 router.post(

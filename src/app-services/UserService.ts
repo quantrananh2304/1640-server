@@ -70,6 +70,7 @@ class UserService implements IUserService {
   async getUserById(userId: string): Promise<UserModelInterface> {
     const user: UserModelInterface = await User.findById(Types.ObjectId(userId))
       .populate({ path: "department" })
+      .select("-__v -password -code -codeExpires")
       .lean();
 
     return user;
@@ -322,6 +323,26 @@ class UserService implements IUserService {
       totalPage:
         total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
     };
+  }
+
+  async changeDepartment(
+    userId: string,
+    departmentId: string,
+    actor: string
+  ): Promise<UserModelInterface> {
+    const updatedUser: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          department: departmentId,
+          updatedAt: new Date(),
+          updatedBy: Types.ObjectId(actor),
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedUser;
   }
 }
 

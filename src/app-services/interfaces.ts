@@ -114,6 +114,12 @@ export interface IUserService {
     page: number;
     totalPage: number;
   }>;
+
+  changeDepartment(
+    userId: string,
+    departmentId: string,
+    actor: string
+  ): Promise<UserModelInterface>;
 }
 
 export interface IEventService {
