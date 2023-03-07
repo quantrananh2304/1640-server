@@ -162,6 +162,8 @@ class UserController {
         String(updatedUser._id)
       );
 
+      delete result.password;
+
       return res.successRes({ data: result });
     } catch (error) {
       console.log("error", error);
@@ -286,6 +288,8 @@ class UserController {
       const result: UserModelInterface = await this.userService.getUserById(
         String(updatedUser._id)
       );
+
+      delete result.password;
 
       return res.successRes({ data: result });
     } catch (error) {

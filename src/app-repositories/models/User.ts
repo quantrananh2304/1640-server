@@ -37,12 +37,6 @@ export interface UserModelInterface extends BaseModelInterface {
   dob: Date;
   phoneNumber: string;
   gender: USER_GENDER | string;
-  accountStatusUpdate: Array<{
-    status: USER_STATUS;
-    reason: string;
-    updatedAt: Date;
-    updatedBy: string | Types.ObjectId;
-  }>;
   createdAt: Date;
   updatedAt: Date;
   updatedBy: string | Types.ObjectId;
