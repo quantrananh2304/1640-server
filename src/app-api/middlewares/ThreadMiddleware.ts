@@ -1,6 +1,7 @@
+import { GET_LIST_THREAD_SORT } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
 import { isBefore } from "date-fns";
-import { body } from "express-validator";
+import { body, query } from "express-validator";
 
 const ThreadMiddleware = {
   create: [
@@ -44,6 +45,26 @@ const ThreadMiddleware = {
           CONSTANTS.VALIDATION_MESSAGE
             .FINAL_CLOSURE_DATE_NOTE_BEFORE_CLOSURE_DATE
       ),
+  ],
+
+  getListThread: [
+    query("page").exists({ checkNull: true }).isInt({ min: 1 }),
+
+    query("limit")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isInt({ min: 5 }),
+
+    query("sort")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((sort: string) => {
+        if (!GET_LIST_THREAD_SORT[sort]) {
+          return false;
+        }
+
+        return true;
+      })
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.SORT_OPTION_INVALID),
   ],
 };
 

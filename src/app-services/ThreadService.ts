@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { IThreadService } from "./interfaces";
+import { GET_LIST_THREAD_SORT, IThreadService } from "./interfaces";
 import Thread, {
   THREAD_STATUS,
   ThreadModelInterface,
@@ -55,6 +55,89 @@ class ThreadService implements IThreadService {
       .lean();
 
     return thread;
+  }
+
+  async getListThread(filter: {
+    page: number;
+    limit: number;
+    sort: GET_LIST_THREAD_SORT;
+  }): Promise<{
+    threads: ThreadModelInterface[];
+    total: number;
+    page: number;
+    totalPage: number;
+  }> {
+    const { page, limit } = filter;
+
+    const skip = page * limit;
+
+    let sort = {};
+
+    switch (filter.sort) {
+      case GET_LIST_THREAD_SORT.CLOSURE_DATE_ASC:
+        sort = {
+          closureDate: 1,
+        };
+        break;
+
+      case GET_LIST_THREAD_SORT.CLOSURE_DATE_DESC:
+        sort = {
+          closureDate: -1,
+        };
+        break;
+
+      case GET_LIST_THREAD_SORT.DATE_CRATED_DESC:
+        sort = {
+          createdAt: -1,
+        };
+        break;
+
+      case GET_LIST_THREAD_SORT.DATE_CREATED_ASC:
+        sort = {
+          createdAt: 1,
+        };
+        break;
+
+      case GET_LIST_THREAD_SORT.FINAL_CLOSURE_DATE_ASC:
+        sort = {
+          finalClosureDate: 1,
+        };
+        break;
+
+      case GET_LIST_THREAD_SORT.FINAL_CLOSURE_DATE_DESC:
+        sort = {
+          finalClosureDate: -1,
+        };
+        break;
+
+      case GET_LIST_THREAD_SORT.NAME_ASC:
+        sort = {
+          name: 1,
+        };
+        break;
+
+      case GET_LIST_THREAD_SORT.NAME_DESC:
+        sort = {
+          name: -1,
+        };
+        break;
+
+      default:
+        break;
+    }
+
+    const [threads, total] = await Promise.all([
+      Thread.find({}).select("-__v").sort(sort).limit(limit).skip(skip),
+      Thread.find({}).countDocuments(),
+    ]);
+
+    return {
+      threads,
+      total,
+      page: page + 1,
+      totalPage:
+        total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
+    };
   }
 }
 

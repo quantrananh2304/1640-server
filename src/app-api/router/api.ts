@@ -132,6 +132,15 @@ router.post(
   ThreadControllerInstance.createThread.bind(ThreadControllerInstance)
 );
 
+router.get(
+  "/thread/list",
+  ThreadMiddleware.getListThread,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  ThreadControllerInstance.getListThread.bind(ThreadControllerInstance)
+);
+
 // auth
 
 router.put(

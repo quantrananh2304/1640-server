@@ -52,6 +52,36 @@ class ThreadController {
       return res.internal({ message: error.message });
     }
   }
+
+  async getListThread(req: Request, res: Response) {
+    try {
+      const { page, limit, sort } = req.query;
+
+      const thread = await this.threadService.getListThread({
+        page: Number(page) - 1,
+        limit: Number(limit),
+        sort,
+      });
+
+      if (!thread) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.THREAD,
+        action: EVENT_ACTION.READ,
+        schemaId: null,
+        actor: req.headers.userId,
+        description: "/thread/list",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({ data: thread });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default ThreadController;
