@@ -45,6 +45,17 @@ export enum GET_LIST_CATEGORY_SORT {
   DATE_CRATED_DESC = "DATE_CREATED_DESC",
 }
 
+export enum GET_LIST_THREAD_SORT {
+  NAME_ASC = "NAME_ASC",
+  NAME_DESC = "NAME_DESC",
+  CLOSURE_DATE_ASC = "CLOSURE_DATE_ASC",
+  CLOSURE_DATE_DESC = "CLOSURE_DATE_DESC",
+  FINAL_CLOSURE_DATE_ASC = "FINAL_CLOSURE_DATE_ASC",
+  FINAL_CLOSURE_DATE_DESC = "FINAL_CLOSURE_DATE_DESC",
+  DATE_CREATED_ASC = "DATE_CREATED_ASC",
+  DATE_CRATED_DESC = "DATE_CREATED_DESC",
+}
+
 export interface IUserService {
   createUser(_user: {
     firstName: string;
@@ -163,6 +174,17 @@ export interface IThreadService {
   getThreadByName(name: string): Promise<ThreadModelInterface>;
 
   getThreadById(_id: string): Promise<ThreadModelInterface>;
+
+  getListThread(filter: {
+    page: number;
+    limit: number;
+    sort: GET_LIST_THREAD_SORT;
+  }): Promise<{
+    threads: Array<ThreadModelInterface>;
+    total: number;
+    page: number;
+    totalPage: number;
+  }>;
 }
 
 export interface ICategoryService {
