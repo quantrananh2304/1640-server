@@ -611,12 +611,12 @@ class IdeaService implements IIdeaService {
         },
       },
 
-      {
-        $unwind: {
-          path: "$category",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+      // {
+      //   $unwind: {
+      //     path: "$category",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
 
       {
         $lookup: {
