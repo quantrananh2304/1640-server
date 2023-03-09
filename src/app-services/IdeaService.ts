@@ -164,7 +164,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy._id",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
@@ -173,7 +176,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy.firstName",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
@@ -182,7 +188,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy.lastName",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
@@ -191,7 +200,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy.email",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
@@ -200,7 +212,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy.status",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
@@ -209,7 +224,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy.role",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
@@ -218,7 +236,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy.address",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
@@ -227,7 +248,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy.dob",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
@@ -236,7 +260,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy.phoneNumber",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
@@ -245,7 +272,10 @@ class IdeaService implements IIdeaService {
                         $arrayElemAt: [
                           "$commentedBy.gender",
                           {
-                            $indexOfArray: ["$commentedBy._id", "$$this.user"],
+                            $indexOfArray: [
+                              "$commentedBy._id",
+                              "$$this.createdBy",
+                            ],
                           },
                         ],
                       },
