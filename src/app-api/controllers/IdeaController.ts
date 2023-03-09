@@ -222,7 +222,7 @@ class IdeaController {
 
       const { thread } = idea;
 
-      if (isBefore(new Date(thread.closureDate), new Date())) {
+      if (isBefore(new Date(thread.finalClosureDate), new Date())) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.THREAD_EXPIRED);
       }
 
