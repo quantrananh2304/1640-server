@@ -219,6 +219,7 @@ export interface IIdeaService {
       documents: Array<string>;
       category: Array<string>;
       thread: string;
+      isAnonymous: boolean;
     },
     actor: string
   ): Promise<IdeaModelInterface>;

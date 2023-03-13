@@ -28,7 +28,8 @@ class IdeaController {
 
   async createIdea(req: Request, res: Response) {
     try {
-      const { title, description, documents, category, thread } = req.body;
+      const { title, description, documents, category, thread, isAnonymous } =
+        req.body;
 
       const idea: IdeaModelInterface = await this.ideaService.getIdeaByTitle(
         title
@@ -71,6 +72,7 @@ class IdeaController {
           documents,
           category,
           thread,
+          isAnonymous,
         },
         req.headers.userId
       );

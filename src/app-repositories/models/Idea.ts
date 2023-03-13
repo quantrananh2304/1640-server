@@ -43,6 +43,7 @@ export interface IdeaModelInterface extends BaseModelInterface {
   category: Array<string | Types.ObjectId>;
   thread: string | Types.ObjectId | ThreadModelInterface;
   subscribers: Array<string | Types.ObjectId>;
+  isAnonymous: boolean;
 }
 
 const ideaSchema = new Schema({
@@ -166,6 +167,11 @@ const ideaSchema = new Schema({
     ],
     default: [],
     _id: false,
+  },
+  isAnonymous: {
+    type: Boolean,
+    default: false,
+    required: true,
   },
 });
 

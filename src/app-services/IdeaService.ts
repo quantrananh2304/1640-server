@@ -641,12 +641,12 @@ class IdeaService implements IIdeaService {
         },
       },
 
-      {
-        $unwind: {
-          path: "$category",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+      // {
+      //   $unwind: {
+      //     path: "$category",
+      //     preserveNullAndEmptyArrays: true,
+      //   },
+      // },
 
       {
         $lookup: {
@@ -909,7 +909,11 @@ class IdeaService implements IIdeaService {
     const updatedIdea: IdeaModelInterface = await Idea.findOneAndUpdate(
       {
         _id: Types.ObjectId(ideaId),
-        "comments._id": Types.ObjectId(commentId),
+        comments: {
+          $elemMatch: {
+            _id: Types.ObjectId(commentId),
+          },
+        },
       },
       {
         $set: {
