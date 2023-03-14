@@ -42,6 +42,8 @@ const IdeaMiddleware = {
       .isString()
       .custom((thread: string) => isValidObjectId(thread))
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+
+    body("isAnonymous").exists({ checkNull: true }).isBoolean(),
   ],
 
   getListIdea: [
