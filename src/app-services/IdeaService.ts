@@ -695,6 +695,7 @@ class IdeaService implements IIdeaService {
           thread: 1,
           subscribers: 1,
           comments: 1,
+          description: 1,
 
           dislikeCount: {
             $cond: {
