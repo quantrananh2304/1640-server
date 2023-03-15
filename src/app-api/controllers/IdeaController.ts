@@ -167,7 +167,10 @@ class IdeaController {
         String(updatedIdea._id)
       );
 
-      return res.successRes({ data: result });
+      const likeCount = result.like.length;
+      const dislikeCount = result.dislike.length;
+
+      return res.successRes({ data: { ...result, likeCount, dislikeCount } });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });
