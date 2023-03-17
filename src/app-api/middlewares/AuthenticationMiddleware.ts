@@ -59,6 +59,12 @@ const AuthenticationMiddleware = {
       .isString(),
 
     body("gender").exists({ checkFalsy: true, checkNull: true }).isString(),
+
+    body("department")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((department: string) => isValidObjectId(department))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
   ],
 
   activateUserAccount: [

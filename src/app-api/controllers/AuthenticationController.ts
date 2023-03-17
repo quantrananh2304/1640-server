@@ -10,12 +10,19 @@ import { RANDOM_TOKEN_SECRET } from "@app-configs";
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
 import { differenceInSeconds, isBefore, sub } from "date-fns";
 import { Types } from "mongoose";
+import DepartmentService from "@app-services/DepartmentService";
+import {
+  DEPARTMENT_STATUS,
+  DepartmentModelInterface,
+} from "@app-repositories/models/Department";
 
 @injectable()
 class AuthenticationController {
   @inject(TYPES.UserService) private readonly userService: IUserService;
   @inject(TYPES.EventService) private readonly eventService: IEventService;
   @inject(TYPES.NodeMailer) private readonly nodeMailer: any;
+  @inject(TYPES.DepartmentService)
+  private readonly departmentService: DepartmentService;
 
   async login(req: Request, res: Response) {
     try {
@@ -81,6 +88,18 @@ class AuthenticationController {
 
   async signup(req: Request, res: Response) {
     try {
+      const { department } = req.body;
+
+      const departmentDoc: DepartmentModelInterface =
+        await this.departmentService.getDepartmentById(department);
+
+      if (
+        !departmentDoc ||
+        departmentDoc.status === DEPARTMENT_STATUS.INACTIVE
+      ) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.DEPARTMENT_NOT_EXISTED);
+      }
+
       const user = await this.userService.createUser(req.body);
 
       const title = CONSTANTS.ACCOUNT_ACTIVATION;
