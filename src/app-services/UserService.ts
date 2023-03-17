@@ -27,6 +27,7 @@ class UserService implements IUserService {
     dob: string | Date;
     phoneNumber: string;
     gender: USER_GENDER;
+    department: string;
   }): Promise<any> {
     const { email, dob } = _user;
 
@@ -44,6 +45,7 @@ class UserService implements IUserService {
 
     const user = await User.create({
       ..._user,
+      department: Types.ObjectId(_user.department),
       avatar: "",
       password,
       code,

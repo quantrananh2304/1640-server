@@ -68,6 +68,7 @@ export interface IUserService {
     dob: string | Date;
     phoneNumber: string;
     gender: USER_GENDER;
+    department: string;
   }): Promise<any>;
 
   getUserByEmail(email: string): Promise<UserModelInterface>;
