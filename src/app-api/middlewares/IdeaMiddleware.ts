@@ -31,10 +31,8 @@ const IdeaMiddleware = {
 
     body("category")
       .exists({ checkFalsy: true, checkNull: true })
-      .isArray()
-      .custom((category: Array<string>) =>
-        category.every((item: string) => isValidObjectId(item))
-      )
+      .isString()
+      .custom((category: string) => isValidObjectId(category))
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
 
     body("thread")

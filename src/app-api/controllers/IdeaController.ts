@@ -52,18 +52,28 @@ class IdeaController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.THREAD_EXPIRED);
       }
 
-      category.map(async (item: string) => {
-        const categoryDocument: CategoryModelInterface =
-          await this.categoryService.getCategoryById(item);
+      const categoryDocument: CategoryModelInterface =
+        await this.categoryService.getCategoryById(category);
 
-        if (!categoryDocument) {
-          return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
-        }
+      if (
+        !categoryDocument ||
+        categoryDocument.status === CATEGORY_STATUS.INACTIVE
+      ) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
+      }
 
-        if (categoryDocument.status === CATEGORY_STATUS.INACTIVE) {
-          return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
-        }
-      });
+      // category.map(async (item: string) => {
+      //   const categoryDocument: CategoryModelInterface =
+      //     await this.categoryService.getCategoryById(item);
+
+      //   if (!categoryDocument) {
+      //     return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
+      //   }
+
+      //   if (categoryDocument.status === CATEGORY_STATUS.INACTIVE) {
+      //     return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
+      //   }
+      // });
 
       const newIdea: IdeaModelInterface = await this.ideaService.createIdea(
         {

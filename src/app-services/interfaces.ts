@@ -218,7 +218,7 @@ export interface IIdeaService {
       title: string;
       description: string;
       documents: Array<string>;
-      category: Array<string>;
+      category: string;
       thread: string;
       isAnonymous: boolean;
     },

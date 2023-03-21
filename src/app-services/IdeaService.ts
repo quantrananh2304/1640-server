@@ -10,14 +10,14 @@ class IdeaService implements IIdeaService {
       title: string;
       description: string;
       documents: string[];
-      category: Array<string>;
+      category: string;
       thread: string;
     },
     actor: string
   ): Promise<IdeaModelInterface> {
     const newIdea: IdeaModelInterface = await Idea.create({
       ..._idea,
-      category: _idea.category.map((item: string) => Types.ObjectId(item)),
+      category: Types.ObjectId(_idea.category),
       thread: Types.ObjectId(_idea.thread),
       like: [],
       dislike: [],
@@ -641,12 +641,12 @@ class IdeaService implements IIdeaService {
         },
       },
 
-      // {
-      //   $unwind: {
-      //     path: "$category",
-      //     preserveNullAndEmptyArrays: true,
-      //   },
-      // },
+      {
+        $unwind: {
+          path: "$category",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
 
       {
         $lookup: {

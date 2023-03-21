@@ -40,7 +40,7 @@ export interface IdeaModelInterface extends BaseModelInterface {
     name: string;
     url: string;
   }>;
-  category: Array<string | Types.ObjectId>;
+  category: string | Types.ObjectId;
   thread: string | Types.ObjectId | ThreadModelInterface;
   subscribers: Array<string | Types.ObjectId>;
   isAnonymous: boolean;
@@ -130,14 +130,12 @@ const ideaSchema = new Schema({
     default: [],
     _id: false,
   },
-  category: [
-    {
-      type: Types.ObjectId,
-      ref: CATEGORY_COLLECTION_NAME,
-      default: [],
-      _id: false,
-    },
-  ],
+  category: {
+    type: Types.ObjectId,
+    ref: CATEGORY_COLLECTION_NAME,
+    required: true,
+  },
+
   createdAt: {
     type: Date,
     required: true,
