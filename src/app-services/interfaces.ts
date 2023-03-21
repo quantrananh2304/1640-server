@@ -221,6 +221,7 @@ export interface IIdeaService {
       category: string;
       thread: string;
       isAnonymous: boolean;
+      department: string;
     },
     actor: string
   ): Promise<IdeaModelInterface>;
@@ -233,6 +234,11 @@ export interface IIdeaService {
     page: number;
     limit: number;
     sort: GET_LIST_IDEA_SORT;
+    filter?: {
+      category: Array<string>;
+      thread: Array<string>;
+      department: Array<string>;
+    };
   }): Promise<{
     ideas: Array<IdeaModelInterface>;
     total: number;

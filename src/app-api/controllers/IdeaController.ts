@@ -6,8 +6,9 @@ import {
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
 import { IdeaModelInterface } from "@app-repositories/models/Idea";
 import { ThreadModelInterface } from "@app-repositories/models/Thread";
-import { USER_ROLE } from "@app-repositories/models/User";
+import { USER_ROLE, UserModelInterface } from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
+import UserService from "@app-services/UserService";
 import {
   ICategoryService,
   IEventService,
@@ -25,6 +26,7 @@ class IdeaController {
   @inject(TYPES.CategoryService)
   private readonly categoryService: ICategoryService;
   @inject(TYPES.EventService) private readonly eventService: IEventService;
+  @inject(TYPES.UserService) private readonly userService: UserService;
 
   async createIdea(req: Request, res: Response) {
     try {
@@ -62,18 +64,11 @@ class IdeaController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
       }
 
-      // category.map(async (item: string) => {
-      //   const categoryDocument: CategoryModelInterface =
-      //     await this.categoryService.getCategoryById(item);
+      const user: UserModelInterface = await this.userService.getUserById(
+        req.headers.userId
+      );
 
-      //   if (!categoryDocument) {
-      //     return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
-      //   }
-
-      //   if (categoryDocument.status === CATEGORY_STATUS.INACTIVE) {
-      //     return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
-      //   }
-      // });
+      const { department } = user;
 
       const newIdea: IdeaModelInterface = await this.ideaService.createIdea(
         {
@@ -83,6 +78,7 @@ class IdeaController {
           category,
           thread,
           isAnonymous,
+          department: department._id,
         },
         req.headers.userId
       );

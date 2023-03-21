@@ -3,6 +3,7 @@ import { USER_COLLECTION_NAME, UserModelInterface } from "./User";
 import { CATEGORY_COLLECTION_NAME } from "./Category";
 import { BaseModelInterface } from "./BaseModelInterface";
 import { THREAD_COLLECTION_NAME, ThreadModelInterface } from "./Thread";
+import { DEPARTMENT_COLLECTION_NAME } from "./Department";
 
 export const IDEA_COLLECTION_NAME = "Ideas";
 
@@ -44,6 +45,7 @@ export interface IdeaModelInterface extends BaseModelInterface {
   thread: string | Types.ObjectId | ThreadModelInterface;
   subscribers: Array<string | Types.ObjectId>;
   isAnonymous: boolean;
+  department: string | Types.ObjectId;
 }
 
 const ideaSchema = new Schema({
@@ -170,6 +172,11 @@ const ideaSchema = new Schema({
     type: Boolean,
     default: false,
     required: true,
+  },
+  department: {
+    type: Types.ObjectId,
+    required: true,
+    ref: DEPARTMENT_COLLECTION_NAME,
   },
 });
 

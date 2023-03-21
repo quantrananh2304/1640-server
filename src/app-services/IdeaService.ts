@@ -12,11 +12,13 @@ class IdeaService implements IIdeaService {
       documents: string[];
       category: string;
       thread: string;
+      department: string;
     },
     actor: string
   ): Promise<IdeaModelInterface> {
     const newIdea: IdeaModelInterface = await Idea.create({
       ..._idea,
+      department: Types.ObjectId(_idea.department),
       category: Types.ObjectId(_idea.category),
       thread: Types.ObjectId(_idea.thread),
       like: [],
@@ -644,7 +646,21 @@ class IdeaService implements IIdeaService {
       {
         $unwind: {
           path: "$category",
-          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "departments",
+          localField: "department",
+          foreignField: "_id",
+          as: "department",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$department",
         },
       },
 
@@ -696,6 +712,7 @@ class IdeaService implements IIdeaService {
           subscribers: 1,
           comments: 1,
           description: 1,
+          department: 1,
 
           dislikeCount: {
             $cond: {
