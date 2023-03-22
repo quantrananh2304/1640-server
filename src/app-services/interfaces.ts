@@ -234,7 +234,7 @@ export interface IIdeaService {
     page: number;
     limit: number;
     sort: GET_LIST_IDEA_SORT;
-    filter?: {
+    filteredBy: {
       category: Array<string>;
       thread: Array<string>;
       department: Array<string>;

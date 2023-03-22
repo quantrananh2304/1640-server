@@ -62,6 +62,54 @@ const IdeaMiddleware = {
         return true;
       })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.SORT_OPTION_INVALID),
+
+    query("category").custom((category) => {
+      if (!category) {
+        return true;
+      }
+
+      if (Array.isArray(category)) {
+        if (!category.length) {
+          return true;
+        } else {
+          return category.every((item) => isValidObjectId(item));
+        }
+      }
+
+      return false;
+    }),
+
+    query("thread").custom((thread) => {
+      if (!thread) {
+        return true;
+      }
+
+      if (Array.isArray(thread)) {
+        if (!thread.length) {
+          return true;
+        } else {
+          return thread.every((item) => isValidObjectId(item));
+        }
+      }
+
+      return false;
+    }),
+
+    query("department").custom((department) => {
+      if (!department) {
+        return true;
+      }
+
+      if (Array.isArray(department)) {
+        if (!department.length) {
+          return true;
+        } else {
+          return department.every((item) => isValidObjectId(item));
+        }
+      }
+
+      return false;
+    }),
   ],
 
   likeDislikeIdea: [

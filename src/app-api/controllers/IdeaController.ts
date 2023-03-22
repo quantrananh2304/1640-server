@@ -109,12 +109,19 @@ class IdeaController {
 
   async getListIdea(req: Request, res: Response) {
     try {
-      const { page, limit, sort } = req.query;
+      const { page, limit, sort, category, thread, department } = req.query;
+
+      console.log("asd", req.query);
 
       const idea = await this.ideaService.getListIdea({
         page: Number(page) - 1,
         limit: Number(limit),
         sort,
+        filteredBy: {
+          category: category || [],
+          thread: thread || [],
+          department: department || [],
+        },
       });
 
       if (!idea) {

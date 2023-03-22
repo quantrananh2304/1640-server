@@ -71,13 +71,44 @@ class IdeaService implements IIdeaService {
     page: number;
     limit: number;
     sort: GET_LIST_IDEA_SORT;
+    filteredBy: {
+      category: Array<string>;
+      thread: Array<string>;
+      department: Array<string>;
+    };
   }): Promise<{
     ideas: IdeaModelInterface[];
     total: number;
     page: number;
     totalPage: number;
   }> {
-    const { page, limit } = filter;
+    const { page, limit, filteredBy } = filter;
+
+    const matcher = { $and: [] };
+
+    if (filteredBy.category.length) {
+      matcher.$and.push({
+        category: {
+          $in: filteredBy.category.map((item) => Types.ObjectId(item)),
+        },
+      });
+    }
+
+    if (filteredBy.department.length) {
+      matcher.$and.push({
+        department: {
+          $in: filteredBy.department.map((item) => Types.ObjectId(item)),
+        },
+      });
+    }
+
+    if (filteredBy.thread.length) {
+      matcher.$and.push({
+        thread: {
+          $in: filteredBy.thread.map((item) => Types.ObjectId(item)),
+        },
+      });
+    }
 
     const skip = page * limit;
 
@@ -143,6 +174,8 @@ class IdeaService implements IIdeaService {
     }
 
     const aggregation = [
+      { $match: matcher },
+
       {
         $lookup: {
           from: "users",
@@ -761,7 +794,7 @@ class IdeaService implements IIdeaService {
 
     const [ideas, total] = await Promise.all([
       Idea.aggregate(aggregation),
-      Idea.find({}).countDocuments(),
+      Idea.find(matcher).countDocuments(),
     ]);
 
     return {
