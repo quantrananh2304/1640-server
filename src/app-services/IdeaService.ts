@@ -62,6 +62,14 @@ class IdeaService implements IIdeaService {
         path: "comments.createdBy",
         select: "-__v -password -code -codeExpires",
       })
+      .populate({
+        path: "department",
+        select: "-__v -updatedBy -updatedAt -createdAt",
+      })
+      .populate({
+        path: "views.user",
+        select: "-__v -password -code -codeExpires",
+      })
       .lean();
 
     return idea;

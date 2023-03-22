@@ -111,8 +111,6 @@ class IdeaController {
     try {
       const { page, limit, sort, category, thread, department } = req.query;
 
-      console.log("asd", req.query);
-
       const idea = await this.ideaService.getListIdea({
         page: Number(page) - 1,
         limit: Number(limit),
@@ -379,6 +377,51 @@ class IdeaController {
       );
 
       return res.successRes({ data: result });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async getIdeaDetail(req: Request, res: Response) {
+    try {
+      const { ideaId } = req.query;
+
+      const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
+        ideaId
+      );
+
+      if (!idea) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      if (idea.isAnonymous) {
+        delete idea.updatedBy;
+      }
+
+      const likeCount = idea.like.length;
+      const dislikeCount = idea.dislike.length;
+      const viewCount = idea.views.length;
+      const commentsCount = idea.comments.length;
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.READ,
+        schemaId: idea._id,
+        actor: req.headers.userId,
+        description: "/idea/detail",
+        createdAt: new Date(),
+      });
+
+      return res.successRes({
+        data: {
+          ...idea,
+          likeCount,
+          dislikeCount,
+          viewCount,
+          commentsCount,
+        },
+      });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });
