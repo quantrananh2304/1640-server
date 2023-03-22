@@ -10,14 +10,16 @@ class IdeaService implements IIdeaService {
       title: string;
       description: string;
       documents: string[];
-      category: Array<string>;
+      category: string;
       thread: string;
+      department: string;
     },
     actor: string
   ): Promise<IdeaModelInterface> {
     const newIdea: IdeaModelInterface = await Idea.create({
       ..._idea,
-      category: _idea.category.map((item: string) => Types.ObjectId(item)),
+      department: Types.ObjectId(_idea.department),
+      category: Types.ObjectId(_idea.category),
       thread: Types.ObjectId(_idea.thread),
       like: [],
       dislike: [],
@@ -69,13 +71,44 @@ class IdeaService implements IIdeaService {
     page: number;
     limit: number;
     sort: GET_LIST_IDEA_SORT;
+    filteredBy: {
+      category: Array<string>;
+      thread: Array<string>;
+      department: Array<string>;
+    };
   }): Promise<{
     ideas: IdeaModelInterface[];
     total: number;
     page: number;
     totalPage: number;
   }> {
-    const { page, limit } = filter;
+    const { page, limit, filteredBy } = filter;
+
+    const matcher = { $and: [] };
+
+    if (filteredBy.category.length) {
+      matcher.$and.push({
+        category: {
+          $in: filteredBy.category.map((item) => Types.ObjectId(item)),
+        },
+      });
+    }
+
+    if (filteredBy.department.length) {
+      matcher.$and.push({
+        department: {
+          $in: filteredBy.department.map((item) => Types.ObjectId(item)),
+        },
+      });
+    }
+
+    if (filteredBy.thread.length) {
+      matcher.$and.push({
+        thread: {
+          $in: filteredBy.thread.map((item) => Types.ObjectId(item)),
+        },
+      });
+    }
 
     const skip = page * limit;
 
@@ -141,6 +174,8 @@ class IdeaService implements IIdeaService {
     }
 
     const aggregation = [
+      { $match: matcher },
+
       {
         $lookup: {
           from: "users",
@@ -641,12 +676,26 @@ class IdeaService implements IIdeaService {
         },
       },
 
-      // {
-      //   $unwind: {
-      //     path: "$category",
-      //     preserveNullAndEmptyArrays: true,
-      //   },
-      // },
+      {
+        $unwind: {
+          path: "$category",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "departments",
+          localField: "department",
+          foreignField: "_id",
+          as: "department",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$department",
+        },
+      },
 
       {
         $lookup: {
@@ -696,6 +745,7 @@ class IdeaService implements IIdeaService {
           subscribers: 1,
           comments: 1,
           description: 1,
+          department: 1,
 
           dislikeCount: {
             $cond: {
@@ -744,7 +794,7 @@ class IdeaService implements IIdeaService {
 
     const [ideas, total] = await Promise.all([
       Idea.aggregate(aggregation),
-      Idea.find({}).countDocuments(),
+      Idea.find(matcher).countDocuments(),
     ]);
 
     return {

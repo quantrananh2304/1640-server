@@ -218,9 +218,10 @@ export interface IIdeaService {
       title: string;
       description: string;
       documents: Array<string>;
-      category: Array<string>;
+      category: string;
       thread: string;
       isAnonymous: boolean;
+      department: string;
     },
     actor: string
   ): Promise<IdeaModelInterface>;
@@ -233,6 +234,11 @@ export interface IIdeaService {
     page: number;
     limit: number;
     sort: GET_LIST_IDEA_SORT;
+    filteredBy: {
+      category: Array<string>;
+      thread: Array<string>;
+      department: Array<string>;
+    };
   }): Promise<{
     ideas: Array<IdeaModelInterface>;
     total: number;

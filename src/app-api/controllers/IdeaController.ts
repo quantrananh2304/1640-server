@@ -6,8 +6,9 @@ import {
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
 import { IdeaModelInterface } from "@app-repositories/models/Idea";
 import { ThreadModelInterface } from "@app-repositories/models/Thread";
-import { USER_ROLE } from "@app-repositories/models/User";
+import { USER_ROLE, UserModelInterface } from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
+import UserService from "@app-services/UserService";
 import {
   ICategoryService,
   IEventService,
@@ -25,6 +26,7 @@ class IdeaController {
   @inject(TYPES.CategoryService)
   private readonly categoryService: ICategoryService;
   @inject(TYPES.EventService) private readonly eventService: IEventService;
+  @inject(TYPES.UserService) private readonly userService: UserService;
 
   async createIdea(req: Request, res: Response) {
     try {
@@ -52,18 +54,21 @@ class IdeaController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.THREAD_EXPIRED);
       }
 
-      category.map(async (item: string) => {
-        const categoryDocument: CategoryModelInterface =
-          await this.categoryService.getCategoryById(item);
+      const categoryDocument: CategoryModelInterface =
+        await this.categoryService.getCategoryById(category);
 
-        if (!categoryDocument) {
-          return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
-        }
+      if (
+        !categoryDocument ||
+        categoryDocument.status === CATEGORY_STATUS.INACTIVE
+      ) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
+      }
 
-        if (categoryDocument.status === CATEGORY_STATUS.INACTIVE) {
-          return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
-        }
-      });
+      const user: UserModelInterface = await this.userService.getUserById(
+        req.headers.userId
+      );
+
+      const { department } = user;
 
       const newIdea: IdeaModelInterface = await this.ideaService.createIdea(
         {
@@ -73,6 +78,7 @@ class IdeaController {
           category,
           thread,
           isAnonymous,
+          department: department._id,
         },
         req.headers.userId
       );
@@ -103,12 +109,19 @@ class IdeaController {
 
   async getListIdea(req: Request, res: Response) {
     try {
-      const { page, limit, sort } = req.query;
+      const { page, limit, sort, category, thread, department } = req.query;
+
+      console.log("asd", req.query);
 
       const idea = await this.ideaService.getListIdea({
         page: Number(page) - 1,
         limit: Number(limit),
         sort,
+        filteredBy: {
+          category: category || [],
+          thread: thread || [],
+          department: department || [],
+        },
       });
 
       if (!idea) {

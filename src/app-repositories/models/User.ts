@@ -40,7 +40,7 @@ export interface UserModelInterface extends BaseModelInterface {
   createdAt: Date;
   updatedAt: Date;
   updatedBy: string | Types.ObjectId;
-  department: string | Types.ObjectId;
+  department: string | Types.ObjectId | { _id: string | Types.ObjectId } | any;
 }
 
 const userSchema = new Schema({
