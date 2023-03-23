@@ -137,23 +137,21 @@ class IdeaController {
 
       return res.successRes({
         data: {
-          idea: {
-            ...idea,
-            ideas: idea.ideas.map((item) => {
-              const { comments, isAnonymous } = item;
+          ...idea,
+          ideas: idea.ideas.map((item) => {
+            const { comments, isAnonymous } = item;
 
-              return {
-                ...item,
-                updatedBy: isAnonymous ? {} : item.updatedBy,
-                comments: comments.map((comment) => {
-                  return {
-                    ...comment,
-                    createdBy: comment.isAnonymous ? {} : comment.createdBy,
-                  };
-                }),
-              };
-            }),
-          },
+            return {
+              ...item,
+              updatedBy: isAnonymous ? {} : item.updatedBy,
+              comments: comments.map((comment) => {
+                return {
+                  ...comment,
+                  createdBy: comment.isAnonymous ? {} : comment.createdBy,
+                };
+              }),
+            };
+          }),
         },
       });
     } catch (error) {
