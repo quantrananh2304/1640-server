@@ -9,6 +9,10 @@ import { DepartmentModelInterface } from "@app-repositories/models/Department";
 import { ThreadModelInterface } from "@app-repositories/models/Thread";
 import { CategoryModelInterface } from "@app-repositories/models/Category";
 import { IdeaModelInterface } from "@app-repositories/models/Idea";
+import {
+  IDEA_NOTIFICATION_TYPE,
+  IdeaNotificationModelInterface,
+} from "@app-repositories/models/IdeaNotification";
 
 export enum GET_LIST_USER_SORT {
   EMAIL_ASC = "EMAIL_ASC",
@@ -132,6 +136,8 @@ export interface IUserService {
     departmentId: string,
     actor: string
   ): Promise<UserModelInterface>;
+
+  getUserByRoles(roles: Array<USER_ROLE>): Promise<Array<UserModelInterface>>;
 }
 
 export interface IEventService {
@@ -268,4 +274,15 @@ export interface IIdeaService {
     commentId: string,
     content: string
   ): Promise<IdeaModelInterface>;
+}
+
+export interface IIdeaNotificationService {
+  createNotification(
+    _notification: {
+      content: string;
+      type: IDEA_NOTIFICATION_TYPE;
+      idea: string;
+    },
+    actor: string
+  ): Promise<IdeaNotificationModelInterface>;
 }

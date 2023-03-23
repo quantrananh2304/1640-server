@@ -13,6 +13,7 @@ import CategoryController from "@app-api/controllers/CategoryController";
 import CategoryService from "@app-services/CategoryService";
 import IdeaController from "@app-api/controllers/IdeaController";
 import IdeaService from "@app-services/IdeaService";
+import IdeaNotificationService from "@app-services/IdeaNotificationService";
 
 const container = new Container();
 
@@ -32,5 +33,8 @@ container
 container.bind<ThreadService>(TYPES.ThreadService).to(ThreadService);
 container.bind<CategoryService>(TYPES.CategoryService).to(CategoryService);
 container.bind<IdeaService>(TYPES.IdeaService).to(IdeaService);
+container
+  .bind<IdeaNotificationService>(TYPES.IdeaNotificationService)
+  .to(IdeaNotificationService);
 
 export { container };

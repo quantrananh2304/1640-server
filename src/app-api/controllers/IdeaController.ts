@@ -5,9 +5,16 @@ import {
 } from "@app-repositories/models/Category";
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
 import { IdeaModelInterface } from "@app-repositories/models/Idea";
+import { IDEA_NOTIFICATION_TYPE } from "@app-repositories/models/IdeaNotification";
 import { ThreadModelInterface } from "@app-repositories/models/Thread";
-import { USER_ROLE, UserModelInterface } from "@app-repositories/models/User";
+import {
+  USER_ROLE,
+  USER_STATUS,
+  UserModelInterface,
+} from "@app-repositories/models/User";
+import NodeMailer from "@app-repositories/smtp";
 import TYPES from "@app-repositories/types";
+import IdeaNotificationService from "@app-services/IdeaNotificationService";
 import UserService from "@app-services/UserService";
 import {
   ICategoryService,
@@ -16,7 +23,7 @@ import {
   IThreadService,
 } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { isBefore } from "date-fns";
+import { format, isBefore } from "date-fns";
 import { inject, injectable } from "inversify";
 
 @injectable()
@@ -27,6 +34,9 @@ class IdeaController {
   private readonly categoryService: ICategoryService;
   @inject(TYPES.EventService) private readonly eventService: IEventService;
   @inject(TYPES.UserService) private readonly userService: UserService;
+  @inject(TYPES.IdeaNotificationService)
+  private readonly ideaNotificationService: IdeaNotificationService;
+  @inject(TYPES.NodeMailer) private readonly nodeMailer: NodeMailer;
 
   async createIdea(req: Request, res: Response) {
     try {
@@ -86,6 +96,56 @@ class IdeaController {
       if (!newIdea) {
         return res.internal({});
       }
+
+      const ideaNotification =
+        await this.ideaNotificationService.createNotification(
+          {
+            content: `${user.firstName} ${user.lastName} submitted a new idea: ${newIdea.title}`,
+            type: IDEA_NOTIFICATION_TYPE.SUBMISSION,
+            idea: String(newIdea._id),
+          },
+          req.headers.userId
+        );
+
+      if (!ideaNotification) {
+        return res.internal({});
+      }
+
+      const emailSubject = CONSTANTS.NEW_IDEA_NOTIFICATION_TITLE.replace(
+        "${idea.title}",
+        newIdea.title
+      );
+
+      const emailBody = CONSTANTS.NEW_IDEA_NOTIFICATION_BODY.replace(
+        "${idea.title}",
+        newIdea.title
+      )
+        .replace("${user.firstName}", user.firstName)
+        .replace("${user.lastName}", user.lastName)
+        .replace("${thread.name}", threadDocument.name)
+        .replace("${idea.createdAt}", format(new Date(), "MMM do yyyy"))
+        .replace("${baseUrl}", CONSTANTS.BASE_URL)
+        .replace("${idea._id}", String(newIdea._id));
+
+      const QACUsers: Array<UserModelInterface> =
+        await this.userService.getUserByRoles([
+          USER_ROLE.QUALITY_ASSURANCE_COORDINATOR,
+        ]);
+
+      if (!QACUsers) {
+        return res.internal({});
+      }
+
+      const receivers = QACUsers.filter(
+        (item) => item.status === USER_STATUS.ACTIVE
+      ).map((item) => item.email);
+
+      await this.nodeMailer.nodeMailerSendMail(
+        receivers,
+        // ["trananhquan23499@gmail.com"],
+        emailSubject,
+        emailBody
+      );
 
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.IDEA,
