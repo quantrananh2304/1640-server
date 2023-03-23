@@ -908,6 +908,7 @@ class IdeaService implements IIdeaService {
   async addComment(
     _id: string,
     content: string,
+    isAnonymous: boolean,
     actor: string
   ): Promise<IdeaModelInterface> {
     const updatedIdea: IdeaModelInterface = await Idea.findByIdAndUpdate(
@@ -919,6 +920,7 @@ class IdeaService implements IIdeaService {
             createdBy: Types.ObjectId(actor),
             createdAt: new Date(),
             editHistory: [],
+            isAnonymous,
           },
           $position: 0,
         },
