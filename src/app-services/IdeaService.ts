@@ -181,9 +181,7 @@ class IdeaService implements IIdeaService {
         break;
     }
 
-    const aggregation = [
-      { $match: matcher },
-
+    const aggregation: Array<any> = [
       {
         $lookup: {
           from: "users",
@@ -800,9 +798,13 @@ class IdeaService implements IIdeaService {
       { $skip: skip },
     ];
 
+    if (matcher.$and.length) {
+      aggregation.unshift({ $match: matcher });
+    }
+
     const [ideas, total] = await Promise.all([
       Idea.aggregate(aggregation),
-      Idea.find(matcher).countDocuments(),
+      Idea.find(matcher.$and.length ? matcher : {}).countDocuments(),
     ]);
 
     return {
