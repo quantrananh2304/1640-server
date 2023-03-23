@@ -145,6 +145,8 @@ const IdeaMiddleware = {
       .exists({ checkFalsy: true, checkNull: false })
       .isString()
       .isLength({ max: 255 }),
+
+    body("isAnonymous").exists({ checkNull: true }).isBoolean(),
   ],
 
   deleteComment: [

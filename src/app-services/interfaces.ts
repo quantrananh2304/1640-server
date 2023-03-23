@@ -257,6 +257,7 @@ export interface IIdeaService {
   addComment(
     _id: string,
     content: string,
+    isAnonymous: boolean,
     actor: string
   ): Promise<IdeaModelInterface>;
 

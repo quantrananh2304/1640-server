@@ -135,7 +135,27 @@ class IdeaController {
         createdAt: new Date(),
       });
 
-      return res.successRes({ data: idea });
+      return res.successRes({
+        data: {
+          idea: {
+            ...idea,
+            ideas: idea.ideas.map((item) => {
+              const { comments, isAnonymous } = item;
+
+              return {
+                ...item,
+                updatedBy: isAnonymous ? {} : item.updatedBy,
+                comments: comments.map((comment) => {
+                  return {
+                    ...comment,
+                    createdBy: comment.isAnonymous ? {} : comment.createdBy,
+                  };
+                }),
+              };
+            }),
+          },
+        },
+      });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });
@@ -184,7 +204,21 @@ class IdeaController {
       const viewCount = result.views.length;
 
       return res.successRes({
-        data: { ...result, likeCount, dislikeCount, commentsCount, viewCount },
+        data: {
+          ...result,
+          likeCount,
+          dislikeCount,
+          commentsCount,
+          viewCount,
+          comments: result.comments.map((item) => {
+            const { isAnonymous, createdBy } = item;
+
+            return {
+              ...item,
+              createdBy: isAnonymous ? {} : createdBy,
+            };
+          }),
+        },
       });
     } catch (error) {
       console.log("error", error);
@@ -232,7 +266,7 @@ class IdeaController {
   async addComment(req: Request, res: Response) {
     try {
       const { ideaId } = req.params;
-      const { content } = req.body;
+      const { content, isAnonymous } = req.body;
 
       const idea: any = await this.ideaService.getIdeaById(ideaId);
 
@@ -249,6 +283,7 @@ class IdeaController {
       const updatedIdea: IdeaModelInterface = await this.ideaService.addComment(
         ideaId,
         content,
+        isAnonymous,
         req.headers.userId
       );
 
@@ -320,7 +355,19 @@ class IdeaController {
         String(updatedIdea._id)
       );
 
-      return res.successRes({ data: result });
+      return res.successRes({
+        data: {
+          ...result,
+          comments: result.comments.map((item) => {
+            const { isAnonymous, createdBy } = item;
+
+            return {
+              ...item,
+              createdBy: isAnonymous ? {} : createdBy,
+            };
+          }),
+        },
+      });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });
@@ -376,7 +423,19 @@ class IdeaController {
         String(updatedIdea._id)
       );
 
-      return res.successRes({ data: result });
+      return res.successRes({
+        data: {
+          ...result,
+          comments: result.comments.map((item) => {
+            const { isAnonymous, createdBy } = item;
+
+            return {
+              ...item,
+              createdBy: isAnonymous ? {} : createdBy,
+            };
+          }),
+        },
+      });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });
@@ -416,6 +475,14 @@ class IdeaController {
       return res.successRes({
         data: {
           ...idea,
+          comments: idea.comments.map((item) => {
+            const { isAnonymous, createdBy } = item;
+
+            return {
+              ...item,
+              createdBy: isAnonymous ? {} : createdBy,
+            };
+          }),
           likeCount,
           dislikeCount,
           viewCount,

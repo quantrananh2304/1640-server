@@ -26,6 +26,7 @@ export interface IdeaModelInterface extends BaseModelInterface {
   updatedAt: Date;
   updatedBy: string | Types.ObjectId;
   comments: Array<{
+    isAnonymous: boolean;
     _id: string | Types.ObjectId;
     content: string;
     createdBy: string | Types.ObjectId | UserModelInterface;
@@ -101,6 +102,7 @@ const ideaSchema = new Schema({
   comments: {
     type: [
       {
+        isAnonymous: Boolean,
         content: String,
         createdAt: Date,
         createdBy: {
