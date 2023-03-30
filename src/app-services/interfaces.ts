@@ -300,4 +300,12 @@ export interface IIdeaNotificationService {
     page: number;
     totalPage: number;
   }>;
+
+  readNotification(
+    notificationId: string
+  ): Promise<IdeaNotificationModelInterface>;
+
+  getNotificationById(
+    notificationId: string
+  ): Promise<IdeaNotificationModelInterface>;
 }

@@ -358,6 +358,17 @@ router.get(
   )
 );
 
+router.put(
+  "/idea-notification/:notificationId/read",
+  IdeaNotificationMiddleware.read,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaNotificationControllerInstance.read.bind(
+    IdeaNotificationControllerInstance
+  )
+);
+
 router.use(function (req: Request, res: Response) {
   return res.errorRes({
     errorCode: "40",

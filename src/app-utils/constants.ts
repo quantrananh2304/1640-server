@@ -191,6 +191,16 @@ const CONSTANTS = {
       message: "User already in this department",
     },
 
+    NOTIFICATION_NOT_EXIST: {
+      errorCode: "029",
+      message: "Notification not exist",
+    },
+
+    CANNOT_READ_OTHER_NOTIFICATION: {
+      errorCode: "030",
+      message: "Cannot read others' notification",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",
