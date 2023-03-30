@@ -28,7 +28,6 @@ import {
   format,
   getYear,
   isBefore,
-  startOfMonth,
   startOfYear,
   sub,
 } from "date-fns";
@@ -568,9 +567,9 @@ class IdeaController {
       const yesterday: Date = sub(today, { days: 1 });
       const firstDateOfYear: Date = startOfYear(today);
       const lastDateOfYear: Date = endOfYear(today);
-      const firstDateOfLastFourMonth: Date = startOfMonth(
-        sub(today, { months: 4 })
-      );
+      // const firstDateOfLastFourMonth: Date = startOfMonth(
+      // sub(today, { months: 4 })
+      // );
       const lastYear: Date = sub(today, { years: 1 });
       const lastTwoYear: Date = sub(today, { years: 2 });
       const lastThreeYear: Date = sub(today, { years: 3 });
@@ -594,13 +593,6 @@ class IdeaController {
         await this.ideaService.getIdeaByDate(firstDateOfYear, lastDateOfYear);
 
       if (!thisYearIdeas) {
-        return res.internal({});
-      }
-
-      const lastFiveMonthIdeas: Array<IdeaModelInterface> =
-        await this.ideaService.getIdeaByDate(firstDateOfLastFourMonth, today);
-
-      if (!lastFiveMonthIdeas) {
         return res.internal({});
       }
 
@@ -671,27 +663,55 @@ class IdeaController {
                 // new month
 
                 prev[month] = {
-                  [department.name]: {
-                    _id: String(department._id),
-                    ideaCount: 1,
-                  },
+                  // [department.name]: {
+                  //   _id: String(department._id),
+                  //   ideaCount: 1,
+                  // },
+                  departments: [
+                    {
+                      _id: String(department._id),
+                      name: department.name,
+                      ideaCount: 1,
+                    },
+                  ],
                   users: [updatedBy],
                   userCount: 1,
                 };
               } else {
                 // existed month
 
-                if (!prev[month][department.name]) {
+                if (
+                  !prev[month].departments
+                    .map(
+                      (item: {
+                        _id: string;
+                        ideaCount: number;
+                        name: string;
+                      }) => item._id
+                    )
+                    .includes(String(department._id))
+                ) {
                   // new department
 
-                  prev[month][department.name] = {
+                  prev[month].departments.push({
                     _id: String(department._id),
+                    name: department.name,
                     ideaCount: 1,
-                  };
+                  });
                 } else {
                   // existed department
 
-                  prev[month][department.name].ideaCount += 1;
+                  const index = prev[month].departments
+                    .map(
+                      (item: {
+                        _id: string;
+                        ideaCount: number;
+                        name: string;
+                      }) => item._id
+                    )
+                    .indexOf(String(department._id));
+
+                  prev[month].departments[index].ideaCount += 1;
                 }
 
                 if (
