@@ -26,6 +26,7 @@ import CONSTANTS from "@app-utils/constants";
 import {
   endOfYear,
   format,
+  getYear,
   isBefore,
   startOfMonth,
   startOfYear,
@@ -570,6 +571,10 @@ class IdeaController {
       const firstDateOfLastFourMonth: Date = startOfMonth(
         sub(today, { months: 4 })
       );
+      const lastYear: Date = sub(today, { years: 1 });
+      const lastTwoYear: Date = sub(today, { years: 2 });
+      const lastThreeYear: Date = sub(today, { years: 3 });
+      const lastFourYear: Date = sub(today, { years: 4 });
 
       const todayIdeas: Array<IdeaModelInterface> =
         await this.ideaService.getIdeaByDate(today, today);
@@ -599,6 +604,46 @@ class IdeaController {
         return res.internal({});
       }
 
+      const lastYearIdeas: Array<IdeaModelInterface> =
+        await this.ideaService.getIdeaByDate(
+          startOfYear(lastYear),
+          endOfYear(lastYear)
+        );
+
+      if (!lastYearIdeas) {
+        return res.internal({});
+      }
+
+      const lastTwoYearIdeas: Array<IdeaModelInterface> =
+        await this.ideaService.getIdeaByDate(
+          startOfYear(lastTwoYear),
+          endOfYear(lastTwoYear)
+        );
+
+      if (!lastTwoYearIdeas) {
+        return res.internal({});
+      }
+
+      const lastThreeYearIdeas: Array<IdeaModelInterface> =
+        await this.ideaService.getIdeaByDate(
+          startOfYear(lastThreeYear),
+          endOfYear(lastThreeYear)
+        );
+
+      if (!lastThreeYearIdeas) {
+        return res.internal({});
+      }
+
+      const lastFourYearIdeas: Array<IdeaModelInterface> =
+        await this.ideaService.getIdeaByDate(
+          startOfYear(lastFourYear),
+          endOfYear(lastFourYear)
+        );
+
+      if (!lastFourYearIdeas) {
+        return res.internal({});
+      }
+
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.IDEA,
         action: EVENT_ACTION.READ,
@@ -608,13 +653,15 @@ class IdeaController {
         createdAt: new Date(),
       });
 
-      console.log(thisYearIdeas);
-
       return res.successRes({
         data: {
           todayIdeaCount: todayIdeas.length,
           yesterdayIdeaCount: yesterdayIdeas.length,
-          thisYearIdeaCount: thisYearIdeas.length,
+          [getYear(today)]: thisYearIdeas.length,
+          [getYear(lastYear)]: lastYearIdeas.length,
+          [getYear(lastTwoYear)]: lastTwoYearIdeas.length,
+          [getYear(lastThreeYear)]: lastThreeYearIdeas.length,
+          [getYear(lastFourYear)]: lastFourYearIdeas.length,
           ideaCountByDepartment: thisYearIdeas.reduce(
             (prev: any, current: IdeaModelInterface) => {
               const { department, createdAt, updatedBy } = current;
