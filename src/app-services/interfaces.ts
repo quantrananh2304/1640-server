@@ -290,4 +290,14 @@ export interface IIdeaNotificationService {
     },
     actor: string
   ): Promise<IdeaNotificationModelInterface>;
+
+  getListNotification(
+    filter: { page: number; limit: number },
+    receiver: string
+  ): Promise<{
+    notifications: Array<IdeaNotificationModelInterface>;
+    total: number;
+    page: number;
+    totalPage: number;
+  }>;
 }
