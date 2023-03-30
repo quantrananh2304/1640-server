@@ -829,23 +829,51 @@ class IdeaController {
             (prev: any, current: IdeaModelInterface) => {
               const { department, like, dislike, comments, views } = current;
 
-              if (!prev[department.name]) {
-                prev[department.name] = {
+              if (
+                !prev
+                  .map(
+                    (item: {
+                      _id: string;
+                      name: string;
+                      likeCount: number;
+                      dislikeCount: number;
+                      commentsCount: number;
+                      viewCount: number;
+                    }) => item._id
+                  )
+                  .includes(String(department._id))
+              ) {
+                prev.push({
+                  _id: String(department._id),
+                  name: department.name,
                   likeCount: like.length,
                   dislikeCount: dislike.length,
                   commentsCount: comments.length,
                   viewCount: views.length,
-                };
+                });
               } else {
-                prev[department.name].likeCount += like.length;
-                prev[department.name].dislikeCount += dislike.length;
-                prev[department.name].commentsCount += comments.length;
-                prev[department.name].viewCount += views.length;
+                const index: number = prev
+                  .map(
+                    (item: {
+                      _id: string;
+                      name: string;
+                      likeCount: number;
+                      dislikeCount: number;
+                      commentsCount: number;
+                      viewCount: number;
+                    }) => item._id
+                  )
+                  .indexOf(String(department._id));
+
+                prev[index].likeCount += like.length;
+                prev[index].dislikeCount += dislike.length;
+                prev[index].commentsCount += comments.length;
+                prev[index].viewCount += views.length;
               }
 
               return prev;
             },
-            {}
+            []
           ),
         },
       });
