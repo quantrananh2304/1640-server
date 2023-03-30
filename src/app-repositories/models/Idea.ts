@@ -24,7 +24,11 @@ export interface IdeaModelInterface extends BaseModelInterface {
   }>;
   createdAt: Date;
   updatedAt: Date;
-  updatedBy: string | Types.ObjectId;
+  updatedBy:
+    | string
+    | Types.ObjectId
+    | { firstName: string; lastName: string; _id: string | Types.ObjectId }
+    | any;
   comments: Array<{
     isAnonymous: boolean;
     _id: string | Types.ObjectId;
@@ -46,7 +50,7 @@ export interface IdeaModelInterface extends BaseModelInterface {
   thread: string | Types.ObjectId | ThreadModelInterface;
   subscribers: Array<string | Types.ObjectId>;
   isAnonymous: boolean;
-  department: string | Types.ObjectId;
+  department: string | Types.ObjectId | { name: string } | any;
 }
 
 const ideaSchema = new Schema({

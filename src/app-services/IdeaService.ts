@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import { GET_LIST_IDEA_SORT, IIdeaService } from "./interfaces";
 import Idea, { IdeaModelInterface } from "@app-repositories/models/Idea";
 import { Types } from "mongoose";
+import { isSameDay } from "date-fns";
 
 @injectable()
 class IdeaService implements IIdeaService {
@@ -995,6 +996,45 @@ class IdeaService implements IIdeaService {
     );
 
     return updatedIdea;
+  }
+
+  async getIdeaByDate(
+    startDate: Date,
+    endDate: Date
+  ): Promise<IdeaModelInterface[]> {
+    let matcher: any;
+
+    if (isSameDay(new Date(startDate), new Date(endDate))) {
+      matcher = {
+        createdAt: new Date(startDate),
+      };
+    } else {
+      matcher = {
+        $and: [
+          {
+            createdAt: {
+              $gte: new Date(startDate),
+            },
+          },
+          {
+            createdAt: {
+              $lte: new Date(endDate),
+            },
+          },
+        ],
+      };
+    }
+
+    const ideas = await Idea.find(matcher)
+      .sort({ createdAt: 1 })
+      .populate({
+        path: "updatedBy",
+        select: "firstName lastName _id",
+      })
+      .populate({ path: "department", select: "name _id" })
+      .lean();
+
+    return ideas;
   }
 }
 
