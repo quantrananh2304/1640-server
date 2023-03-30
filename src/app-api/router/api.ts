@@ -141,6 +141,17 @@ router.get(
   ThreadControllerInstance.getListThread.bind(ThreadControllerInstance)
 );
 
+/// idea
+
+router.get(
+  "/admin/idea/dashboard",
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  checkAdmin,
+  IdeaControllerInstance.dashboardInfo.bind(IdeaControllerInstance)
+);
+
 // auth
 
 router.put(

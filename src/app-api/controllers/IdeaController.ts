@@ -23,8 +23,16 @@ import {
   IThreadService,
 } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { format, isBefore } from "date-fns";
+import {
+  endOfYear,
+  format,
+  isBefore,
+  startOfMonth,
+  startOfYear,
+  sub,
+} from "date-fns";
 import { inject, injectable } from "inversify";
+import { Types } from "mongoose";
 
 @injectable()
 class IdeaController {
@@ -545,6 +553,121 @@ class IdeaController {
           dislikeCount,
           viewCount,
           commentsCount,
+        },
+      });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async dashboardInfo(req: Request, res: Response) {
+    try {
+      const today: Date = new Date();
+      const yesterday: Date = sub(today, { days: 1 });
+      const firstDateOfYear: Date = startOfYear(today);
+      const lastDateOfYear: Date = endOfYear(today);
+      const firstDateOfLastFourMonth: Date = startOfMonth(
+        sub(today, { months: 4 })
+      );
+
+      const todayIdeas: Array<IdeaModelInterface> =
+        await this.ideaService.getIdeaByDate(today, today);
+
+      if (!todayIdeas) {
+        return res.internal({});
+      }
+
+      const yesterdayIdeas: Array<IdeaModelInterface> =
+        await this.ideaService.getIdeaByDate(yesterday, yesterday);
+
+      if (!yesterdayIdeas) {
+        return res.internal({});
+      }
+
+      const thisYearIdeas: Array<IdeaModelInterface> =
+        await this.ideaService.getIdeaByDate(firstDateOfYear, lastDateOfYear);
+
+      if (!thisYearIdeas) {
+        return res.internal({});
+      }
+
+      const lastFiveMonthIdeas: Array<IdeaModelInterface> =
+        await this.ideaService.getIdeaByDate(firstDateOfLastFourMonth, today);
+
+      if (!lastFiveMonthIdeas) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.READ,
+        schemaId: null,
+        actor: req.headers.userId,
+        description: "/idea/dashboard",
+        createdAt: new Date(),
+      });
+
+      console.log(thisYearIdeas);
+
+      return res.successRes({
+        data: {
+          todayIdeaCount: todayIdeas.length,
+          yesterdayIdeaCount: yesterdayIdeas.length,
+          thisYearIdeaCount: thisYearIdeas.length,
+          ideaCountByDepartment: thisYearIdeas.reduce(
+            (prev: any, current: IdeaModelInterface) => {
+              const { department, createdAt, updatedBy } = current;
+              const month: string = format(new Date(createdAt), "LLL");
+
+              if (!prev[month]) {
+                // new month
+
+                prev[month] = {
+                  [department.name]: {
+                    _id: String(department._id),
+                    ideaCount: 1,
+                  },
+                  users: [updatedBy],
+                  userCount: 1,
+                };
+              } else {
+                // existed month
+
+                if (!prev[month][department.name]) {
+                  // new department
+
+                  prev[month][department.name] = {
+                    _id: String(department._id),
+                    ideaCount: 1,
+                  };
+                } else {
+                  // existed department
+
+                  prev[month][department.name].ideaCount += 1;
+                }
+
+                if (
+                  !prev[month].users
+                    .map(
+                      (item: {
+                        firstName: string;
+                        lastName: string;
+                        _id: Types.ObjectId;
+                      }) => String(item._id)
+                    )
+                    .includes(String(updatedBy._id))
+                ) {
+                  // new user
+                  prev[month].users.push(updatedBy);
+                  prev[month].userCount += 1;
+                }
+              }
+
+              return prev;
+            },
+            {}
+          ),
         },
       });
     } catch (error) {

@@ -274,6 +274,11 @@ export interface IIdeaService {
     commentId: string,
     content: string
   ): Promise<IdeaModelInterface>;
+
+  getIdeaByDate(
+    startDate: Date,
+    endDate: Date
+  ): Promise<Array<IdeaModelInterface>>;
 }
 
 export interface IIdeaNotificationService {
