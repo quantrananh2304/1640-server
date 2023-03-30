@@ -8,6 +8,7 @@ export const IDEA_NOTIFICATION_COLLECTION_NAME = "Idea_Notifications";
 export enum IDEA_NOTIFICATION_TYPE {
   SUBMISSION = "SUBMISSION",
   UPDATE = "UPDATE",
+  NEW_COMMENT = "NEW_COMMENT",
 }
 
 export interface IdeaNotificationModelInterface extends BaseModelInterface {
