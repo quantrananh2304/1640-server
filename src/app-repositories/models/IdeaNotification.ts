@@ -19,6 +19,7 @@ export interface IdeaNotificationModelInterface extends BaseModelInterface {
   createdAt: Date;
   updatedAt: Date;
   updatedBy: string | Types.ObjectId;
+  receiver: string | Types.ObjectId;
 }
 
 const ideaNotificationSchema = new Schema({
@@ -54,7 +55,10 @@ const ideaNotificationSchema = new Schema({
   },
   updatedBy: {
     type: Types.ObjectId,
-    required: true,
+    ref: USER_COLLECTION_NAME,
+  },
+  receiver: {
+    type: Types.ObjectId,
     ref: USER_COLLECTION_NAME,
   },
 });

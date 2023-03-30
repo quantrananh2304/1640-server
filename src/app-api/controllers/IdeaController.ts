@@ -159,8 +159,9 @@ class IdeaController {
                   content: `${user.firstName} ${user.lastName} submitted a new idea: ${newIdea.title}`,
                   type: IDEA_NOTIFICATION_TYPE.SUBMISSION,
                   idea: String(newIdea._id),
+                  receiver: item,
                 },
-                item
+                req.headers.userId
               );
 
             if (!notification) {
@@ -426,6 +427,7 @@ class IdeaController {
             content: `${user.firstName} ${user.lastName} added a new comment in idea: ${updatedIdea.title}`,
             type: IDEA_NOTIFICATION_TYPE.NEW_COMMENT,
             idea: String(updatedIdea._id),
+            receiver: String(updatedBy),
           },
           userId
         );
