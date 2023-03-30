@@ -14,6 +14,7 @@ import CategoryService from "@app-services/CategoryService";
 import IdeaController from "@app-api/controllers/IdeaController";
 import IdeaService from "@app-services/IdeaService";
 import IdeaNotificationService from "@app-services/IdeaNotificationService";
+import IdeaNotificationController from "@app-api/controllers/IdeaNotificationController";
 
 const container = new Container();
 
@@ -23,6 +24,7 @@ container.bind(DepartmentController).toSelf();
 container.bind(ThreadController).toSelf();
 container.bind(CategoryController).toSelf();
 container.bind(IdeaController).toSelf();
+container.bind(IdeaNotificationController).toSelf();
 
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<EventService>(TYPES.EventService).to(EventService);

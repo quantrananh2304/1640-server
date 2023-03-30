@@ -20,6 +20,7 @@ export interface IdeaNotificationModelInterface extends BaseModelInterface {
   updatedAt: Date;
   updatedBy: string | Types.ObjectId;
   receiver: string | Types.ObjectId;
+  isAnonymous: boolean;
 }
 
 const ideaNotificationSchema = new Schema({
@@ -60,6 +61,11 @@ const ideaNotificationSchema = new Schema({
   receiver: {
     type: Types.ObjectId,
     ref: USER_COLLECTION_NAME,
+  },
+  isAnonymous: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
 });
 

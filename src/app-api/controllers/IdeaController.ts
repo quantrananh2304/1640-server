@@ -156,10 +156,13 @@ class IdeaController {
             const notification =
               await this.ideaNotificationService.createNotification(
                 {
-                  content: `${user.firstName} ${user.lastName} submitted a new idea: ${newIdea.title}`,
+                  content: isAnonymous
+                    ? `A user submitted a new idea: ${newIdea.title}`
+                    : `${user.firstName} ${user.lastName} submitted a new idea: ${newIdea.title}`,
                   type: IDEA_NOTIFICATION_TYPE.SUBMISSION,
                   idea: String(newIdea._id),
                   receiver: item,
+                  isAnonymous,
                 },
                 req.headers.userId
               );
@@ -424,10 +427,13 @@ class IdeaController {
 
         await this.ideaNotificationService.createNotification(
           {
-            content: `${user.firstName} ${user.lastName} added a new comment in idea: ${updatedIdea.title}`,
+            content: isAnonymous
+              ? `A user added a new comment in idea: ${updatedIdea.title}`
+              : `${user.firstName} ${user.lastName} added a new comment in idea: ${updatedIdea.title}`,
             type: IDEA_NOTIFICATION_TYPE.NEW_COMMENT,
             idea: String(updatedIdea._id),
             receiver: String(updatedBy),
+            isAnonymous,
           },
           userId
         );

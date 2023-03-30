@@ -2,12 +2,14 @@ import AuthenticationController from "@app-api/controllers/AuthenticationControl
 import CategoryController from "@app-api/controllers/CategoryController";
 import DepartmentController from "@app-api/controllers/DepartmentController";
 import IdeaController from "@app-api/controllers/IdeaController";
+import IdeaNotificationController from "@app-api/controllers/IdeaNotificationController";
 import ThreadController from "@app-api/controllers/ThreadController";
 import UserController from "@app-api/controllers/UserController";
 import AuthenticationMiddleware from "@app-api/middlewares/AuthenticationMiddleware";
 import CategoryMiddleware from "@app-api/middlewares/CategoryMiddleware";
 import DepartmentMiddleware from "@app-api/middlewares/DepartmentMiddleware";
 import IdeaMiddleware from "@app-api/middlewares/IdeaMiddleware";
+import IdeaNotificationMiddleware from "@app-api/middlewares/IdeaNotificationMiddleware";
 import ThreadMiddleware from "@app-api/middlewares/ThreadMiddleware";
 import UserMiddleware from "@app-api/middlewares/UserMiddleware";
 import checkToken, { checkAdmin } from "@app-api/middlewares/authorization";
@@ -41,6 +43,8 @@ const ThreadControllerInstance =
 const CategoryControllerInstance =
   container.get<CategoryController>(CategoryController);
 const IdeaControllerInstance = container.get<IdeaController>(IdeaController);
+const IdeaNotificationControllerInstance =
+  container.get<IdeaNotificationController>(IdeaNotificationController);
 
 router.get("/test", (req, res) => {
   res.send({ foo: "bar" });
@@ -339,6 +343,19 @@ router.get(
   ParamsValidations.preventUnknownData,
   checkToken,
   IdeaControllerInstance.getIdeaDetail.bind(IdeaControllerInstance)
+);
+
+// idea notification
+
+router.get(
+  "/idea-notification/list",
+  IdeaNotificationMiddleware.getListNotification,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaNotificationControllerInstance.getListNotification.bind(
+    IdeaNotificationControllerInstance
+  )
 );
 
 router.use(function (req: Request, res: Response) {
