@@ -1,4 +1,6 @@
 const CONSTANTS = {
+  BASE_URL: "https://1640-client.vercel.app",
+
   DEFAULT_PASSWORD: "1640Group3!",
 
   CODE_LENGTH: 6,
@@ -22,6 +24,12 @@ const CONSTANTS = {
   `,
 
   MIN_CODE_REQUEST_TIME: 10 * 60,
+
+  NEW_IDEA_NOTIFICATION_TITLE: "New idea submitted: ${idea.title}",
+
+  NEW_IDEA_NOTIFICATION_BODY:
+    "<p>${user.firstName} ${user.lastName} submitted a new idea in campaign ${thread.name} at ${idea.createdAt}: </p>" +
+    '<p><a href="${baseUrl}/ideas/${idea._id}">${idea.title}</a></p>',
 
   DEFAULT_CODE_EXPIRES: {
     days: 1,

@@ -346,6 +346,14 @@ class UserService implements IUserService {
 
     return updatedUser;
   }
+
+  async getUserByRoles(roles: USER_ROLE[]): Promise<UserModelInterface[]> {
+    const users: Array<UserModelInterface> = await User.find({
+      role: { $in: roles },
+    }).lean();
+
+    return users;
+  }
 }
 
 export default UserService;

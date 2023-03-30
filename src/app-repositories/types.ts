@@ -6,6 +6,7 @@ const TYPES = {
   ThreadService: Symbol.for("ThreadService"),
   CategoryService: Symbol.for("CategoryService"),
   IdeaService: Symbol.for("IdeaService"),
+  IdeaNotificationService: Symbol.for("IdeaNotificationService"),
 };
 
 export default TYPES;
