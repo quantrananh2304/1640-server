@@ -105,36 +105,6 @@ class IdeaController {
         return res.internal({});
       }
 
-      const ideaNotification =
-        await this.ideaNotificationService.createNotification(
-          {
-            content: `${user.firstName} ${user.lastName} submitted a new idea: ${newIdea.title}`,
-            type: IDEA_NOTIFICATION_TYPE.SUBMISSION,
-            idea: String(newIdea._id),
-          },
-          req.headers.userId
-        );
-
-      if (!ideaNotification) {
-        return res.internal({});
-      }
-
-      const emailSubject = CONSTANTS.NEW_IDEA_NOTIFICATION_TITLE.replace(
-        "${idea.title}",
-        newIdea.title
-      );
-
-      const emailBody = CONSTANTS.NEW_IDEA_NOTIFICATION_BODY.replace(
-        "${idea.title}",
-        newIdea.title
-      )
-        .replace("${user.firstName}", user.firstName)
-        .replace("${user.lastName}", user.lastName)
-        .replace("${thread.name}", threadDocument.name)
-        .replace("${idea.createdAt}", format(new Date(), "MMM do yyyy"))
-        .replace("${baseUrl}", CONSTANTS.BASE_URL)
-        .replace("${idea._id}", String(newIdea._id));
-
       const QACUsers: Array<UserModelInterface> =
         await this.userService.getUserByRoles([
           USER_ROLE.QUALITY_ASSURANCE_COORDINATOR,
@@ -144,16 +114,68 @@ class IdeaController {
         return res.internal({});
       }
 
-      const receivers = QACUsers.filter(
-        (item) => item.status === USER_STATUS.ACTIVE
-      ).map((item) => item.email);
+      if (QACUsers.length) {
+        const emailSubject = CONSTANTS.NEW_IDEA_NOTIFICATION_TITLE.replace(
+          "${idea.title}",
+          newIdea.title
+        );
 
-      await this.nodeMailer.nodeMailerSendMail(
-        receivers,
-        // ["trananhquan23499@gmail.com"],
-        emailSubject,
-        emailBody
-      );
+        const emailBody = isAnonymous
+          ? CONSTANTS.NEW_ANONYMOUS_IDEA_NOTIFICATION_BODY.replace(
+              "${idea.title}",
+              newIdea.title
+            )
+              .replace("${thread.name}", threadDocument.name)
+              .replace("${idea.createdAt}", format(new Date(), "MMM do yyyy"))
+              .replace("${baseUrl}", CONSTANTS.BASE_URL)
+              .replace("${idea._id}", String(newIdea._id))
+          : CONSTANTS.NEW_IDEA_NOTIFICATION_BODY.replace(
+              "${idea.title}",
+              newIdea.title
+            )
+              .replace("${user.firstName}", user.firstName)
+              .replace("${user.lastName}", user.lastName)
+              .replace("${thread.name}", threadDocument.name)
+              .replace("${idea.createdAt}", format(new Date(), "MMM do yyyy"))
+              .replace("${baseUrl}", CONSTANTS.BASE_URL)
+              .replace("${idea._id}", String(newIdea._id));
+
+        const receivers = QACUsers.filter(
+          (item) => item.status === USER_STATUS.ACTIVE
+        ).map((item) => item.email);
+
+        await this.nodeMailer.nodeMailerSendMail(
+          receivers,
+          // ["trananhquan23499@gmail.com"],
+          emailSubject,
+          emailBody
+        );
+
+        const createNotifications = (arr: Array<any>) => {
+          const promises = arr.map(async (item: string) => {
+            const notification =
+              await this.ideaNotificationService.createNotification(
+                {
+                  content: `${user.firstName} ${user.lastName} submitted a new idea: ${newIdea.title}`,
+                  type: IDEA_NOTIFICATION_TYPE.SUBMISSION,
+                  idea: String(newIdea._id),
+                  receiver: item,
+                },
+                req.headers.userId
+              );
+
+            if (!notification) {
+              return res.internal({});
+            }
+
+            return notification;
+          });
+
+          return Promise.all(promises);
+        };
+
+        await createNotifications(QACUsers.map((item) => String(item._id)));
+      }
 
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.IDEA,
@@ -333,6 +355,7 @@ class IdeaController {
     try {
       const { ideaId } = req.params;
       const { content, isAnonymous } = req.body;
+      const { userId } = req.headers;
 
       const idea: any = await this.ideaService.getIdeaById(ideaId);
 
@@ -350,18 +373,71 @@ class IdeaController {
         ideaId,
         content,
         isAnonymous,
-        req.headers.userId
+        userId
       );
 
       if (!updatedIdea) {
         return res.internal({});
       }
 
+      const { updatedBy } = updatedIdea;
+
+      if (String(updatedBy) !== userId) {
+        const user: UserModelInterface = await this.userService.getUserById(
+          userId
+        );
+        const receiver: UserModelInterface = await this.userService.getUserById(
+          String(updatedBy)
+        );
+
+        const emailTitle =
+          CONSTANTS.NEW_IDEA_COMMENT_NOTIFICATION_TITLE.replace(
+            "${idea.title}",
+            updatedIdea.title
+          );
+        const emailBody = isAnonymous
+          ? CONSTANTS.NEW_ANONYMOUS_IDEA_COMMENT_NOTIFICATION_BODY.replace(
+              "${comment.createdAt}",
+              format(new Date(), "MMM do yyyy")
+            )
+              .replace("${baseUrl}", CONSTANTS.BASE_URL)
+              .replace("${idea._id}", String(updatedIdea._id))
+              .replace("${idea.title}", updatedIdea.title)
+          : CONSTANTS.NEW_IDEA_COMMENT_NOTIFICATION_BODY.replace(
+              "${user.firstName}",
+              user.firstName
+            )
+              .replace("${user.lastName}", user.lastName)
+              .replace(
+                "${comment.createdAt}",
+                format(new Date(), "MMM do yyyy")
+              )
+              .replace("${baseUrl}", CONSTANTS.BASE_URL)
+              .replace("${idea._id}", String(updatedIdea._id))
+              .replace("${idea.title}", updatedIdea.title);
+
+        await this.nodeMailer.nodeMailerSendMail(
+          [receiver.email],
+          emailTitle,
+          emailBody
+        );
+
+        await this.ideaNotificationService.createNotification(
+          {
+            content: `${user.firstName} ${user.lastName} added a new comment in idea: ${updatedIdea.title}`,
+            type: IDEA_NOTIFICATION_TYPE.NEW_COMMENT,
+            idea: String(updatedIdea._id),
+            receiver: String(updatedBy),
+          },
+          userId
+        );
+      }
+
       await this.eventService.createEvent({
         schema: EVENT_SCHEMA.IDEA,
         action: EVENT_ACTION.UPDATE,
         schemaId: updatedIdea._id,
-        actor: req.headers.userId,
+        actor: userId,
         description: "/idea/add-comment",
         createdAt: new Date(),
       });

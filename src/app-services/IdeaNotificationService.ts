@@ -13,10 +13,11 @@ class IdeaNotificationService implements IIdeaNotificationService {
       content: string;
       type: IDEA_NOTIFICATION_TYPE;
       idea: string;
+      receiver: string;
     },
     actor: string
   ): Promise<IdeaNotificationModelInterface> {
-    const { content, type, idea } = _notification;
+    const { content, type, idea, receiver } = _notification;
     const notification: IdeaNotificationModelInterface =
       await IdeaNotification.create({
         content,
@@ -26,6 +27,7 @@ class IdeaNotificationService implements IIdeaNotificationService {
         createdAt: new Date(),
         updatedAt: new Date(),
         updatedBy: Types.ObjectId(actor),
+        receiver: Types.ObjectId(receiver),
       });
 
     return notification;

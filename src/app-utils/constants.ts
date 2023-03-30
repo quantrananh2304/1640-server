@@ -29,7 +29,22 @@ const CONSTANTS = {
 
   NEW_IDEA_NOTIFICATION_BODY:
     "<p>${user.firstName} ${user.lastName} submitted a new idea in campaign ${thread.name} at ${idea.createdAt}: </p>" +
-    '<p><a href="${baseUrl}/ideas/${idea._id}">${idea.title}</a></p>',
+    '<p><a href="${baseUrl}/ideas/lists/${idea._id}">${idea.title}</a></p>',
+
+  NEW_ANONYMOUS_IDEA_NOTIFICATION_BODY:
+    "<p>A user submitted a new idea in campaign ${thread.name} at ${idea.createdAt}: </p>" +
+    '<p><a href="${baseUrl}/ideas/lists/${idea._id}">${idea.title}</a></p>',
+
+  NEW_IDEA_COMMENT_NOTIFICATION_TITLE:
+    "New comment added in idea: ${idea.title}",
+
+  NEW_IDEA_COMMENT_NOTIFICATION_BODY:
+    "<p>${user.firstName} ${user.lastName} added a comment in your idea at ${comment.createdAt}: </p>" +
+    '<p><a href="${baseUrl}/ideas/lists/${idea._id}">${idea.title}</a></p>',
+
+  NEW_ANONYMOUS_IDEA_COMMENT_NOTIFICATION_BODY:
+    "<p>A user added a comment in your idea at ${comment.createdAt}: </p>" +
+    '<p><a href="${baseUrl}/ideas/lists/${idea._id}">${idea.title}</a></p>',
 
   DEFAULT_CODE_EXPIRES: {
     days: 1,
