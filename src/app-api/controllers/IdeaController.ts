@@ -725,11 +725,19 @@ class IdeaController {
         data: {
           todayIdeaCount: todayIdeas.length,
           yesterdayIdeaCount: yesterdayIdeas.length,
-          [getYear(today)]: thisYearIdeas.length,
-          [getYear(lastYear)]: lastYearIdeas.length,
-          [getYear(lastTwoYear)]: lastTwoYearIdeas.length,
-          [getYear(lastThreeYear)]: lastThreeYearIdeas.length,
-          [getYear(lastFourYear)]: lastFourYearIdeas.length,
+          ideasByYear: [
+            { year: getYear(today), ideasCount: thisYearIdeas.length },
+            { year: getYear(lastYear), ideasCount: lastYearIdeas.length },
+            { year: getYear(lastTwoYear), ideasCount: lastTwoYearIdeas.length },
+            {
+              year: getYear(lastThreeYear),
+              ideasCount: lastThreeYearIdeas.length,
+            },
+            {
+              year: getYear(lastFourYear),
+              ideasCount: lastFourYearIdeas.length,
+            },
+          ],
           ideaCountByDepartment: thisYearIdeas.reduce(
             (prev: any, current: IdeaModelInterface) => {
               const { department, createdAt, updatedBy } = current;
@@ -805,6 +813,28 @@ class IdeaController {
                   prev[month].users.push(updatedBy);
                   prev[month].userCount += 1;
                 }
+              }
+
+              return prev;
+            },
+            {}
+          ),
+          departmentInteractionCount: thisYearIdeas.reduce(
+            (prev: any, current: IdeaModelInterface) => {
+              const { department, like, dislike, comments, views } = current;
+
+              if (!prev[department.name]) {
+                prev[department.name] = {
+                  likeCount: like.length,
+                  dislikeCount: dislike.length,
+                  commentsCount: comments.length,
+                  viewCount: views.length,
+                };
+              } else {
+                prev[department.name].likeCount += like.length;
+                prev[department.name].dislikeCount += dislike.length;
+                prev[department.name].commentsCount += comments.length;
+                prev[department.name].viewCount += views.length;
               }
 
               return prev;
