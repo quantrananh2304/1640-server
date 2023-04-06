@@ -278,12 +278,7 @@ class IdeaController {
       }
 
       const { updatedBy } = updatedIdea;
-      console.log(
-        `action === "dislike" &&
-!idea.dislike.map((item) => String(item.user).includes(userId))`,
-        action === "dislike" &&
-          !idea.dislike.map((item) => String(item.user).includes(userId))
-      );
+
       if (String(updatedBy) !== userId) {
         if (
           (action === "like" &&
