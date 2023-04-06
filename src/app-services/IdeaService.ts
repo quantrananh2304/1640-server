@@ -753,6 +753,7 @@ class IdeaService implements IIdeaService {
           comments: 1,
           description: 1,
           department: 1,
+          isAnonymous: 1,
 
           dislikeCount: {
             $cond: {

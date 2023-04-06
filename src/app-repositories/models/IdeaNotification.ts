@@ -9,6 +9,8 @@ export enum IDEA_NOTIFICATION_TYPE {
   SUBMISSION = "SUBMISSION",
   UPDATE = "UPDATE",
   NEW_COMMENT = "NEW_COMMENT",
+  LIKE = "LIKE",
+  DISLIKE = "DISLIKE",
 }
 
 export interface IdeaNotificationModelInterface extends BaseModelInterface {
