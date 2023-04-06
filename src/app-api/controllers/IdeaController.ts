@@ -256,6 +256,7 @@ class IdeaController {
   async likeDislikeIdea(req: Request, res: Response) {
     try {
       const { ideaId, action } = req.params;
+      const { userId } = req.headers;
 
       const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
         ideaId
@@ -274,6 +275,51 @@ class IdeaController {
 
       if (!updatedIdea) {
         return res.internal({});
+      }
+
+      const { updatedBy } = updatedIdea;
+      console.log(
+        `action === "dislike" &&
+!idea.dislike.map((item) => String(item.user).includes(userId))`,
+        action === "dislike" &&
+          !idea.dislike.map((item) => String(item.user).includes(userId))
+      );
+      if (String(updatedBy) !== userId) {
+        if (
+          (action === "like" &&
+            !idea.like.map((item) => String(item.user)).includes(userId)) ||
+          (action === "dislike" &&
+            !idea.dislike.map((item) => String(item.user)).includes(userId))
+        ) {
+          const user: UserModelInterface = await this.userService.getUserById(
+            userId
+          );
+
+          if (!user) {
+            return res.internal({});
+          }
+
+          const receiver: UserModelInterface =
+            await this.userService.getUserById(String(updatedBy));
+
+          if (!receiver) {
+            return res.internal({});
+          }
+
+          await this.ideaNotificationService.createNotification(
+            {
+              content: `${user.firstName} ${user.lastName} ${action}d your idea: ${updatedIdea.title}`,
+              type:
+                action === "like"
+                  ? IDEA_NOTIFICATION_TYPE.LIKE
+                  : IDEA_NOTIFICATION_TYPE.DISLIKE,
+              idea: String(updatedIdea._id),
+              receiver: String(updatedBy),
+              isAnonymous: false,
+            },
+            userId
+          );
+        }
       }
 
       await this.eventService.createEvent({

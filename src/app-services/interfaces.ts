@@ -36,7 +36,7 @@ export enum GET_LIST_IDEA_SORT {
   DATE_CREATED_ASC = "DATE_CREATED_ASC",
   DATE_CREATED_DESC = "DATE_CREATED_DESC",
   LATEST_COMMENT = "LATEST_COMMENT",
-  LIKE_ASC = "LIE_ASC",
+  LIKE_ASC = "LIKE_ASC",
   LIKE_DESC = "LIKE_DESC",
   DISLIKE_ASC = "DISLIKE_ASC",
   DISLIKE_DESC = "DISLIKE_DESC",
@@ -300,4 +300,12 @@ export interface IIdeaNotificationService {
     page: number;
     totalPage: number;
   }>;
+
+  readNotification(
+    notificationId: string
+  ): Promise<IdeaNotificationModelInterface>;
+
+  getNotificationById(
+    notificationId: string
+  ): Promise<IdeaNotificationModelInterface>;
 }

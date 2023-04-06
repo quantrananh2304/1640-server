@@ -134,6 +134,30 @@ class IdeaNotificationService implements IIdeaNotificationService {
         total % limit === 0 ? total / limit : Math.floor(total / limit) + 1,
     };
   }
+
+  async readNotification(
+    notificationId: string
+  ): Promise<IdeaNotificationModelInterface> {
+    const ideaNotification: IdeaNotificationModelInterface =
+      await IdeaNotification.findByIdAndUpdate(
+        notificationId,
+        {
+          $set: { read: true, updatedAt: new Date() },
+        },
+        { new: true, useFindAndModify: false }
+      );
+
+    return ideaNotification;
+  }
+
+  async getNotificationById(
+    notificationId: string
+  ): Promise<IdeaNotificationModelInterface> {
+    const ideaNotification: IdeaNotificationModelInterface =
+      await IdeaNotification.findById(notificationId);
+
+    return ideaNotification;
+  }
 }
 
 export default IdeaNotificationService;
