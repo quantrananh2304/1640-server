@@ -90,18 +90,6 @@ router.post(
   )
 );
 
-router.get(
-  "/admin/department/list",
-  DepartmentMiddleware.getListDepartment,
-  ParamsValidations.validationRequest,
-  ParamsValidations.preventUnknownData,
-  checkToken,
-  checkAdmin,
-  DepartmentControllerInstance.getListDepartment.bind(
-    DepartmentControllerInstance
-  )
-);
-
 /// user
 
 router.get(
@@ -154,6 +142,19 @@ router.get(
   checkToken,
   checkAdmin,
   IdeaControllerInstance.dashboardInfo.bind(IdeaControllerInstance)
+);
+
+// department
+
+router.get(
+  "/department/list",
+  DepartmentMiddleware.getListDepartment,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  DepartmentControllerInstance.getListDepartment.bind(
+    DepartmentControllerInstance
+  )
 );
 
 // auth
