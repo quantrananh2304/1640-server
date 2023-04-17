@@ -201,6 +201,16 @@ const CONSTANTS = {
       message: "Cannot read others' notification",
     },
 
+    DEPARTMENT_ALREADY_ACTIVE: {
+      errorCode: "031",
+      message: "Department already active",
+    },
+
+    DEPARTMENT_ALREADY_INACTIVE: {
+      errorCode: "032",
+      message: "Department already inactive",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",

@@ -1,5 +1,8 @@
 import { Request, Response } from "@app-helpers/http.extends";
-import { DepartmentModelInterface } from "@app-repositories/models/Department";
+import {
+  DEPARTMENT_STATUS,
+  DepartmentModelInterface,
+} from "@app-repositories/models/Department";
 import { EVENT_ACTION, EVENT_SCHEMA } from "@app-repositories/models/Event";
 import TYPES from "@app-repositories/types";
 import { IDepartmentService, IEventService } from "@app-services/interfaces";
@@ -80,6 +83,66 @@ class DepartmentController {
       return res.successRes({
         data: department,
       });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async toggleActivateDepartment(req: Request, res: Response) {
+    try {
+      const { departmentId, action } = req.params;
+      const { userId } = req.headers;
+
+      const department: DepartmentModelInterface =
+        await this.departmentService.getDepartmentById(departmentId);
+
+      if (!department) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.DEPARTMENT_NOT_EXISTED);
+      }
+
+      if (action === "activate") {
+        if (department.status === DEPARTMENT_STATUS.ACTIVE) {
+          return res.errorRes(CONSTANTS.SERVER_ERROR.DEPARTMENT_ALREADY_ACTIVE);
+        }
+
+        const newDepartment: DepartmentModelInterface =
+          await this.departmentService.activateDepartment(departmentId, userId);
+
+        if (!newDepartment) {
+          return res.internal({});
+        }
+      } else if (action === "deactivate") {
+        if (department.status === DEPARTMENT_STATUS.INACTIVE) {
+          return res.errorRes(
+            CONSTANTS.SERVER_ERROR.DEPARTMENT_ALREADY_INACTIVE
+          );
+        }
+
+        const newDepartment: DepartmentModelInterface =
+          await this.departmentService.deactivateDepartment(
+            departmentId,
+            userId
+          );
+
+        if (!newDepartment) {
+          return res.internal({});
+        }
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.DEPARTMENT,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: departmentId,
+        actor: userId,
+        description: `/department/${action}`,
+        createdAt: new Date(),
+      });
+
+      const updatedDepartment: DepartmentModelInterface =
+        await this.departmentService.getDepartmentById(departmentId);
+
+      return res.successRes({ data: updatedDepartment });
     } catch (error) {
       console.log("error", error);
       return res.internal({ message: error.message });

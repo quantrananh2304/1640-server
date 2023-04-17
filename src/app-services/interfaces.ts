@@ -164,6 +164,16 @@ export interface IDepartmentService {
   }>;
 
   getDepartmentById(_id: string): Promise<DepartmentModelInterface>;
+
+  activateDepartment(
+    departmentId: string,
+    actor: string
+  ): Promise<DepartmentModelInterface>;
+
+  deactivateDepartment(
+    departmentId: string,
+    actor: string
+  ): Promise<DepartmentModelInterface>;
 }
 
 export interface IThreadService {

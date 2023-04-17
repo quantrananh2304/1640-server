@@ -90,6 +90,18 @@ router.post(
   )
 );
 
+router.put(
+  "/admin/department/:departmentId/toggle/:action",
+  DepartmentMiddleware.toggleActivateDeactivate,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  checkAdmin,
+  DepartmentControllerInstance.toggleActivateDepartment.bind(
+    DepartmentControllerInstance
+  )
+);
+
 /// user
 
 router.get(

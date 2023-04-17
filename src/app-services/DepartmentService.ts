@@ -95,6 +95,42 @@ class DepartmentService implements IDepartmentService {
 
     return department;
   }
+
+  async activateDepartment(
+    departmentId: string,
+    actor: string
+  ): Promise<DepartmentModelInterface> {
+    const department: DepartmentModelInterface =
+      await Department.findByIdAndUpdate(
+        departmentId,
+        {
+          $set: { status: DEPARTMENT_STATUS.ACTIVE },
+          updatedAt: new Date(),
+          updatedBy: Types.ObjectId(actor),
+        },
+        { new: true, useFindAndModify: false }
+      );
+
+    return department;
+  }
+
+  async deactivateDepartment(
+    departmentId: string,
+    actor: string
+  ): Promise<DepartmentModelInterface> {
+    const department: DepartmentModelInterface =
+      await Department.findByIdAndUpdate(
+        departmentId,
+        {
+          $set: { status: DEPARTMENT_STATUS.INACTIVE },
+          updatedAt: new Date(),
+          updatedBy: Types.ObjectId(actor),
+        },
+        { new: true, useFindAndModify: false }
+      );
+
+    return department;
+  }
 }
 
 export default DepartmentService;

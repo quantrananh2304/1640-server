@@ -1,6 +1,7 @@
 import { GET_LIST_DEPARTMENT_SORT } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { body, query } from "express-validator";
+import { body, param, query } from "express-validator";
+import { isValidObjectId } from "mongoose";
 
 const DepartmentMiddleware = {
   create: [
@@ -30,6 +31,20 @@ const DepartmentMiddleware = {
         return true;
       })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.SORT_OPTION_INVALID),
+  ],
+
+  toggleActivateDeactivate: [
+    param("departmentId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((departmentId) => isValidObjectId(departmentId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+
+    param("action")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((action) => action === "activate" || action === "deactivate")
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.ACTION_INVALID),
   ],
 };
 
