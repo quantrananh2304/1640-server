@@ -211,6 +211,11 @@ const CONSTANTS = {
       message: "Department already inactive",
     },
 
+    CANNOT_EDIT_OTHER_IDEA: {
+      errorCode: "033",
+      message: "Cannot edit others' idea",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",

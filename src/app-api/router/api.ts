@@ -358,6 +358,15 @@ router.get(
   IdeaControllerInstance.getIdeaDetail.bind(IdeaControllerInstance)
 );
 
+router.put(
+  "/idea/:ideaId/edit",
+  IdeaMiddleware.edit,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  IdeaControllerInstance.editIdea.bind(IdeaControllerInstance)
+);
+
 // idea notification
 
 router.get(

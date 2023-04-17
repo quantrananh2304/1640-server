@@ -289,6 +289,16 @@ export interface IIdeaService {
     startDate: Date,
     endDate: Date
   ): Promise<Array<IdeaModelInterface>>;
+
+  editIdea(
+    ideaId: string,
+    _idea: {
+      description: string;
+      documents: Array<{ contentType: string; name: string; url: string }>;
+      isAnonymous: boolean;
+    },
+    actor: string
+  ): Promise<IdeaModelInterface>;
 }
 
 export interface IIdeaNotificationService {

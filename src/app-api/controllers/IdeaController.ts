@@ -923,6 +923,76 @@ class IdeaController {
       return res.internal({ message: error.message });
     }
   }
+
+  async editIdea(req: Request, res: Response) {
+    try {
+      const { ideaId } = req.params;
+      const { userId } = req.headers;
+
+      const idea: any = await this.ideaService.getIdeaById(ideaId);
+
+      if (!idea) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      if (isBefore(new Date(idea.thread.closureDate), new Date())) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.THREAD_EXPIRED);
+      }
+
+      if (userId !== String(idea.updatedBy._id)) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CANNOT_EDIT_OTHER_IDEA);
+      }
+
+      const newIdea: IdeaModelInterface = await this.ideaService.editIdea(
+        ideaId,
+        req.body,
+        userId
+      );
+
+      if (!newIdea) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.IDEA,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: ideaId,
+        actor: userId,
+        description: "/idea/edit",
+        createdAt: new Date(),
+      });
+
+      const updatedIdea: IdeaModelInterface =
+        await this.ideaService.getIdeaById(ideaId);
+
+      const likeCount = updatedIdea.like.length;
+      const dislikeCount = updatedIdea.dislike.length;
+      const viewCount = updatedIdea.views.length;
+      const commentsCount = updatedIdea.comments.length;
+
+      return res.successRes({
+        data: {
+          ...updatedIdea,
+          comments: idea.comments.map((item: any) => {
+            const { isAnonymous, createdBy } = item;
+
+            return {
+              ...item,
+              createdBy: isAnonymous ? {} : createdBy,
+            };
+          }),
+          likeCount,
+          dislikeCount,
+          viewCount,
+          commentsCount,
+          updatedBy: updatedIdea.isAnonymous ? {} : updatedIdea.updatedBy,
+        },
+      });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
 }
 
 export default IdeaController;

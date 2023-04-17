@@ -1037,6 +1037,30 @@ class IdeaService implements IIdeaService {
 
     return ideas;
   }
+
+  async editIdea(
+    ideaId: string,
+    _idea: {
+      description: string;
+      documents: Array<{ contentType: string; name: string; url: string }>;
+      isAnonymous: boolean;
+    },
+    actor: string
+  ): Promise<IdeaModelInterface> {
+    const idea: IdeaModelInterface = await Idea.findByIdAndUpdate(
+      ideaId,
+      {
+        $set: {
+          ..._idea,
+          updatedAt: new Date(),
+          updatedBy: Types.ObjectId(actor),
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return idea;
+  }
 }
 
 export default IdeaService;

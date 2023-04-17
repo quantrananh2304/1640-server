@@ -189,6 +189,35 @@ const IdeaMiddleware = {
       .custom((ideaId: string) => isValidObjectId(ideaId))
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
   ],
+
+  edit: [
+    param("ideaId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((ideaId: string) => isValidObjectId(ideaId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+
+    body("description")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isLength({ max: 255 }),
+
+    body("isAnonymous").exists({ checkNull: true }).isBoolean(),
+
+    body("documents")
+      .exists({ checkNull: true, checkFalsy: true })
+      .isArray()
+      .custom((documents: Array<any>) => {
+        if (!documents.length) {
+          return true;
+        }
+
+        return documents.every(
+          (item) => item.contentType && item.name && item.url
+        );
+      })
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.DOCUMENT_INVALID),
+  ],
 };
 
 export default IdeaMiddleware;
