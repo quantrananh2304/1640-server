@@ -223,6 +223,12 @@ const IdeaMiddleware = {
       .isString()
       .custom((category: string) => isValidObjectId(category))
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+
+    body("thread")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((thread: string) => isValidObjectId(thread))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
   ],
 };
 
