@@ -187,10 +187,8 @@ class UserController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
       }
 
-      const updatedUser: UserModelInterface = await this.userService.update(
-        userId,
-        req.body
-      );
+      const updatedUser: UserModelInterface =
+        await this.userService.updateUserForAdmin(userId, req.body);
 
       if (!updatedUser) {
         return res.internal({});
