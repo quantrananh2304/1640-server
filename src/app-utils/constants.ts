@@ -11,7 +11,8 @@ const CONSTANTS = {
 
   ACCOUNT_ACTIVATION: "Account activation",
 
-  ACCOUNT_ACTIVATION_BODY: `<p>Your activation code is <b>{user.code}</b></p>
+  ACCOUNT_ACTIVATION_BODY: `<p>Your account is created successfully. Please login to the system with your email to activate your account. Default password: 1640Group3!.</p>
+  <p>Your activation code is <b>{user.code}</b></p>
   <p>This code will be expired in a day.</p>`,
 
   PASSWORD_RESET_REQUEST: "Password reset request",
