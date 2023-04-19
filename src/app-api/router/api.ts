@@ -124,6 +124,16 @@ router.put(
   UserControllerInstance.changeDepartment.bind(UserControllerInstance)
 );
 
+router.put(
+  "/admin/user/:userId/update",
+  UserMiddleware.updateProfileForAdmin,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  checkAdmin,
+  UserControllerInstance.updateProfileForAdmin.bind(UserControllerInstance)
+);
+
 /// thread
 
 router.post(

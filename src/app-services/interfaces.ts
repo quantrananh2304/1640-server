@@ -108,6 +108,19 @@ export interface IUserService {
     }
   ): Promise<UserModelInterface>;
 
+  updateUserForAdmin(
+    userId: string | Types.ObjectId,
+    _user: {
+      firstName: string;
+      lastName: string;
+      address: string;
+      dob: string | Date;
+      phoneNumber: string;
+      gender: USER_GENDER;
+      role: USER_ROLE;
+    }
+  ): Promise<UserModelInterface>;
+
   resetPassword(
     userId: string | Types.ObjectId,
     password: string,

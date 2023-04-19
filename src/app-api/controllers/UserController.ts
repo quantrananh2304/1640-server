@@ -171,6 +171,53 @@ class UserController {
     }
   }
 
+  async updateProfileForAdmin(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+
+      const user: UserModelInterface = await this.userService.getUserById(
+        userId
+      );
+
+      if (!user) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.USER_NOT_EXIST);
+      }
+
+      if (user.status !== USER_STATUS.ACTIVE) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ACCOUNT_NOT_ACTIVATED);
+      }
+
+      const updatedUser: UserModelInterface = await this.userService.update(
+        userId,
+        req.body
+      );
+
+      if (!updatedUser) {
+        return res.internal({});
+      }
+
+      await this.eventService.createEvent({
+        schema: EVENT_SCHEMA.USER,
+        action: EVENT_ACTION.UPDATE,
+        schemaId: userId,
+        actor: req.headers.userId,
+        description: "/user/update",
+        createdAt: new Date(),
+      });
+
+      const result: UserModelInterface = await this.userService.getUserById(
+        String(updatedUser._id)
+      );
+
+      delete result.password;
+
+      return res.successRes({ data: result });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
   async uploadAvatar(req: Request, res: Response) {
     try {
       const { userId } = req.params;

@@ -1,6 +1,5 @@
 import AuthenticationController from "@app-api/controllers/AuthenticationController";
 import UserService from "@app-services/UserService";
-import { Container } from "inversify";
 import TYPES from "./types";
 import EventService from "@app-services/EventService";
 import NodeMailer from "./smtp";
@@ -15,8 +14,11 @@ import IdeaController from "@app-api/controllers/IdeaController";
 import IdeaService from "@app-services/IdeaService";
 import IdeaNotificationService from "@app-services/IdeaNotificationService";
 import IdeaNotificationController from "@app-api/controllers/IdeaNotificationController";
+import { Container } from "inversify";
 
 const container = new Container();
+
+export { container };
 
 container.bind(AuthenticationController).toSelf();
 container.bind(UserController).toSelf();
@@ -38,5 +40,3 @@ container.bind<IdeaService>(TYPES.IdeaService).to(IdeaService);
 container
   .bind<IdeaNotificationService>(TYPES.IdeaNotificationService)
   .to(IdeaNotificationService);
-
-export { container };

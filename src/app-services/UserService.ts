@@ -231,6 +231,46 @@ class UserService implements IUserService {
     return user;
   }
 
+  async updateUserForAdmin(
+    userId: string | Types.ObjectId,
+    {
+      firstName,
+      lastName,
+      address,
+      dob,
+      phoneNumber,
+      gender,
+      role,
+    }: {
+      firstName: string;
+      lastName: string;
+      address: string;
+      dob: string | Date;
+      phoneNumber: string;
+      gender: USER_GENDER;
+      role: USER_ROLE;
+    }
+  ): Promise<UserModelInterface> {
+    const user: UserModelInterface = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          firstName,
+          lastName,
+          address,
+          dob: new Date(dob),
+          phoneNumber,
+          gender,
+          updatedAt: new Date(),
+          role,
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return user;
+  }
+
   async uploadAvatar(
     userId: string | Types.ObjectId,
     image: string,

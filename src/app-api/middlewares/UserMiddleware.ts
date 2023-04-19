@@ -1,3 +1,4 @@
+import { USER_ROLE } from "@app-repositories/models/User";
 import { GET_LIST_USER_SORT } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
 import { body, param, query } from "express-validator";
@@ -69,6 +70,46 @@ const UserMiddleware = {
       .isString(),
 
     body("gender").exists({ checkFalsy: true, checkNull: true }).isString(),
+  ],
+
+  updateProfileForAdmin: [
+    param("userId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .custom((userId: string) => isValidObjectId(userId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+
+    body("firstName")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isLength({ max: 50 }),
+
+    body("lastName")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isLength({ max: 50 }),
+
+    body("address")
+      .exists({ checkNull: true })
+      .isString()
+      .isLength({ max: 255 }),
+
+    body("dob")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((dob: string) => !isNaN(Date.parse(dob)))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.DATE_FORMAT_NOT_VALID),
+
+    body("phoneNumber")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString(),
+
+    body("gender").exists({ checkFalsy: true, checkNull: true }).isString(),
+
+    body("role")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((role) => USER_ROLE[role])
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.USER_ROLE_NOT_EXIST),
   ],
 
   uploadAvatar: [

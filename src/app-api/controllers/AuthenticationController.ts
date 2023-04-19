@@ -3,7 +3,6 @@ import TYPES from "@app-repositories/types";
 import { USER_STATUS, UserModelInterface } from "@app-repositories/models/User";
 import { IEventService, IUserService } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
-import { inject, injectable } from "inversify";
 import bcrypt = require("bcryptjs");
 import jwt = require("jsonwebtoken");
 import { RANDOM_TOKEN_SECRET } from "@app-configs";
@@ -15,6 +14,8 @@ import {
   DEPARTMENT_STATUS,
   DepartmentModelInterface,
 } from "@app-repositories/models/Department";
+
+import { inject, injectable } from "inversify";
 
 @injectable()
 class AuthenticationController {
