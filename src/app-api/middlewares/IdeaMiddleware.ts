@@ -217,6 +217,12 @@ const IdeaMiddleware = {
         );
       })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.DOCUMENT_INVALID),
+
+    body("category")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((category: string) => isValidObjectId(category))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
   ],
 };
 
