@@ -38,6 +38,19 @@ const CategoryMiddleware = {
       .custom((ideaId: string) => isValidObjectId(ideaId))
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
   ],
+
+  updateName: [
+    param("categoryId")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .custom((ideaId: string) => isValidObjectId(ideaId))
+      .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
+
+    body("name")
+      .exists({ checkFalsy: true, checkNull: true })
+      .isString()
+      .isLength({ max: 50 }),
+  ],
 };
 
 export default CategoryMiddleware;

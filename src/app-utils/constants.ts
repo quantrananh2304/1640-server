@@ -227,6 +227,16 @@ const CONSTANTS = {
       message: "Cannot assign department to Admin or Quality Assurance Manager",
     },
 
+    NOT_QAM: {
+      errorCode: "035",
+      message: "Not a Quality Assurance Manager",
+    },
+
+    CANNOT_UPDATE_CATEGORY_NAME_TO_SAME_NAME: {
+      errorCode: "036",
+      message: "Cannot update category name to its same name",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",

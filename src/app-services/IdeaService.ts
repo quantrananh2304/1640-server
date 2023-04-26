@@ -1077,7 +1077,10 @@ class IdeaService implements IIdeaService {
     const idea: IdeaModelInterface = await Idea.findByIdAndUpdate(
       ideaId,
       {
-        $set: { department: Types.ObjectId(departmentId) },
+        $set: {
+          department: Types.ObjectId(departmentId),
+          updatedAt: new Date(),
+        },
       },
       { new: true, useFindAndModify: false }
     );

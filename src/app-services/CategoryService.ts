@@ -120,6 +120,22 @@ class CategoryService implements ICategoryService {
 
     return updatedCategory;
   }
+
+  async updateCategoryName(
+    categoryId: string,
+    name: string,
+    actor: string
+  ): Promise<CategoryModelInterface> {
+    const category: CategoryModelInterface = await Category.findByIdAndUpdate(
+      categoryId,
+      {
+        $set: { name, updatedAt: new Date(), updatedBy: Types.ObjectId(actor) },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return category;
+  }
 }
 
 export default CategoryService;

@@ -17,11 +17,8 @@ class CategoryController {
     try {
       const { userId, userRole } = req.headers;
 
-      if (
-        userRole !== USER_ROLE.ADMIN &&
-        userRole !== USER_ROLE.QUALITY_ASSURANCE_MANAGER
-      ) {
-        return res.forbidden(CONSTANTS.SERVER_ERROR.NOT_ADMIN_OR_QAM);
+      if (userRole !== USER_ROLE.QUALITY_ASSURANCE_MANAGER) {
+        return res.forbidden(CONSTANTS.SERVER_ERROR.NOT_QAM);
       }
 
       const { name } = req.body;
@@ -97,11 +94,8 @@ class CategoryController {
       const { categoryId } = req.params;
       const { userRole, userId } = req.headers;
 
-      if (
-        userRole !== USER_ROLE.ADMIN &&
-        userRole !== USER_ROLE.QUALITY_ASSURANCE_COORDINATOR
-      ) {
-        return res.errorRes(CONSTANTS.SERVER_ERROR.NOT_ADMIN_OR_QAM);
+      if (userRole !== USER_ROLE.QUALITY_ASSURANCE_MANAGER) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.NOT_QAM);
       }
 
       const updatedCategory: CategoryModelInterface =
@@ -119,6 +113,50 @@ class CategoryController {
         description: "/category/deactivate",
         createdAt: new Date(),
       });
+
+      return res.successRes({ data: {} });
+    } catch (error) {
+      console.log("error", error);
+      return res.internal({ message: error.message });
+    }
+  }
+
+  async updateCategoryName(req: Request, res: Response) {
+    try {
+      const { categoryId } = req.params;
+      const { name } = req.body;
+      const { userRole, userId } = req.headers;
+
+      if (userRole !== USER_ROLE.QUALITY_ASSURANCE_MANAGER) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.NOT_QAM);
+      }
+
+      const category: CategoryModelInterface =
+        await this.categoryService.getCategoryById(categoryId);
+
+      if (!category) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_NOT_EXISTED);
+      }
+
+      if (category.name === name) {
+        return res.errorRes(
+          CONSTANTS.SERVER_ERROR.CANNOT_UPDATE_CATEGORY_NAME_TO_SAME_NAME
+        );
+      }
+
+      const existedCategory: CategoryModelInterface =
+        await this.categoryService.getCategoryByName(name);
+
+      if (existedCategory) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.CATEGORY_EXISTED);
+      }
+
+      const updatedCategory: CategoryModelInterface =
+        await this.categoryService.updateCategoryName(categoryId, name, userId);
+
+      if (!updatedCategory) {
+        return res.internal({});
+      }
 
       return res.successRes({ data: {} });
     } catch (error) {

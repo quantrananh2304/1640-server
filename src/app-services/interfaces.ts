@@ -239,6 +239,12 @@ export interface ICategoryService {
     _id: string,
     actor: string
   ): Promise<CategoryModelInterface>;
+
+  updateCategoryName(
+    categoryId: string,
+    name: string,
+    actor: string
+  ): Promise<CategoryModelInterface>;
 }
 
 export interface IIdeaService {

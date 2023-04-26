@@ -294,6 +294,15 @@ router.put(
   CategoryControllerInstance.deactivateCategory.bind(CategoryControllerInstance)
 );
 
+router.put(
+  "/category/:categoryId/update",
+  CategoryMiddleware.updateName,
+  ParamsValidations.validationRequest,
+  ParamsValidations.preventUnknownData,
+  checkToken,
+  CategoryControllerInstance.updateCategoryName.bind(CategoryControllerInstance)
+);
+
 /// idea
 
 router.post(
