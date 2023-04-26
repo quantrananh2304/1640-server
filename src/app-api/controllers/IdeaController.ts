@@ -72,9 +72,9 @@ class IdeaController {
         return res.errorRes(CONSTANTS.SERVER_ERROR.THREAD_NOT_EXISTED);
       }
 
-      const { finalClosureDate } = threadDocument;
+      const { closureDate } = threadDocument;
 
-      if (isBefore(new Date(finalClosureDate), new Date())) {
+      if (isBefore(new Date(closureDate), new Date())) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.THREAD_EXPIRED);
       }
 
@@ -575,12 +575,16 @@ class IdeaController {
       const { content } = req.body;
       const { userId, userRole } = req.headers;
 
-      const idea: IdeaModelInterface = await this.ideaService.getIdeaById(
-        ideaId
-      );
+      const idea: any = await this.ideaService.getIdeaById(ideaId);
 
       if (!idea) {
         return res.errorRes(CONSTANTS.SERVER_ERROR.IDEA_NOT_EXISTED);
+      }
+
+      const { thread } = idea;
+
+      if (isBefore(new Date(thread.closureDate), new Date())) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.THREAD_EXPIRED);
       }
 
       const comment: any = idea.comments.filter(
