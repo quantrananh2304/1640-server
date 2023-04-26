@@ -808,13 +808,15 @@ class IdeaController {
                   //   _id: String(department._id),
                   //   ideaCount: 1,
                   // },
-                  departments: [
-                    {
-                      _id: String(department._id),
-                      name: department.name,
-                      ideaCount: 1,
-                    },
-                  ],
+                  departments: department
+                    ? [
+                        {
+                          _id: String(department._id),
+                          name: department.name,
+                          ideaCount: 1,
+                        },
+                      ]
+                    : [],
                   users: [updatedBy],
                   userCount: 1,
                 };
@@ -822,6 +824,7 @@ class IdeaController {
                 // existed month
 
                 if (
+                  department &&
                   !prev[month].departments
                     .map(
                       (item: {
@@ -839,7 +842,7 @@ class IdeaController {
                     name: department.name,
                     ideaCount: 1,
                   });
-                } else {
+                } else if (department) {
                   // existed department
 
                   const index = prev[month].departments
@@ -881,6 +884,7 @@ class IdeaController {
               const { department, like, dislike, comments, views } = current;
 
               if (
+                department &&
                 !prev
                   .map(
                     (item: {
@@ -902,7 +906,7 @@ class IdeaController {
                   commentsCount: comments.length,
                   viewCount: views.length,
                 });
-              } else {
+              } else if (department) {
                 const index: number = prev
                   .map(
                     (item: {
