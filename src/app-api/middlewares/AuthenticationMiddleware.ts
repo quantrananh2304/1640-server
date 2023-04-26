@@ -2,6 +2,7 @@ import { USER_ROLE } from "@app-repositories/models/User";
 import CONSTANTS from "@app-utils/constants";
 import { body, param } from "express-validator";
 import { isValidObjectId } from "mongoose";
+import _ from "lodash";
 
 const AuthenticationMiddleware = {
   signUp: [
@@ -61,9 +62,20 @@ const AuthenticationMiddleware = {
     body("gender").exists({ checkFalsy: true, checkNull: true }).isString(),
 
     body("department")
-      .exists({ checkFalsy: true, checkNull: true })
+      .exists({})
       .isString()
-      .custom((department: string) => isValidObjectId(department))
+      .custom((department: string, { req }) => {
+        const { role } = req.body;
+
+        if (
+          role === USER_ROLE.STAFF ||
+          role === USER_ROLE.QUALITY_ASSURANCE_COORDINATOR
+        ) {
+          return isValidObjectId(department);
+        }
+
+        return _.isNil(department);
+      })
       .withMessage(CONSTANTS.VALIDATION_MESSAGE.OBJECT_ID_NOT_VALID),
   ],
 

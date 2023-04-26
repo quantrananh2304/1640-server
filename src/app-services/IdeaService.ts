@@ -1061,6 +1061,29 @@ class IdeaService implements IIdeaService {
 
     return idea;
   }
+
+  async getListIdeaByCreatorId(userId: string): Promise<IdeaModelInterface[]> {
+    const ideas: Array<IdeaModelInterface> = await Idea.find({
+      updatedBy: Types.ObjectId(userId),
+    }).lean();
+
+    return ideas;
+  }
+
+  async updateIdeaDepartment(
+    ideaId: string,
+    departmentId: string
+  ): Promise<IdeaModelInterface> {
+    const idea: IdeaModelInterface = await Idea.findByIdAndUpdate(
+      ideaId,
+      {
+        $set: { department: Types.ObjectId(departmentId) },
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return idea;
+  }
 }
 
 export default IdeaService;

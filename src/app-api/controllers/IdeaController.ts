@@ -48,6 +48,12 @@ class IdeaController {
 
   async createIdea(req: Request, res: Response) {
     try {
+      const { userRole } = req.headers;
+
+      if (userRole !== USER_ROLE.STAFF) {
+        return res.errorRes(CONSTANTS.SERVER_ERROR.ONLY_STAFF_CAN_SUBMIT_IDEA);
+      }
+
       const { title, description, documents, category, thread, isAnonymous } =
         req.body;
 

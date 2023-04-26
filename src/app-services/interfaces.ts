@@ -312,6 +312,13 @@ export interface IIdeaService {
     },
     actor: string
   ): Promise<IdeaModelInterface>;
+
+  getListIdeaByCreatorId(userId: string): Promise<Array<IdeaModelInterface>>;
+
+  updateIdeaDepartment(
+    ideaId: string,
+    departmentId: string
+  ): Promise<IdeaModelInterface>;
 }
 
 export interface IIdeaNotificationService {

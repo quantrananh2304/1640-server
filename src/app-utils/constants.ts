@@ -217,6 +217,16 @@ const CONSTANTS = {
       message: "Cannot edit others' idea",
     },
 
+    ONLY_STAFF_CAN_SUBMIT_IDEA: {
+      errorCode: "033",
+      message: "Only staff can submit new idea",
+    },
+
+    CANNOT_ASSIGN_DEPARTMENT_TO_QAM_OR_ADMIN: {
+      errorCode: "034",
+      message: "Cannot assign department to Admin or Quality Assurance Manager",
+    },
+
     AUTHORIZATION_FORBIDDEN: {
       errorCode: "403",
       message: "Authorization forbidden",

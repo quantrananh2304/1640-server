@@ -1,6 +1,10 @@
 import { Request, Response } from "@app-helpers/http.extends";
 import TYPES from "@app-repositories/types";
-import { USER_STATUS, UserModelInterface } from "@app-repositories/models/User";
+import {
+  USER_ROLE,
+  USER_STATUS,
+  UserModelInterface,
+} from "@app-repositories/models/User";
 import { IEventService, IUserService } from "@app-services/interfaces";
 import CONSTANTS from "@app-utils/constants";
 import bcrypt = require("bcryptjs");
@@ -89,16 +93,22 @@ class AuthenticationController {
 
   async signup(req: Request, res: Response) {
     try {
-      const { department } = req.body;
-
-      const departmentDoc: DepartmentModelInterface =
-        await this.departmentService.getDepartmentById(department);
+      const { department, role } = req.body;
 
       if (
-        !departmentDoc ||
-        departmentDoc.status === DEPARTMENT_STATUS.INACTIVE
+        (role === USER_ROLE.QUALITY_ASSURANCE_COORDINATOR ||
+          role === USER_ROLE.STAFF) &&
+        department
       ) {
-        return res.errorRes(CONSTANTS.SERVER_ERROR.DEPARTMENT_NOT_EXISTED);
+        const departmentDoc: DepartmentModelInterface =
+          await this.departmentService.getDepartmentById(department);
+
+        if (
+          !departmentDoc ||
+          departmentDoc.status === DEPARTMENT_STATUS.INACTIVE
+        ) {
+          return res.errorRes(CONSTANTS.SERVER_ERROR.DEPARTMENT_NOT_EXISTED);
+        }
       }
 
       const user = await this.userService.createUser(req.body);

@@ -1,5 +1,9 @@
 import { Request, Response } from "@app-helpers/http.extends";
-import { USER_STATUS, UserModelInterface } from "@app-repositories/models/User";
+import {
+  USER_ROLE,
+  USER_STATUS,
+  UserModelInterface,
+} from "@app-repositories/models/User";
 import TYPES from "@app-repositories/types";
 import {
   IDepartmentService,
@@ -115,7 +119,7 @@ class UserController {
           gender: user.gender,
           createdAt: user.createdAt,
           _id: user._id,
-          department: user.department,
+          department: user.department || {},
         },
       });
     } catch (error) {
@@ -293,6 +297,16 @@ class UserController {
     try {
       const { userId } = req.params;
       const { departmentId } = req.body;
+      const { userRole } = req.headers;
+
+      if (
+        userRole === USER_ROLE.ADMIN ||
+        userRole === USER_ROLE.QUALITY_ASSURANCE_MANAGER
+      ) {
+        return res.errorRes(
+          CONSTANTS.SERVER_ERROR.CANNOT_ASSIGN_DEPARTMENT_TO_QAM_OR_ADMIN
+        );
+      }
 
       const user: any = await this.userService.getUserById(userId);
 

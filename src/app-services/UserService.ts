@@ -1,5 +1,5 @@
-import { injectable } from "inversify";
-import { GET_LIST_USER_SORT, IUserService } from "./interfaces";
+import { injectable, inject } from "inversify";
+import { GET_LIST_USER_SORT, IIdeaService, IUserService } from "./interfaces";
 import {
   USER_GENDER,
   USER_ROLE,
@@ -13,9 +13,13 @@ import { stringGenerator } from "@app-utils/utils";
 import CONSTANTS from "@app-utils/constants";
 import { add } from "date-fns";
 import { Types } from "mongoose";
+import TYPES from "@app-repositories/types";
+import { IdeaModelInterface } from "@app-repositories/models/Idea";
 
 @injectable()
 class UserService implements IUserService {
+  @inject(TYPES.IdeaService) private readonly ideaService: IIdeaService;
+
   async createUser(_user: {
     firstName: string;
     lastName: string;
@@ -383,6 +387,28 @@ class UserService implements IUserService {
       },
       { new: true, useFindAndModify: false }
     );
+
+    if (updatedUser) {
+      const ideas: Array<IdeaModelInterface> =
+        await this.ideaService.getListIdeaByCreatorId(userId);
+
+      if (ideas.length) {
+        const handleUpdateIdeaDepartment = (arr: Array<IdeaModelInterface>) => {
+          const promises: Array<Promise<any>> = arr.map(
+            async (item: IdeaModelInterface) => {
+              return await this.ideaService.updateIdeaDepartment(
+                String(item._id),
+                departmentId
+              );
+            }
+          );
+
+          return Promise.all(promises);
+        };
+
+        await handleUpdateIdeaDepartment(ideas);
+      }
+    }
 
     return updatedUser;
   }
